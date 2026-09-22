@@ -249,6 +249,37 @@ var game = {
   },
 
   /**
+   * Hapus cache sesi siswa agar kunjungan game berikutnya selalu meminta nama dan nomor absen baru.
+   * Preferensi bahasa sengaja tidak dihapus.
+   */
+  clearStudentSession: function () {
+    [
+      "playerName",
+      "playerAbsence",
+      "level",
+      "answers",
+      "solved",
+      "timeLeft",
+      "gameStartTime",
+      "levelRunCounts",
+    ].forEach(function (key) {
+      localStorage.removeItem(key);
+    });
+  },
+
+  /**
+   * Simpan data terakhir ke Spreadsheet, lalu bersihkan cache sesi lokal.
+   */
+  saveAndClearSession: function () {
+    if (this.isLeavingGame) return;
+    this.isLeavingGame = true;
+
+    this.saveAnswer();
+    this.liveSyncData(true);
+    this.clearStudentSession();
+  },
+
+  /**
    * Reset game to initial state
    */
   resetGame: function () {
@@ -262,11 +293,7 @@ var game = {
     localStorage.removeItem("levelRunCounts");
 
     this.loadLevel(levels[0]);
-
-    // Clear player data
-    localStorage.removeItem("playerName");
-    localStorage.removeItem("playerAbsence");
-
+    this.clearStudentSession();
     this.showInputPopup();
   },
 
@@ -355,8 +382,10 @@ var game = {
         if (name && absence) {
           localStorage.setItem("playerName", name);
           localStorage.setItem("playerAbsence", absence);
-          game.liveSyncData(); // <-- Sinkronisasi saat input prompt
-          setTimeout(() => location.reload(), 500);
+          game.liveSyncData();
+          game.startTimer();
+          game.initializeGame();
+          game.generateProgressDots();
         }
         return;
       }
@@ -387,19 +416,14 @@ var game = {
 
             localStorage.setItem("playerName", playerName);
             localStorage.setItem("playerAbsence", playerAbsence);
-            game.liveSyncData(); // <-- Sinkronisasi saat input Swal
-
-            // Beri jeda 500ms agar pengiriman data berhasil sebelum reload
-            return new Promise(resolve => {
-              setTimeout(() => {
-                location.reload();
-                resolve(true);
-              }, 500);
-            });
+            game.liveSyncData();
+            return true;
           },
         }).then((result) => {
           if (result.isConfirmed) {
+            this.startTimer();
             this.initializeGame();
+            this.generateProgressDots();
           }
         });
       } catch (e) {
@@ -408,8 +432,10 @@ var game = {
         if (name && absence) {
           localStorage.setItem("playerName", name);
           localStorage.setItem("playerAbsence", absence);
-          game.liveSyncData(); // <-- Sinkronisasi saat error fallback
-          setTimeout(() => location.reload(), 500);
+          game.liveSyncData();
+          game.startTimer();
+          game.initializeGame();
+          game.generateProgressDots();
         }
       }
     } else {
@@ -1348,13 +1374,8 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    */
   bindWindowEvents: function () {
     $(window)
-      .on("beforeunload", function () {
-        game.saveAnswer();
-        localStorage.setItem("level", game.level);
-        localStorage.setItem("answers", JSON.stringify(game.answers));
-        localStorage.setItem("solved", JSON.stringify(game.solved));
-        localStorage.setItem("timeLeft", game.timeLeft);
-        localStorage.setItem("levelRunCounts", JSON.stringify(game.levelRunCounts || {}));
+      .on("pagehide", function () {
+        game.saveAndClearSession();
       })
       .on("hashchange", function () {
         var languageFromHash = window.location.hash.substring(1);
@@ -1584,7 +1605,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
   /**
    * Sinkronisasi data real-time ke Spreadsheet
    */
-  liveSyncData: function () {
+  liveSyncData: function (keepalive) {
     const playerName = localStorage.getItem("playerName");
     const playerAbsence = localStorage.getItem("playerAbsence");
     if (!playerName || !playerAbsence) return;
@@ -1622,6 +1643,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
       method: "POST",
       mode: "no-cors",
       body: formData,
+      keepalive: Boolean(keepalive),
     }).catch(err => console.error("Sync error:", err));
   },
 
