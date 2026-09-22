@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![MagicFlex Banner](images/bg.png)
+![MagicFlex Banner](images/tumbnail.png)
 
 **Belajar CSS Flexbox dengan Cara yang Menyenangkan!**
 
@@ -46,7 +46,7 @@
 - ✨ **Game-based Learning** - Belajar sambil bermain dengan misi menarik
 - 🎨 **Visual Feedback** - Lihat hasil kode CSS secara langsung
 - 📊 **Tracking Otomatis** - Data kemajuan tersimpan di Google Sheets
-- 🤖 **AI-Powered Hints** - Bantuan cerdas dari Google Gemini AI
+- 🤖 **AI-Powered Hints** - Tips cerdas dari Google Gemini AI
 - ⏱️ **Timer System** - Tantangan 30 menit untuk mengasah fokus
 - 🌐 **Multilingual** - Mendukung Bahasa Indonesia & English
 - 📱 **Responsive Design** - Optimal di desktop dan mobile
@@ -66,7 +66,6 @@
 ### 2. **Sistem Timer**
 - Countdown 30 menit per sesi
 - Tampilan ganda (desktop & mobile)
-- Auto-pause saat tab tidak aktif
 - Sinkronisasi waktu real-time ke spreadsheet
 
 ### 3. **Integrasi Google Sheets**
@@ -146,8 +145,6 @@ magicflex_2/
     ├── bg.png                # Background mistis
     ├── Bola*.svg             # Magic ball elements (Air, Api, Tanah)
     ├── portal*.png           # Portal target elements
-    ├── alien-*.svg           # Karakter alien
-    ├── planet-*.svg          # Dekorasi planet
     ├── element *.svg         # Elemen dekoratif (1-5)
     ├── *.jpg                 # Foto tim (Ima, Icha, Anike, Candra)
     └── Handout *.pdf         # Materi pembelajaran
@@ -225,12 +222,12 @@ magicflex_2/
 
 2. **📝 Solve Levels**
    - Baca instruksi di panel kiri
-   - Tulis kode CSS di editor "Grimoire"
-   - Klik **Cast Spell** untuk test kode
+   - Tulis kode CSS di editor "Editor Buku Sihir"
+   - Klik **Jalankan Sihir** untuk test kode
    - Lihat hasil visual di panel kanan
 
 3. **✅ Validasi**
-   - Jika benar: Alien mencapai portal ✨
+   - Jika benar: Bola mencapai portal ✨
    - Jika salah: Error analysis muncul ❌
    - Klik **Lanjut Soal Berikutnya** untuk next level
 
@@ -246,7 +243,7 @@ magicflex_2/
 | **Cast Spell** | Test kode CSS (dihitung sebagai percobaan) |
 | **Lanjut Soal Berikutnya** | Validasi final & lanjut ke level berikutnya |
 | **← →** | Navigasi Previous/Next level |
-| **Progress Dots** | Klik untuk jump ke level tertentu |
+| **Progress Dots** | Klik untuk jump ke level sebelumnya |
 | **Reset** | Mulai ulang dari level 1 (dengan konfirmasi) |
 
 ### Tips Bermain
