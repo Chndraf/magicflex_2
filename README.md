@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![MagicFlex Banner](images/bg.png)
+![MagicFlex Banner](images/tumbnail.png)
 
 **Belajar CSS Flexbox dengan Cara yang Menyenangkan!**
 
