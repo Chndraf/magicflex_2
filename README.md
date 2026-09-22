@@ -567,7 +567,7 @@ Project ini dibuat untuk tujuan edukasi.
 
 ## 📞 Kontak
 
-Untuk pertanyaan, saran, atau bug report, silakan buka [GitHub Issues](https://wa.me/+6287769006246).
+Untuk pertanyaan, saran, atau bug report, silakan buka [WhatsApp Developer](https://wa.me/+6287769006246).
 
 ---
 
