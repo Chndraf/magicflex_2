@@ -32,7 +32,7 @@ var game = {
 
   // Game state
   googleScriptUrl:
-    "https://script.google.com/macros/s/AKfycbw-BTlHqtO8Ti6v6EKVE4FvHhpKoupWCuCSXBy6MCbpS4tRqPb-CRFjR_nTGGg3Qsz_qQ/exec",
+    "https://script.google.com/macros/s/AKfycbzV-vlUviLkrjUR7g79-FyolCvr3fjzrmiZ_jSTi43qB2vs7_hFtU7wtVUA05EP-Sd88w/exec",
   language: ["id", "en"].includes(window.location.hash.substring(1))
     ? window.location.hash.substring(1)
     : localStorage.getItem("language") || "id",
@@ -53,7 +53,7 @@ var game = {
   timerStarted: false,
   timeLeft: localStorage.getItem("timeLeft")
     ? parseInt(localStorage.getItem("timeLeft"), 10)
-    : 1800, // 30 minutes
+    : 1800, // 30 menit
 
   // ===========================================
   // TIMER METHODS
@@ -107,7 +107,7 @@ var game = {
   resetTimer: function () {
     this.timerStarted = false;
     clearInterval(this.timer);
-    this.timeLeft = 1800; // 30 minutes
+    this.timeLeft = 1800; // 30 menit
     localStorage.removeItem("timeLeft");
     this.gameStartTime = null;
     localStorage.removeItem("gameStartTime");
@@ -635,23 +635,23 @@ var game = {
     let performanceIcon = "";
 
     if (score >= 90) {
-      performanceLevel = "Excellent!";
+      performanceLevel = t("performanceExcellent", this.language);
       performanceColor = "#10b981";
       performanceIcon = "🌟";
     } else if (score >= 80) {
-      performanceLevel = "Very Good!";
+      performanceLevel = t("performanceVeryGood", this.language);
       performanceColor = "#3b82f6";
       performanceIcon = "🎯";
     } else if (score >= 70) {
-      performanceLevel = "Good!";
+      performanceLevel = t("performanceGood", this.language);
       performanceColor = "#8b5cf6";
       performanceIcon = "👍";
     } else if (score >= 60) {
-      performanceLevel = "Fair";
+      performanceLevel = t("performanceFair", this.language);
       performanceColor = "#f59e0b";
       performanceIcon = "📈";
     } else {
-      performanceLevel = "Keep Trying!";
+      performanceLevel = t("performanceKeepTrying", this.language);
       performanceColor = "#ef4444";
       performanceIcon = "💪";
     }
@@ -687,73 +687,75 @@ var game = {
       const correctDetails =
         this.solved.length > 0
           ? `<div class="question-list correct-list">${this.solved.map((q) => `<div class="question-item correct-item"><span class="question-icon">✅</span><span class="question-text">${q}</span></div>`).join("")}</div>`
-          : '<div class="empty-state">No correct answers</div>';
+          : '<div class="empty-state">' + t("noCorrectAnswers", this.language) + '</div>';
 
       const wrongDetails =
         totalQuestions > 0
           ? `<div class="question-list wrong-list">${levels.map((level) => level.name).filter((name) => !this.solved.includes(name)).map((q) => `<div class="question-item wrong-item"><span class="question-icon">❌</span><span class="question-text">${q}</span></div>`).join("")}</div>`
-          : '<div class="empty-state">All questions answered correctly!</div>';
+          : '<div class="empty-state">' + t("allQuestionsCorrect", this.language) + '</div>';
 
       Swal.fire({
-        title: `${performanceIcon} Quiz Results`,
+        title: `${t("resultTitle", this.language)}`,
         html: `
               <style>
                   .performance-badge { background: linear-gradient(135deg, ${performanceColor}20, ${performanceColor}35); border: 2px solid ${performanceColor}; border-radius: 25px; padding: 12px 20px; margin: 15px 0; text-align: center; font-weight: bold; color: ${performanceColor}; font-size: 1.1em; }
               </style>
               
               <div class="results-container">
-                  <div class="performance-badge">${performanceLevel} Your score: ${score}%</div>
+                  <div class="performance-badge">${performanceLevel} ${t("yourScore", this.language)} ${score}%</div>
                   
                   <div class="ai-feedback-container" style="margin: 15px 0; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
                       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">Saran Pembelajaran AI</h3>
+                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">${t("aiLearningAdvice", this.language)}</h3>
                       </div>
-                      <div id="ai-feedback-content">
-                          <button id="btn-get-ai-feedback" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">Dapatkan Masukan dari Gemini AI ✨</button>
-                      </div>
+                      <div id="ai-feedback-content"></div>
                   </div>
 
                   <div class="player-info">
-                      <div class="player-row"><span class="player-label"> Player Name:</span><span class="player-value">${playerName}</span></div>
-                      <div class="player-row"><span class="player-label"> Absence Number:</span><span class="player-value">${playerAbsence}</span></div>
+                      <div class="player-row"><span class="player-label"> ${t("playerName", this.language)}</span><span class="player-value">${playerName}</span></div>
+                      <div class="player-row"><span class="player-label"> ${t("absenceNumber", this.language)}</span><span class="player-value">${playerAbsence}</span></div>
                   </div>
                   
                   <div class="stats-grid">
-                      <div class="stat-card"><div class="stat-value score-value">${score}%</div><div class="stat-label">Final Score</div></div>
-                      <div class="stat-card"><div class="stat-value total-value">${totalQuestions}</div><div class="stat-label">Total Questions</div></div>
-                      <div class="stat-card"><div class="stat-value correct-value">${correctAnswers}</div><div class="stat-label">Correct Answers</div></div>
-                      <div class="stat-card"><div class="stat-value wrong-value">${wrongAnswers}</div><div class="stat-label">Wrong Answers</div></div>
+                      <div class="stat-card"><div class="stat-value score-value">${score}%</div><div class="stat-label">${t("finalScore", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value total-value">${totalQuestions}</div><div class="stat-label">${t("totalQuestions", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value correct-value">${correctAnswers}</div><div class="stat-label">${t("correctAnswers", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value wrong-value">${wrongAnswers}</div><div class="stat-label">${t("wrongAnswers", this.language)}</div></div>
                   </div>
                   
                   <div class="section-divider"></div>
-                  <div class="section-title correct-title">✅ Correct Questions (${correctAnswers})</div>${correctDetails}
-                  <div class="section-title wrong-title">❌ Wrong Questions (${wrongAnswers})</div>${wrongDetails}
+                  <button id="btn-share-results" type="button" style="width: 100%; margin-bottom: 16px; padding: 10px 16px; border: 0; border-radius: 8px; background: #2563eb; color: #ffffff; cursor: pointer; font-weight: 700;">${t("shareToWhatsApp", this.language)}</button>
+                  <div class="section-title correct-title">✅ ${t("correctQuestions", this.language)} (${correctAnswers})</div>${correctDetails}
+                  <div class="section-title wrong-title">❌ ${t("wrongQuestions", this.language)} (${wrongAnswers})</div>${wrongDetails}
               </div>
           `,
-        showCancelButton: true,
         focusConfirm: false,
         allowOutsideClick: false,
-        confirmButtonText: "🔄 Play Again",
-        cancelButtonText: "📤 Share to WhatsApp",
+        showDenyButton: true,
+        confirmButtonText: t("playAgain", this.language),
+        denyButtonText: t("backToHome", this.language),
         customClass: {
           confirmButton: "swal2-krem-btn",
-          cancelButton: "swal2-biru-btn",
+          denyButton: "swal2-biru-btn",
           popup: "swal2-enhanced-popup",
         },
         didOpen: () => {
-          // Memicu AI ketika tombol AI diklik
-          const aiBtn = document.getElementById("btn-get-ai-feedback");
-          if (aiBtn) {
-            aiBtn.addEventListener("click", () => {
-              game.handleAIFeedbackRequest(quizDataForAI);
+          // Masukan Gemini dibuat otomatis saat hasil kuis dibuka.
+          game.handleAIFeedbackRequest(quizDataForAI);
+
+          // Tombol berbagi berada di dalam popup agar hasil kuis tidak tertutup.
+          const shareButton = document.getElementById("btn-share-results");
+          if (shareButton) {
+            shareButton.addEventListener("click", function () {
+              game.shareResults(score);
             });
           }
         },
         preConfirm: () => this.resetGame(),
       }).then((result) => {
-        // Memicu Share WhatsApp
-        if (result.isDismissed) {
-          this.shareResults({ score });
+        if (result.isDenied) {
+          this.clearStudentSession();
+          window.location.href = "index.html";
         }
       });
     } catch (e) {
@@ -777,21 +779,9 @@ var game = {
     const feedbackContent = document.getElementById('ai-feedback-content');
     if (!feedbackContent) return;
 
-    feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">⏳ Mengirim data ke AI dan menganalisis hasilmu...</div>';
+    feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
 
-    const promptText = `Saya baru saja bermain game edukasi bernama "MagicFlex" untuk belajar CSS Flexbox. 
-Skor saya: ${quizData.score}%. 
-Performa: ${quizData.performanceLevel}. 
-Pertanyaan yang dijawab benar: ${quizData.correctAnswers}.
-Pertanyaan yang dijawab salah: ${quizData.wrongAnswers}.
-Level/Konsep CSS yang saya salah menjawab: ${quizData.wrongDetails}.
-
-Tolong berikan:
-1. Feedback singkat dan memotivasi tentang performa saya.
-2. Saran pembelajaran aplikatif mengenai CSS Flexbox (khususnya konsep yang salah).
-3. Jangan rekomendasikan website lain untuk belajar, cukup berikan saran dari konsep yang salah.
-
-Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). Jangan gunakan format markdown header, tapi boleh list atau bold.`;
+    const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -801,16 +791,17 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "Gagal mengambil respon dari AI.");
+      if (!response.ok) throw new Error(data.error?.message || t("aiResponseError", this.language));
 
       const aiText = data.candidates[0].content.parts[0].text;
-      let formattedText = aiText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      const oneParagraphText = aiText.replace(/\s*\n+\s*/g, " ").trim();
+      const formattedText = oneParagraphText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
       
     } catch (error) {
       feedbackContent.innerHTML = `
-        <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>Error:</strong> ${error.message}</div>
-        <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">Coba Lagi</button>
+        <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>
+        <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">${t("tryAgain", this.language)}</button>
       `;
       document.getElementById('btn-get-ai-feedback-retry').addEventListener('click', () => {
         this.handleAIFeedbackRequest(quizData);
@@ -822,7 +813,9 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    * Share results via WhatsApp only
    */
   shareResults: function (score) {
-    const shareText = `Saya mendapat skor ${score}% di game CSS! Ayo coba kalahkan skorku!`;
+    const shareText = this.language === "en"
+      ? `I scored ${score}% in the MagicFlex CSS game! Can you beat my score?`
+      : `Saya mendapat skor ${score}% di game CSS MagicFlex! Ayo coba kalahkan skorku!`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, "_blank");
   },
@@ -1172,9 +1165,22 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    * Set up all event handlers
    */
   setHandlers: function () {
+    // Setelah Play Again, initializeGame() dipanggil lagi. Bersihkan semua
+    // handler lama terlebih dahulu agar satu klik hanya diproses satu kali.
+    this.unbindHandlers();
     this.bindGameEvents();
     this.bindUIEvents();
     this.bindWindowEvents();
+  },
+
+  /**
+   * Lepaskan handler yang dapat terpasang ulang ketika game dimulai kembali.
+   */
+  unbindHandlers: function () {
+    $("#next, #nextLevelBtn, #labelReset, #labelSettings, .language-button, .level-marker, .arrow, #level-indicator, #code, #editor")
+      .off();
+    $(window).off("pagehide hashchange");
+    $("body").off("click");
   },
 
   /**
