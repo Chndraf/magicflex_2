@@ -14,7 +14,7 @@
 [![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=flat&logo=jquery&logoColor=white)](https://jquery.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[🎮 Demo](game.html) | [📚 Dokumentasi](#dokumentasi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
+[🎮 Demo](https://magicflex.vercel.app/) | [📚 Dokumentasi](#level-dan-materi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
 
 </div>
 
@@ -30,7 +30,7 @@
 - [Cara Bermain](#cara-bermain)
 - [Sistem Scoring](#sistem-scoring)
 - [Integrasi Google Sheets](#integrasi-google-sheets)
-- [Level & Materi](#dokumentasi)
+- [Level & Materi](#level-dan-materi)
 - [Konfigurasi](#konfigurasi)
 - [Tim Pengembang](#tim-pengembang)
 - [Lisensi](#lisensi)
