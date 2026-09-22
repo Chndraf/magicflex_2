@@ -1,37 +1,29 @@
 var messages = {
   languageActive: {
-    en: "English",
     id: "Bahasa Indonesia",
   },
   next: {
-    en: "Next",
     id: "Lanjut",
   },
 
   labelLevel: {
-    en: "Level",
-    id: "Tingkat",
+    id: "Level",
   },
 
   timeRemaining: {
-    en: "Time Left:",
     id: "Waktu Tersisa:",
   },
 
   labelOf: {
-    en: "of",
     id: "dari",
   },
   title: {
-    en: "MagicFlex - Master CSS Flexbox in Space",
-    id: "MagicFlex - Master CSS Flexbox in Space",
+    id: "MagicFlex - Kuasai CSS Flexbox di Luar Angkasa",
   },
   labelReset: {
-    en: "Reset",
     id: "Atur Ulang",
   },
   warningReset: {
-    en: "Are you sure you want to reset the game?\n\nYour saved progress will be lost and you'll be sent to the start of the game.",
-    id: "Apakah Anda yakin ingin mengatur ulang game?\n\n Proses Anda yang tersimpan akan hilang dan Anda akan dikirim ke awal game.",
+    id: "Apakah Anda yakin ingin mengatur ulang game?\n\nProgres tersimpan Anda akan hilang dan Anda akan kembali ke awal game.",
   },
 };

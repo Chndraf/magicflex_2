@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html class="dark" lang="id">
   <head>
     <meta charset="utf-8" />
-    <title>MagicFlex - Master CSS Flexbox</title>
+    <title>MagicFlex - Kuasai CSS Flexbox</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="MagicFlex is an interactive game designed to teach CSS Flexbox concepts through engaging space-themed missions."
+      content="MagicFlex adalah game interaktif untuk mempelajari konsep CSS Flexbox melalui misi bertema luar angkasa yang menarik."
     />
     <meta
       name="keywords"
-      content="CSS, MagicFlex, game, interactive, learning, space, web development, educational"
+      content="CSS, MagicFlex, game, interaktif, pembelajaran, luar angkasa, pengembangan web, edukasi"
     />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css" />
@@ -74,10 +74,17 @@
           <span class="material-symbols-outlined text-secondary">hourglass_empty</span>
           <span class="font-body-md text-on-surface font-bold timer-display" id="timer">30:00</span>
         </div>
-        <a href="index.html" class="flex items-center gap-2 bg-surface-bright/50 hover:bg-surface-variant hover:-translate-y-0.5 transition-all duration-300 px-4 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold">
-          <span class="material-symbols-outlined text-sm">home</span>
-          Kembali ke Beranda
-        </a>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 glass-panel p-1 rounded-full border border-secondary-container/30" role="group" aria-label="Pilih bahasa">
+            <span class="material-symbols-outlined text-secondary text-lg ml-2">language</span>
+            <button type="button" class="language-button px-3 py-1 rounded-full text-sm font-semibold transition-colors" data-language="id">ID</button>
+            <button type="button" class="language-button px-3 py-1 rounded-full text-sm font-semibold transition-colors" data-language="en">EN</button>
+          </div>
+          <a href="index.html" class="flex items-center gap-2 bg-surface-bright/50 hover:bg-surface-variant hover:-translate-y-0.5 transition-all duration-300 px-4 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold">
+            <span class="material-symbols-outlined text-sm">home</span>
+            <span data-i18n="navHome">Kembali ke Beranda</span>
+          </a>
+        </div>
       </div>
     </nav>
 
@@ -87,9 +94,15 @@
         <span class="material-symbols-outlined text-xl">arrow_back</span>
       </a>
       <span class="font-headline-lg text-lg font-bold text-secondary">MagicFlex</span>
-      <div class="flex items-center gap-1 glass-panel px-3 py-1.5 rounded-full border border-secondary-container/30">
-        <span class="material-symbols-outlined text-secondary text-sm">hourglass_empty</span>
-        <span class="font-body-md text-on-surface font-bold text-xs timer-display" id="timer-mobile">30:00</span>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center glass-panel p-1 rounded-full border border-secondary-container/30" role="group" aria-label="Pilih bahasa">
+          <button type="button" class="language-button px-2 py-1 rounded-full text-xs font-semibold transition-colors" data-language="id">ID</button>
+          <button type="button" class="language-button px-2 py-1 rounded-full text-xs font-semibold transition-colors" data-language="en">EN</button>
+        </div>
+        <div class="flex items-center gap-1 glass-panel px-3 py-1.5 rounded-full border border-secondary-container/30">
+          <span class="material-symbols-outlined text-secondary text-sm">hourglass_empty</span>
+          <span class="font-body-md text-on-surface font-bold text-xs timer-display" id="timer-mobile">30:00</span>
+        </div>
       </div>
     </nav>
 
@@ -100,11 +113,11 @@
         <!-- Level Selection -->
         <div class="flex flex-col border-b border-outline-variant/30 pb-4">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="font-headline-lg text-sm text-secondary uppercase tracking-widest">Levels</h3>
+            <h3 class="font-headline-lg text-sm text-secondary uppercase tracking-widest" data-i18n="level">Level</h3>
             <div class="flex items-center gap-2">
               <button class="arrow left text-secondary hover:text-white font-bold" id="prevBtn">‹</button>
               <span class="text-xs text-on-surface-variant font-bold" id="level-indicator">
-                Mission <span class="current">1</span> of <span class="total">25</span>
+                <span data-i18n="mission">Misi</span> <span class="current">1</span> <span data-i18n="of">dari</span> <span class="total">25</span>
               </span>
               <button class="arrow right text-secondary hover:text-white font-bold" id="nextBtn">›</button>
             </div>
@@ -117,7 +130,7 @@
         <!-- Instructions -->
         <div class="flex flex-col border-b border-outline-variant/30 pb-4 h-auto flex-shrink-0">
           <h3 class="font-headline-lg text-lg text-secondary mb-3 flex items-center justify-between">
-            <span id="level-counter">Mission <span class="current">1</span></span>
+            <span id="level-counter"><span data-i18n="mission">Misi</span> <span class="current">1</span></span>
           </h3>
           <div class="text-on-surface-variant font-body-md space-y-4 text-sm" id="instructions">
             <!-- instructions html goes here -->
@@ -127,10 +140,10 @@
         <!-- Editor -->
         <div class="glass-panel rounded-xl p-4 md:p-5 flex flex-col font-mono text-lg h-content">
           <div class="flex justify-between items-center mb-4 border-b border-outline-variant/50 pb-2">
-            <span class="text-secondary font-bold text-sm tracking-widest uppercase">Grimoire Editor</span>
+            <span class="text-secondary font-bold text-sm tracking-widest uppercase" data-i18n="editorTitle">Editor Buku Sihir</span>
             <div class="flex items-center gap-3">
-              <button class="bg-surface-bright hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-lg font-bold transition-all text-xs border border-outline-variant/50" id="labelReset">Reset</button>
-              <button class="bg-primary-container text-on-primary-container px-5 py-1.5 rounded-lg font-bold hover:bg-primary transition-all shadow-lg text-xs border border-primary/30" id="next">Cast Spell</button>
+              <button class="bg-surface-bright hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-lg font-bold transition-all text-xs border border-outline-variant/50" id="labelReset" data-i18n="reset">Atur Ulang</button>
+              <button class="bg-primary-container text-on-primary-container px-5 py-1.5 rounded-lg font-bold hover:bg-primary transition-all shadow-lg text-xs border border-primary/30" id="next" data-i18n="runCode">Jalankan Sihir</button>
             </div>
           </div>
           <div class="flex-1 relative overflow-y-auto text-sm">
@@ -142,7 +155,8 @@
                 autocapitalize="none"
                 spellcheck="false"
                 class="code-input w-full rounded px-2 py-1 text-sm font-mono mt-1"
-                placeholder="type spell here..."
+                placeholder="ketik kode di sini..."
+                data-i18n-placeholder="codePlaceholder"
               ></textarea>
               <pre id="after" class="text-on-surface-variant"></pre>
             </div>
@@ -152,7 +166,7 @@
         <!-- Next Level / Finish Button -->
         <button id="nextLevelBtn" class="w-full mt-2 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-300 border border-secondary-container/40 bg-gradient-to-r from-primary-container/80 to-primary-container text-on-primary-container hover:from-primary hover:to-primary hover:text-on-primary hover:shadow-[0_0_25px_rgba(125,78,250,0.5)] hover:-translate-y-0.5 active:scale-[0.98]">
           <span class="material-symbols-outlined text-lg" id="nextLevelIcon">arrow_forward</span>
-          <span id="nextLevelText">Lanjut Soal Berikutnya</span>
+          <span id="nextLevelText" data-i18n="nextQuestion">Soal Berikutnya</span>
         </button>
       </div>
 
@@ -178,6 +192,7 @@
 
     <script src="js/levels.js"></script>
     <script src="js/docs.js"></script>
+    <script src="js/translations.js"></script>
     <script src="js/messages.js"></script>
     <script src="js/game.js"></script>
   </body>

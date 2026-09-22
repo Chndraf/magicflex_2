@@ -23,7 +23,8 @@ function doPost(e) {
     var params = e.parameter || {};
     var action = params.action;
     var nama = (params.nama || "").trim();
-    var absen = (params.absen || "").trim();
+    // Samakan nomor absen numerik: "01", "001", dan "1" dianggap sebagai "1".
+    var absen = normalizeAbsence(params.absen);
     var skor = params.skor || 0;
     var waktuPengerjaan = params.waktuPengerjaan || "N/A";
     var detailJawaban = [];
@@ -58,7 +59,7 @@ function doPost(e) {
     for (var i = 1; i < data.length; i++) {
       if (
         String(data[i][1]).trim().toLowerCase() === nama.toLowerCase() &&
-        String(data[i][2]).trim() === absen
+        normalizeAbsence(data[i][2]) === absen
       ) {
         rowIndex = i + 1;
         break;
@@ -113,12 +114,27 @@ function deleteRowByNamaAbsen(sheet, nama, absen) {
   var data = sheet.getDataRange().getValues();
   for (var r = data.length - 1; r >= 1; r--) {
     if (
-      String(data[r][1]).trim().toLowerCase() === nama.toLowerCase() &&
-      String(data[r][2]).trim() === String(absen).trim()
+    String(data[r][1]).trim().toLowerCase() === nama.toLowerCase() &&
+    normalizeAbsence(data[r][2]) === normalizeAbsence(absen)
     ) {
       sheet.deleteRow(r + 1);
     }
   }
+}
+
+/**
+ * Menormalkan nomor absen numerik.
+ * Contoh: "01", "001", dan 1 semuanya menjadi "1".
+ * Nomor absen non-numerik tetap disimpan sebagai teks tanpa spasi di awal/akhir.
+ */
+function normalizeAbsence(absen) {
+  var value = String(absen || "").trim();
+
+  if (/^\d+$/.test(value)) {
+    return String(parseInt(value, 10));
+  }
+
+  return value;
 }
 
 /**

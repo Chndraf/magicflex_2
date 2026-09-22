@@ -58,7 +58,28 @@
             class="absolute bottom-0 h-0.5 bg-secondary-fixed transition-all duration-300 ease-out z-0 pointer-events-none"
           ></div>
         </nav>
-        <div class="flex items-center gap-4 text-secondary dark:text-secondary">
+        <div class="flex items-center gap-3 text-secondary dark:text-secondary">
+          <div
+            class="flex items-center gap-1 rounded-full border border-secondary-fixed-variant/30 bg-surface-bright/20 p-1"
+            role="group"
+            aria-label="Pilih bahasa"
+          >
+            <span class="material-symbols-outlined ml-2 text-lg">language</span>
+            <button
+              type="button"
+              class="dashboard-language-button rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+              data-language="id"
+              aria-pressed="true"
+              title="Gunakan Bahasa Indonesia"
+            >ID</button>
+            <button
+              type="button"
+              class="dashboard-language-button rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+              data-language="en"
+              aria-pressed="false"
+              title="Use English"
+            >EN</button>
+          </div>
           <span
             class="material-symbols-outlined cursor-pointer hover:bg-surface-bright/20 transition-all duration-300 active:scale-95 transition-transform p-2 rounded-full"
             data-modal="handout"
@@ -1674,6 +1695,7 @@
       </div>
     </div>
 
+    <script src="js/dashboard-translations.js"></script>
     <script>
       // Smooth scrolling for navigation links
       document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -1691,6 +1713,51 @@
 
       // Initialize when DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
+        // Dashboard language selector. The selection is saved and passed to game.html.
+        const dashboardLanguageButtons = document.querySelectorAll(
+          ".dashboard-language-button",
+        );
+        const validLanguages = ["id", "en"];
+        const savedLanguage = validLanguages.includes(localStorage.getItem("language"))
+          ? localStorage.getItem("language")
+          : "id";
+
+        function updateDashboardLanguageButtons(language) {
+          dashboardLanguageButtons.forEach((button) => {
+            const isActive = button.dataset.language === language;
+            button.setAttribute("aria-pressed", String(isActive));
+            button.classList.toggle("bg-primary-container", isActive);
+            button.classList.toggle("text-on-primary-container", isActive);
+            button.classList.toggle("text-secondary-fixed", !isActive);
+          });
+        }
+
+        function setDashboardLanguage(language) {
+          if (!validLanguages.includes(language)) return;
+
+          try {
+            localStorage.setItem("language", language);
+          } catch (error) {
+            console.warn("Pilihan bahasa tidak dapat disimpan:", error);
+          }
+
+          updateDashboardLanguageButtons(language);
+          translateDashboard(language);
+
+          // Semua tombol menuju game membawa pilihan bahasa secara eksplisit.
+          document.querySelectorAll('a[href^="game.html"]').forEach((link) => {
+            link.href = `game.html#${language}`;
+          });
+        }
+
+        setDashboardLanguage(savedLanguage);
+
+        dashboardLanguageButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            setDashboardLanguage(this.dataset.language);
+          });
+        });
+
         // Sliding nav indicator logic
         const nav = document.getElementById("main-nav");
         const indicator = document.getElementById("nav-indicator");

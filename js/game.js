@@ -32,8 +32,10 @@ var game = {
 
   // Game state
   googleScriptUrl:
-    "https://script.google.com/macros/s/AKfycbzNaAFCCBjUZRHO6UerMyZ1JKaU_jOXV2rEC_PtVT811C9pFa2hUgndKP8dtGKUCG_Zng/exec",
-  language: window.location.hash.substring(1) || "id",
+    "https://script.google.com/macros/s/AKfycbzV-vlUviLkrjUR7g79-FyolCvr3fjzrmiZ_jSTi43qB2vs7_hFtU7wtVUA05EP-Sd88w/exec",
+  language: ["id", "en"].includes(window.location.hash.substring(1))
+    ? window.location.hash.substring(1)
+    : localStorage.getItem("language") || "id",
   level: parseInt(localStorage.level, 10) || 0,
   answers: (localStorage.answers && JSON.parse(localStorage.answers)) || {},
   solved: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
@@ -51,7 +53,7 @@ var game = {
   timerStarted: false,
   timeLeft: localStorage.getItem("timeLeft")
     ? parseInt(localStorage.getItem("timeLeft"), 10)
-    : 1800, // 30 minutes
+    : 1800, // 30 menit
 
   // ===========================================
   // TIMER METHODS
@@ -105,7 +107,7 @@ var game = {
   resetTimer: function () {
     this.timerStarted = false;
     clearInterval(this.timer);
-    this.timeLeft = 1800; // 30 minutes
+    this.timeLeft = 1800; // 30 menit
     localStorage.removeItem("timeLeft");
     this.gameStartTime = null;
     localStorage.removeItem("gameStartTime");
@@ -202,23 +204,12 @@ var game = {
    * Initialize game components
    */
   initializeGame: function () {
-    // Language detection
-    var requestLang = window.navigator.language.split("-")[0];
-    if (
-      window.location.hash === "" &&
-      requestLang !== "en" &&
-      messages.languageActive.hasOwnProperty(requestLang)
-    ) {
-      this.language = requestLang;
-      window.location.hash = requestLang;
-    }
-
     // Setup UI
     this.translate();
+    this.updateNextLevelBtn();
     $("#level-counter .total").text(levels.length);
     $("#editor").show();
     $("#share").hide();
-    $("#language").val(this.language);
 
     this.setHandlers();
     this.loadMenu();
@@ -258,6 +249,37 @@ var game = {
   },
 
   /**
+   * Hapus cache sesi siswa agar kunjungan game berikutnya selalu meminta nama dan nomor absen baru.
+   * Preferensi bahasa sengaja tidak dihapus.
+   */
+  clearStudentSession: function () {
+    [
+      "playerName",
+      "playerAbsence",
+      "level",
+      "answers",
+      "solved",
+      "timeLeft",
+      "gameStartTime",
+      "levelRunCounts",
+    ].forEach(function (key) {
+      localStorage.removeItem(key);
+    });
+  },
+
+  /**
+   * Simpan data terakhir ke Spreadsheet, lalu bersihkan cache sesi lokal.
+   */
+  saveAndClearSession: function () {
+    if (this.isLeavingGame) return;
+    this.isLeavingGame = true;
+
+    this.saveAnswer();
+    this.liveSyncData(true);
+    this.clearStudentSession();
+  },
+
+  /**
    * Reset game to initial state
    */
   resetGame: function () {
@@ -271,11 +293,7 @@ var game = {
     localStorage.removeItem("levelRunCounts");
 
     this.loadLevel(levels[0]);
-
-    // Clear player data
-    localStorage.removeItem("playerName");
-    localStorage.removeItem("playerAbsence");
-
+    this.clearStudentSession();
     this.showInputPopup();
   },
 
@@ -359,25 +377,27 @@ var game = {
 
     if (!savedName || !savedAbsence) {
       if (typeof Swal === "undefined") {
-        const name = prompt("Enter your name:");
-        const absence = prompt("Enter your absence number:");
+        const name = prompt(t("namePrompt", game.language));
+        const absence = prompt(t("absencePrompt", game.language));
         if (name && absence) {
           localStorage.setItem("playerName", name);
           localStorage.setItem("playerAbsence", absence);
-          game.liveSyncData(); // <-- Sinkronisasi saat input prompt
-          setTimeout(() => location.reload(), 500);
+          game.liveSyncData();
+          game.startTimer();
+          game.initializeGame();
+          game.generateProgressDots();
         }
         return;
       }
 
       try {
         Swal.fire({
-          title: "Welcome!",
+          title: t("welcomeTitle", game.language),
           html: `
-            <input id="nameInput" class="swal2-input" placeholder="Enter your name" value="${savedName || ""}">
-            <input id="absenceInput" class="swal2-input" placeholder="Enter your absence number" value="${savedAbsence || ""}">
+            <input id="nameInput" class="swal2-input" placeholder="${t("namePlaceholder", game.language)}" value="${savedName || ""}">
+            <input id="absenceInput" class="swal2-input" placeholder="${t("absencePlaceholder", game.language)}" value="${savedAbsence || ""}">
           `,
-          confirmButtonText: "Start Game",
+          confirmButtonText: t("startGame", game.language),
           focusConfirm: false,
           allowOutsideClick: false,
           customClass: {
@@ -389,36 +409,33 @@ var game = {
 
             if (!playerName || !playerAbsence) {
               Swal.showValidationMessage(
-                "Name and absence number are required!",
+                t("nameAbsenceRequired", game.language),
               );
               return false;
             }
 
             localStorage.setItem("playerName", playerName);
             localStorage.setItem("playerAbsence", playerAbsence);
-            game.liveSyncData(); // <-- Sinkronisasi saat input Swal
-
-            // Beri jeda 500ms agar pengiriman data berhasil sebelum reload
-            return new Promise(resolve => {
-              setTimeout(() => {
-                location.reload();
-                resolve(true);
-              }, 500);
-            });
+            game.liveSyncData();
+            return true;
           },
         }).then((result) => {
           if (result.isConfirmed) {
+            this.startTimer();
             this.initializeGame();
+            this.generateProgressDots();
           }
         });
       } catch (e) {
-        const name = prompt("Enter your name:");
-        const absence = prompt("Enter your absence number:");
+        const name = prompt(t("namePrompt", game.language));
+        const absence = prompt(t("absencePrompt", game.language));
         if (name && absence) {
           localStorage.setItem("playerName", name);
           localStorage.setItem("playerAbsence", absence);
-          game.liveSyncData(); // <-- Sinkronisasi saat error fallback
-          setTimeout(() => location.reload(), 500);
+          game.liveSyncData();
+          game.startTimer();
+          game.initializeGame();
+          game.generateProgressDots();
         }
       }
     } else {
@@ -618,23 +635,23 @@ var game = {
     let performanceIcon = "";
 
     if (score >= 90) {
-      performanceLevel = "Excellent!";
+      performanceLevel = t("performanceExcellent", this.language);
       performanceColor = "#10b981";
       performanceIcon = "🌟";
     } else if (score >= 80) {
-      performanceLevel = "Very Good!";
+      performanceLevel = t("performanceVeryGood", this.language);
       performanceColor = "#3b82f6";
       performanceIcon = "🎯";
     } else if (score >= 70) {
-      performanceLevel = "Good!";
+      performanceLevel = t("performanceGood", this.language);
       performanceColor = "#8b5cf6";
       performanceIcon = "👍";
     } else if (score >= 60) {
-      performanceLevel = "Fair";
+      performanceLevel = t("performanceFair", this.language);
       performanceColor = "#f59e0b";
       performanceIcon = "📈";
     } else {
-      performanceLevel = "Keep Trying!";
+      performanceLevel = t("performanceKeepTrying", this.language);
       performanceColor = "#ef4444";
       performanceIcon = "💪";
     }
@@ -670,73 +687,75 @@ var game = {
       const correctDetails =
         this.solved.length > 0
           ? `<div class="question-list correct-list">${this.solved.map((q) => `<div class="question-item correct-item"><span class="question-icon">✅</span><span class="question-text">${q}</span></div>`).join("")}</div>`
-          : '<div class="empty-state">No correct answers</div>';
+          : '<div class="empty-state">' + t("noCorrectAnswers", this.language) + '</div>';
 
       const wrongDetails =
         totalQuestions > 0
           ? `<div class="question-list wrong-list">${levels.map((level) => level.name).filter((name) => !this.solved.includes(name)).map((q) => `<div class="question-item wrong-item"><span class="question-icon">❌</span><span class="question-text">${q}</span></div>`).join("")}</div>`
-          : '<div class="empty-state">All questions answered correctly!</div>';
+          : '<div class="empty-state">' + t("allQuestionsCorrect", this.language) + '</div>';
 
       Swal.fire({
-        title: `${performanceIcon} Quiz Results`,
+        title: `${t("resultTitle", this.language)}`,
         html: `
               <style>
                   .performance-badge { background: linear-gradient(135deg, ${performanceColor}20, ${performanceColor}35); border: 2px solid ${performanceColor}; border-radius: 25px; padding: 12px 20px; margin: 15px 0; text-align: center; font-weight: bold; color: ${performanceColor}; font-size: 1.1em; }
               </style>
               
               <div class="results-container">
-                  <div class="performance-badge">${performanceLevel} Your score: ${score}%</div>
+                  <div class="performance-badge">${performanceLevel} ${t("yourScore", this.language)} ${score}%</div>
                   
                   <div class="ai-feedback-container" style="margin: 15px 0; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
                       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">Saran Pembelajaran AI</h3>
+                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">${t("aiLearningAdvice", this.language)}</h3>
                       </div>
-                      <div id="ai-feedback-content">
-                          <button id="btn-get-ai-feedback" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">Dapatkan Masukan dari Gemini AI ✨</button>
-                      </div>
+                      <div id="ai-feedback-content"></div>
                   </div>
 
                   <div class="player-info">
-                      <div class="player-row"><span class="player-label"> Player Name:</span><span class="player-value">${playerName}</span></div>
-                      <div class="player-row"><span class="player-label"> Absence Number:</span><span class="player-value">${playerAbsence}</span></div>
+                      <div class="player-row"><span class="player-label"> ${t("playerName", this.language)}</span><span class="player-value">${playerName}</span></div>
+                      <div class="player-row"><span class="player-label"> ${t("absenceNumber", this.language)}</span><span class="player-value">${playerAbsence}</span></div>
                   </div>
                   
                   <div class="stats-grid">
-                      <div class="stat-card"><div class="stat-value score-value">${score}%</div><div class="stat-label">Final Score</div></div>
-                      <div class="stat-card"><div class="stat-value total-value">${totalQuestions}</div><div class="stat-label">Total Questions</div></div>
-                      <div class="stat-card"><div class="stat-value correct-value">${correctAnswers}</div><div class="stat-label">Correct Answers</div></div>
-                      <div class="stat-card"><div class="stat-value wrong-value">${wrongAnswers}</div><div class="stat-label">Wrong Answers</div></div>
+                      <div class="stat-card"><div class="stat-value score-value">${score}%</div><div class="stat-label">${t("finalScore", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value total-value">${totalQuestions}</div><div class="stat-label">${t("totalQuestions", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value correct-value">${correctAnswers}</div><div class="stat-label">${t("correctAnswers", this.language)}</div></div>
+                      <div class="stat-card"><div class="stat-value wrong-value">${wrongAnswers}</div><div class="stat-label">${t("wrongAnswers", this.language)}</div></div>
                   </div>
                   
                   <div class="section-divider"></div>
-                  <div class="section-title correct-title">✅ Correct Questions (${correctAnswers})</div>${correctDetails}
-                  <div class="section-title wrong-title">❌ Wrong Questions (${wrongAnswers})</div>${wrongDetails}
+                  <button id="btn-share-results" type="button" style="width: 100%; margin-bottom: 16px; padding: 10px 16px; border: 0; border-radius: 8px; background: #2563eb; color: #ffffff; cursor: pointer; font-weight: 700;">${t("shareToWhatsApp", this.language)}</button>
+                  <div class="section-title correct-title">✅ ${t("correctQuestions", this.language)} (${correctAnswers})</div>${correctDetails}
+                  <div class="section-title wrong-title">❌ ${t("wrongQuestions", this.language)} (${wrongAnswers})</div>${wrongDetails}
               </div>
           `,
-        showCancelButton: true,
         focusConfirm: false,
         allowOutsideClick: false,
-        confirmButtonText: "🔄 Play Again",
-        cancelButtonText: "📤 Share to WhatsApp",
+        showDenyButton: true,
+        confirmButtonText: t("playAgain", this.language),
+        denyButtonText: t("backToHome", this.language),
         customClass: {
           confirmButton: "swal2-krem-btn",
-          cancelButton: "swal2-biru-btn",
+          denyButton: "swal2-biru-btn",
           popup: "swal2-enhanced-popup",
         },
         didOpen: () => {
-          // Memicu AI ketika tombol AI diklik
-          const aiBtn = document.getElementById("btn-get-ai-feedback");
-          if (aiBtn) {
-            aiBtn.addEventListener("click", () => {
-              game.handleAIFeedbackRequest(quizDataForAI);
+          // Masukan Gemini dibuat otomatis saat hasil kuis dibuka.
+          game.handleAIFeedbackRequest(quizDataForAI);
+
+          // Tombol berbagi berada di dalam popup agar hasil kuis tidak tertutup.
+          const shareButton = document.getElementById("btn-share-results");
+          if (shareButton) {
+            shareButton.addEventListener("click", function () {
+              game.shareResults(score);
             });
           }
         },
         preConfirm: () => this.resetGame(),
       }).then((result) => {
-        // Memicu Share WhatsApp
-        if (result.isDismissed) {
-          this.shareResults({ score });
+        if (result.isDenied) {
+          this.clearStudentSession();
+          window.location.href = "index.html";
         }
       });
     } catch (e) {
@@ -760,21 +779,9 @@ var game = {
     const feedbackContent = document.getElementById('ai-feedback-content');
     if (!feedbackContent) return;
 
-    feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">⏳ Mengirim data ke AI dan menganalisis hasilmu...</div>';
+    feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
 
-    const promptText = `Saya baru saja bermain game edukasi bernama "MagicFlex" untuk belajar CSS Flexbox. 
-Skor saya: ${quizData.score}%. 
-Performa: ${quizData.performanceLevel}. 
-Pertanyaan yang dijawab benar: ${quizData.correctAnswers}.
-Pertanyaan yang dijawab salah: ${quizData.wrongAnswers}.
-Level/Konsep CSS yang saya salah menjawab: ${quizData.wrongDetails}.
-
-Tolong berikan:
-1. Feedback singkat dan memotivasi tentang performa saya.
-2. Saran pembelajaran aplikatif mengenai CSS Flexbox (khususnya konsep yang salah).
-3. Jangan rekomendasikan website lain untuk belajar, cukup berikan saran dari konsep yang salah.
-
-Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). Jangan gunakan format markdown header, tapi boleh list atau bold.`;
+    const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -784,16 +791,17 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "Gagal mengambil respon dari AI.");
+      if (!response.ok) throw new Error(data.error?.message || t("aiResponseError", this.language));
 
       const aiText = data.candidates[0].content.parts[0].text;
-      let formattedText = aiText.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      const oneParagraphText = aiText.replace(/\s*\n+\s*/g, " ").trim();
+      const formattedText = oneParagraphText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
       
     } catch (error) {
       feedbackContent.innerHTML = `
-        <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>Error:</strong> ${error.message}</div>
-        <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">Coba Lagi</button>
+        <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>
+        <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">${t("tryAgain", this.language)}</button>
       `;
       document.getElementById('btn-get-ai-feedback-retry').addEventListener('click', () => {
         this.handleAIFeedbackRequest(quizData);
@@ -805,7 +813,9 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    * Share results via WhatsApp only
    */
   shareResults: function (score) {
-    const shareText = `Saya mendapat skor ${score}% di game CSS! Ayo coba kalahkan skorku!`;
+    const shareText = this.language === "en"
+      ? `I scored ${score}% in the MagicFlex CSS game! Can you beat my score?`
+      : `Saya mendapat skor ${score}% di game CSS MagicFlex! Ayo coba kalahkan skorku!`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, "_blank");
   },
@@ -936,10 +946,10 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
     if (!textEl || !iconEl) return;
 
     if (this.level >= levels.length - 1) {
-      textEl.textContent = "Selesai";
+      textEl.textContent = t("finish", this.language);
       iconEl.textContent = "check_circle";
     } else {
-      textEl.textContent = "Lanjut Soal Berikutnya";
+      textEl.textContent = t("nextQuestion", this.language);
       iconEl.textContent = "arrow_forward";
     }
   },
@@ -1066,6 +1076,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
     $("#level-indicator .total").text(levels.length);
 
     // Set level content
+    this.updateNextLevelBtn();
     $("#before").text(level.before);
     $("#after").text(level.after);
     this.isAdvancing = false;
@@ -1076,8 +1087,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
     var $instructions = $("#instructions");
     $instructions.addClass("level-fade-out");
     setTimeout(function () {
-      var instructions =
-        level.instructions[game.language] || level.instructions.en;
+      var instructions = getLevelInstruction(level, game.language);
       $instructions.html(instructions);
       $instructions.removeClass("level-fade-out");
       game.loadDocs();
@@ -1155,9 +1165,22 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    * Set up all event handlers
    */
   setHandlers: function () {
+    // Setelah Play Again, initializeGame() dipanggil lagi. Bersihkan semua
+    // handler lama terlebih dahulu agar satu klik hanya diproses satu kali.
+    this.unbindHandlers();
     this.bindGameEvents();
     this.bindUIEvents();
     this.bindWindowEvents();
+  },
+
+  /**
+   * Lepaskan handler yang dapat terpasang ulang ketika game dimulai kembali.
+   */
+  unbindHandlers: function () {
+    $("#next, #nextLevelBtn, #labelReset, #labelSettings, .language-button, .level-marker, .arrow, #level-indicator, #code, #editor")
+      .off();
+    $(window).off("pagehide hashchange");
+    $("body").off("click");
   },
 
   /**
@@ -1266,8 +1289,8 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
       if (typeof Swal !== "undefined") {
         Swal.fire({
           icon: "success",
-          title: "✨ Jawaban Benar!",
-          text: "Hebat! Kode CSS kamu sudah tepat. Melanjutkan ke soal berikutnya...",
+          title: t("correctTitle", game.language),
+          text: t("correctText", game.language),
           timer: 1600,
           timerProgressBar: true,
           showConfirmButton: false,
@@ -1315,16 +1338,13 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
   bindUIEvents: function () {
     // Reset button
     $("#labelReset").on("click", function () {
-      const warningReset =
-        messages.warningReset[game.language] || messages.warningReset["en"];
-
       Swal.fire({
-        title: "Warning",
-        text: warningReset,
+        title: t("resetWarningTitle", game.language),
+        text: t("resetWarningText", game.language),
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, Reset!",
-        cancelButtonText: "Cancel",
+        confirmButtonText: t("confirmReset", game.language),
+        cancelButtonText: t("cancel", game.language),
         customClass: {
           confirmButton: "swal2-krem-btn",
           cancelButton: "swal2-biru-btn",
@@ -1344,8 +1364,8 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
     });
 
     // Language selector
-    $("#language").on("change", function () {
-      window.location.hash = $(this).val();
+    $(".language-button").on("click", function () {
+      game.setLanguage($(this).data("language"));
     });
 
     // Tooltip events
@@ -1360,24 +1380,13 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
    */
   bindWindowEvents: function () {
     $(window)
-      .on("beforeunload", function () {
-        game.saveAnswer();
-        localStorage.setItem("level", game.level);
-        localStorage.setItem("answers", JSON.stringify(game.answers));
-        localStorage.setItem("solved", JSON.stringify(game.solved));
-        localStorage.setItem("timeLeft", game.timeLeft);
-        localStorage.setItem("levelRunCounts", JSON.stringify(game.levelRunCounts || {}));
+      .on("pagehide", function () {
+        game.saveAndClearSession();
       })
       .on("hashchange", function () {
-        game.language = window.location.hash.substring(1) || "en";
-        game.translate();
-
-        if (typeof twttr !== "undefined") {
-          twttr.widgets.load();
-        }
-
-        if (game.language === "en") {
-          history.replaceState({}, document.title, "./");
+        var languageFromHash = window.location.hash.substring(1);
+        if (["id", "en"].includes(languageFromHash)) {
+          game.setLanguage(languageFromHash, true);
         }
       });
   },
@@ -1602,7 +1611,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
   /**
    * Sinkronisasi data real-time ke Spreadsheet
    */
-  liveSyncData: function () {
+  liveSyncData: function (keepalive) {
     const playerName = localStorage.getItem("playerName");
     const playerAbsence = localStorage.getItem("playerAbsence");
     if (!playerName || !playerAbsence) return;
@@ -1640,6 +1649,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
       method: "POST",
       mode: "no-cors",
       body: formData,
+      keepalive: Boolean(keepalive),
     }).catch(err => console.error("Sync error:", err));
   },
 
@@ -1691,7 +1701,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
 
       // Cek apakah ada titik dua
       if (line.indexOf(":") === -1) {
-        errorMessages.push('Baris <code style="color:#f97316;">' + game.escapeHtml(line) + '</code> tidak memiliki tanda titik dua (<code>:</code>).');
+        errorMessages.push('<code style="color:#f97316;">' + game.escapeHtml(line) + '</code> ' + t("missingColon", game.language));
         continue;
       }
 
@@ -1701,7 +1711,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
 
       // Cek apakah ada titik koma di akhir
       if (!val.endsWith(";")) {
-        errorMessages.push('Properti <code style="color:#f97316;">' + game.escapeHtml(prop) + '</code> kurang tanda titik koma (<code>;</code>) di akhir.');
+        errorMessages.push('<code style="color:#f97316;">' + game.escapeHtml(prop) + '</code> ' + t("missingSemicolon", game.language));
       }
 
       // Hapus titik koma untuk perbandingan
@@ -1719,7 +1729,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
 
       if (!(expectedProp in userProps)) {
         // Properti yang dibutuhkan tidak ada
-        errorMessages.push('Properti <code style="color:#60a5fa;">' + expectedProp + '</code> belum ditulis. Kamu perlu menambahkan properti ini.');
+        errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code> ' + t("propertyMissing", game.language));
         hints.push('<code>' + expectedProp + ': ...;</code>');
       } else if (userProps[expectedProp] !== expectedVal) {
         // Nilainya salah - cek apakah mungkin typo
@@ -1727,9 +1737,9 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
         var similarity = game.stringSimilarity(userVal, expectedVal);
 
         if (similarity > 0.5 && similarity < 1) {
-          errorMessages.push('Properti <code style="color:#60a5fa;">' + expectedProp + '</code>: nilai <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> sepertinya <strong>typo</strong>. Periksa kembali ejaannya!');
+          errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueTypo", game.language));
         } else {
-          errorMessages.push('Properti <code style="color:#60a5fa;">' + expectedProp + '</code>: nilai <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> <strong>tidak tepat</strong>. Coba nilai yang lain.');
+          errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueIncorrect", game.language));
         }
       }
     }
@@ -1742,7 +1752,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
         // Cek apakah properti valid tapi tidak diperlukan
         var isValidCSS = validCSSProperties.indexOf(userProp) !== -1;
         if (isValidCSS) {
-          errorMessages.push('Properti <code style="color:#fbbf24;">' + game.escapeHtml(userProp) + '</code> tidak diperlukan untuk soal ini.');
+          errorMessages.push('<code style="color:#fbbf24;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyNotNeeded", game.language));
         } else {
           // Kemungkinan typo pada nama properti
           var bestMatch = "";
@@ -1755,9 +1765,9 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
             }
           }
           if (bestScore > 0.5) {
-            errorMessages.push('Properti <code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> sepertinya <strong>typo</strong>. Mungkin maksudnya <code style="color:#10b981;">' + bestMatch + '</code>?');
+            errorMessages.push('<code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyTypo", game.language) + ' <code style="color:#10b981;">' + bestMatch + '</code>?');
           } else {
-            errorMessages.push('Properti <code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> tidak dikenali sebagai properti CSS yang valid.');
+            errorMessages.push('<code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("invalidProperty", game.language));
           }
         }
       }
@@ -1765,11 +1775,11 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
 
     // 5. Tampilkan popup error
     if (errorMessages.length === 0) {
-      errorMessages.push("Kode CSS kamu belum menghasilkan posisi yang tepat. Coba periksa kembali nilai propertinya.");
+      errorMessages.push(t("incorrectDefault", game.language));
     }
 
     var errorHtml = '<div style="text-align:left;max-height:300px;overflow-y:auto;">';
-    errorHtml += '<div style="font-size:0.9em;color:#cbd5e1;margin-bottom:12px;">Ditemukan <strong style="color:#f87171;">' + errorMessages.length + ' masalah</strong> pada kode kamu:</div>';
+    errorHtml += '<div style="font-size:0.9em;color:#cbd5e1;margin-bottom:12px;">' + t("issuesFound", game.language) + ' <strong style="color:#f87171;">' + errorMessages.length + '</strong> ' + t("issuesSuffix", game.language) + '</div>';
     errorHtml += '<ul style="list-style:none;padding:0;margin:0;">';
     for (var mi = 0; mi < errorMessages.length; mi++) {
       errorHtml += '<li style="background:rgba(239,68,68,0.08);border-left:3px solid #ef4444;padding:8px 12px;margin-bottom:6px;border-radius:0 8px 8px 0;font-size:0.88em;line-height:1.5;">' + errorMessages[mi] + '</li>';
@@ -1777,15 +1787,15 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
     errorHtml += '</ul>';
     if (hints.length > 0) {
       errorHtml += '<div style="margin-top:12px;padding:10px;background:rgba(96,165,250,0.1);border-radius:8px;border:1px solid rgba(96,165,250,0.2);">';
-      errorHtml += '<div style="font-size:0.85em;color:#60a5fa;font-weight:bold;margin-bottom:4px;">💡 Hint:</div>';
-      errorHtml += '<div style="font-size:0.85em;color:#94a3b8;">Coba tambahkan: ' + hints.join(", ") + '</div>';
+      errorHtml += '<div style="font-size:0.85em;color:#60a5fa;font-weight:bold;margin-bottom:4px;">' + t("hint", game.language) + '</div>';
+      errorHtml += '<div style="font-size:0.85em;color:#94a3b8;">' + t("tryAdding", game.language) + ' ' + hints.join(", ") + '</div>';
       errorHtml += '</div>';
     }
     errorHtml += '</div>';
 
     Swal.fire({
       icon: "error",
-      title: "❌ Jawaban Salah!",
+      title: t("incorrectTitle", game.language),
       html: errorHtml,
       confirmButtonText: "OK, Saya Perbaiki",
       customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
@@ -1867,7 +1877,7 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
           $("#levelsWrapper").hide();
           $(".tooltip").remove();
 
-          const html = docs[text][game.language] || docs[text].en;
+          const html = docs[text][game.language] || docs[text].id;
 
           // Ambil posisi elemen <code> di layar
           const offset = code.offset();
@@ -1948,26 +1958,46 @@ Gunakan bahasa Indonesia yang kasual, ramah, dan ringkas (maksimal 3 paragraf). 
   },
 
   /**
-   * Translate interface to selected language
+   * Change language and retain the selected language for the next visit.
+   */
+  setLanguage: function (language, skipHashUpdate) {
+    if (!["id", "en"].includes(language)) return;
+
+    this.language = language;
+    localStorage.setItem("language", language);
+
+    if (!skipHashUpdate && window.location.hash !== "#" + language) {
+      window.location.hash = language;
+      return;
+    }
+
+    this.translate();
+    this.loadLevel(levels[this.level]);
+  },
+
+  /**
+   * Translate interface to selected language.
    */
   translate: function () {
-    document.title = messages.title[this.language] || messages.title.en;
+    document.title = t("pageTitle", this.language);
     $("html").attr("lang", this.language);
+    $("[data-i18n]").each(function () {
+      $(this).text(t($(this).data("i18n"), game.language));
+    });
+    $("[data-i18n-placeholder]").each(function () {
+      $(this).attr("placeholder", t($(this).data("i18n-placeholder"), game.language));
+    });
+
+    $(".language-button")
+      .removeClass("bg-primary-container text-on-primary-container")
+      .addClass("text-on-surface-variant");
+    $(".language-button[data-language='" + this.language + "']")
+      .removeClass("text-on-surface-variant")
+      .addClass("bg-primary-container text-on-primary-container");
 
     const level = levels[this.level];
-    const instructions =
-      level.instructions[this.language] || level.instructions.en;
-    $("#instructions").html(instructions);
-
+    $("#instructions").html(getLevelInstruction(level, this.language));
     this.loadDocs();
-
-    $(".translate").each(function () {
-      const label = $(this).attr("id");
-      if (messages[label]) {
-        const text = messages[label][game.language] || messages[label].en;
-        $("#" + label).text(text);
-      }
-    });
   },
 
   /**
