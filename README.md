@@ -25,18 +25,18 @@
 - [Tentang Proyek](#tentang-proyek)
 - [Fitur Utama](#fitur-utama)
 - [Tech Stack](#tech-stack)
-- [Struktur File](#struktur-file)
-- [Instalasi](#instalasi)
-- [Cara Bermain](#cara-bermain)
-- [Sistem Scoring](#sistem-scoring)
-- [Integrasi Google Sheets](#integrasi-google-sheets)
-- [Level & Materi](#level-dan-materi)
-- [Konfigurasi](#konfigurasi)
-- [Tim Pengembang](#tim-pengembang)
-- [Lisensi](#lisensi)
+- [Struktur File](#struktur-file) 
+- [Instalasi](#instalasi) 
+- [Cara Bermain](#cara-bermain) 
+- [Sistem Scoring](#sistem-scoring) 
+- [Integrasi Google Sheets](#integrasi-google-sheets) 
+- [Level & Materi](#level-dan-materi) 
+- [Konfigurasi](#konfigurasi) 
+- [Tim Pengembang](#tim-pengembang) 
+- [Lisensi](#lisensi) 
 
 ---
-
+<a id="tentang-proyek"></a>
 ## 🎯 Tentang Proyek
 
 **MagicFlex** adalah platform pembelajaran CSS Flexbox yang interaktif dan gamified. Siswa belajar dengan menyelesaikan 25 misi progresif, mendapat umpan balik secara langsung, pelacakan progres otomatis ke Google Sheets, dan masukan berbasis AI.
@@ -52,7 +52,7 @@
 - 📱 **Responsive Design** - Optimal di desktop dan mobile
 
 ---
-
+<a id="fitur-utama"></a>
 ## 🚀 Fitur Utama
 
 ### 1. **Core Gameplay**
@@ -99,7 +99,7 @@
 - Interactive CSS tooltips dengan contoh
 
 ---
-
+<a id="tech-stack"></a>
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -119,7 +119,7 @@
 - **Google Sheets API** - Real-time progress tracking
 
 ---
-
+<a id="struktur-file"></a>
 ## 📁 Struktur File
 
 ```
@@ -213,7 +213,7 @@ magicflex_2/
    ```
 
 ---
-
+<a id="cara-bermain"></a>
 ## 🎮 Cara Bermain
 
 ### Alur Permainan
@@ -258,7 +258,7 @@ magicflex_2/
 💡 **Kelola waktu**: 30 menit untuk 25 level = ~1.2 menit per level  
 
 ---
-
+<a id="sistem-scoring"></a>
 ## 📊 Sistem Scoring
 
 ### Perhitungan Skor
@@ -291,7 +291,7 @@ Score = (Jumlah Level Solved / 25) × 100%
 | < 60% | 💪 Keep Trying! | Merah |
 
 ---
-
+<a id="integrasi-google-sheets"></a>
 ## 🔗 Integrasi Google Sheets
 
 ### Alur Data
@@ -359,7 +359,7 @@ Menerima POST request dari frontend:
 
 ---
 
-<a id="dokumentasi"></a>
+<a id="level-dan-materi"></a>
 ## 📚 Level & Materi
 
 ### 25 Level Progresif
@@ -417,7 +417,7 @@ Tooltips interaktif untuk:
 **Cara Akses**: Klik `<code>` element di instruksi level
 
 ---
-
+<a id="konfigurasi"></a>
 ## ⚙️ Konfigurasi
 
 ### Tailwind Theme (js/tailwind-config.js)
@@ -546,7 +546,7 @@ game.level  // Current level (0-24)
 </table>
 
 ---
-
+<a id="lisensi"></a>
 ## 📄 Lisensi
 
 Project ini dibuat untuk tujuan edukasi.
@@ -567,7 +567,7 @@ Project ini dibuat untuk tujuan edukasi.
 
 ## 📞 Kontak
 
-Untuk pertanyaan, saran, atau bug report, silakan buka [GitHub Issues](https://github.com/username/magicflex/issues).
+Untuk pertanyaan, saran, atau bug report, silakan buka [GitHub Issues](https://wa.me/+6287769006246).
 
 ---
 
