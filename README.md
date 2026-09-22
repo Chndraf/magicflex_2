@@ -6,7 +6,7 @@
 
 **Belajar CSS Flexbox dengan Cara yang Menyenangkan!**
 
-*Sebuah game edukasi interaktif berbasis web dengan tema luar angkasa mistis untuk mempelajari CSS Flexbox melalui 25 misi progresif.*
+*Game edukasi interaktif berbasis web untuk mempelajari CSS Flexbox melalui 25 misi progresif.*
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
@@ -14,7 +14,7 @@
 [![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=flat&logo=jquery&logoColor=white)](https://jquery.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[🎮 Demo](#) | [📚 Dokumentasi](#dokumentasi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
+[🎮 Demo](game.html) | [📚 Dokumentasi](#dokumentasi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
 
 </div>
 
@@ -30,7 +30,7 @@
 - [Cara Bermain](#cara-bermain)
 - [Sistem Scoring](#sistem-scoring)
 - [Integrasi Google Sheets](#integrasi-google-sheets)
-- [Level & Materi](#level--materi)
+- [Level & Materi](#dokumentasi)
 - [Konfigurasi](#konfigurasi)
 - [Tim Pengembang](#tim-pengembang)
 - [Lisensi](#lisensi)
@@ -39,7 +39,7 @@
 
 ## 🎯 Tentang Proyek
 
-**MagicFlex** adalah platform pembelajaran CSS Flexbox yang interaktif dan gamified dengan tema luar angkasa mistis. Siswa belajar dengan menyelesaikan 25 misi progresif, mendapat feedback real-time, pelacakan progres otomatis ke Google Sheets, dan hint berbasis AI.
+**MagicFlex** adalah platform pembelajaran CSS Flexbox yang interaktif dan gamified. Siswa belajar dengan menyelesaikan 25 misi progresif, mendapat umpan balik secara langsung, pelacakan progres otomatis ke Google Sheets, dan masukan berbasis AI.
 
 ### 🌟 Keunggulan
 
@@ -155,6 +155,7 @@ magicflex_2/
 
 ---
 
+<a id="instalasi"></a>
 ## 💻 Instalasi
 
 ### Prasyarat
@@ -358,6 +359,7 @@ Menerima POST request dari frontend:
 
 ---
 
+<a id="dokumentasi"></a>
 ## 📚 Level & Materi
 
 ### 25 Level Progresif
@@ -519,6 +521,7 @@ game.level  // Current level (0-24)
 
 ---
 
+<a id="tim-pengembang"></a>
 ## 👥 Tim Pengembang
 
 <table>
