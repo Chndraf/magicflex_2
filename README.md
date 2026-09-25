@@ -1,4 +1,4 @@
-# 🪐 MagicFlex - Interactive CSS Flexbox Learning Game
+# MagicFlex - Interactive CSS Flexbox Learning Game
 
 <div align="center">
 
