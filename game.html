@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="MagicFlex adalah game interaktif untuk mempelajari konsep CSS Flexbox melalui misi bertema luar angkasa yang menarik."
+      content="MagicFlex adalah game interaktif untuk mempelajari konsep CSS Flexbox melalui misi bertema magic dan fantasy yang menarik."
     />
     <meta
       name="keywords"
-      content="CSS, MagicFlex, game, interaktif, pembelajaran, luar angkasa, pengembangan web, edukasi"
+      content="CSS, MagicFlex, game, interaktif, pembelajaran, magic, fantasy, pengembangan web, edukasi"
     />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
+    <link rel="shortcut icon" type="image/svg+xml" href="images/logo.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Space+Grotesk:wght@300..700&amp;display=swap" rel="stylesheet" />
@@ -65,8 +66,8 @@
   <body class="text-on-surface flex flex-col h-screen overflow-hidden">
     <!-- TopNav - Desktop -->
     <nav class="hidden md:flex justify-between items-center px-margin-desktop py-2 w-full bg-surface dark:bg-surface border-b border-outline-variant shadow-md z-50">
-      <div class="flex items-center gap-4">
-        <span class="material-symbols-outlined text-secondary text-3xl">auto_awesome</span>
+      <div class="flex items-center gap-1">
+        <img src="images/logo.svg" alt="MagicFlex Logo" width="60" height="60" class="opacity-90" />
         <span class="font-headline-lg text-headline-lg font-bold text-secondary-container dark:text-secondary">MagicFlex</span>
       </div>
       <div class="flex items-center gap-6">
@@ -93,7 +94,10 @@
       <a href="index.html" class="flex items-center gap-1 text-on-surface-variant hover:text-secondary transition-colors">
         <span class="material-symbols-outlined text-xl">arrow_back</span>
       </a>
-      <span class="font-headline-lg text-lg font-bold text-secondary">MagicFlex</span>
+      <div class="flex items-center gap-2">
+        <img src="images/logo-icon-only.svg" alt="MagicFlex Logo" width="24" height="24" class="opacity-90" />
+        <span class="font-headline-lg text-lg font-bold text-secondary">MagicFlex</span>
+      </div>
       <div class="flex items-center gap-2">
         <div class="flex items-center glass-panel p-1 rounded-full border border-secondary-container/30" role="group" aria-label="Pilih bahasa">
           <button type="button" class="language-button px-2 py-1 rounded-full text-xs font-semibold transition-colors" data-language="id">ID</button>

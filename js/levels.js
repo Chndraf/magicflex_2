@@ -265,7 +265,7 @@ var levels = [
   {
     name: "Q25",
     instructions: {
-      id: "<p>Ujian Sihir Terakhir! Bola-bola sihir telah tersebar di berbagai dimensi. Gunakan kombinasi properti yang kompleks untuk memasukkan mereka ke portal yang tepat. Perhatikan bahwa beberapa bola sihir memiliki gravitasi berbeda dan memerlukan perlakuan khusus.</p><p>Properti yang mungkin kamu perlukan: <code>flex-direction</code>, <code>flex-wrap</code>, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code>, <code>order</code>, dan <code>flex-grow</code>.</p>",
+      id: "<p>Ujian Sihir Terakhir! Bola-bola sihir telah tersebar di berbagai dimensi. Gunakan kombinasi properti yang kompleks untuk memasukkan mereka ke portal yang tepat. Perhatikan bahwa beberapa bola sihir memiliki gravitasi berbeda dan memerlukan perlakuan khusus.</p><p>Properti yang mungkin kamu perlukan: <code>flex-direction</code>, <code>flex-wrap</code>, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code> dan <code>order</code>.</p>",
     },
     board: "rrggggbbyyyy",
     style: {

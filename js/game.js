@@ -1721,7 +1721,7 @@ var game = {
 
     // 3. Bandingkan dengan expected style
     var expectedKeys = Object.keys(expectedStyle);
-    var validCSSProperties = ["justify-content", "align-items", "flex-direction", "flex-wrap", "flex-flow", "align-content", "align-self", "order", "flex-grow", "flex-shrink", "flex-basis"];
+    var validCSSProperties = ["justify-content", "align-items", "flex-direction", "flex-wrap", "flex-flow", "align-content", "align-self", "order", "flex-shrink", "flex-basis"];
 
     for (var ei = 0; ei < expectedKeys.length; ei++) {
       var expectedProp = expectedKeys[ei];

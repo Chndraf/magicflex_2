@@ -171,7 +171,7 @@ var levelInstructionsEn = {
   Q22: "<p>The portals are now grouped at the bottom. Use <code>align-content</code> to move the magic balls there.</p>",
   Q23: "<p>Combine <code>flex-direction</code> and <code>align-content</code> to guide the magic balls into the portal arrangement.</p>",
   Q24: "<p>Place the magic balls into this portal arrangement using the Flexbox properties you have learned: <code>justify-content</code>, <code>align-items</code>, <code>flex-direction</code>, <code>order</code>, <code>align-self</code>, <code>flex-wrap</code>, <code>flex-flow</code>, and <code>align-content</code>.</p>",
-  Q25: "<p>Final Magic Exam! The magic balls are scattered across dimensions. Use a complex combination of Flexbox properties to place them in the correct portals. You may need <code>flex-direction</code>, <code>flex-wrap</code>, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code>, <code>order</code>, or <code>flex-grow</code>.</p>",
+  Q25: "<p>Final Magic Exam! The magic balls are scattered across dimensions. Use a complex combination of Flexbox properties to place them in the correct portals. You may need <code>flex-direction</code>, <code>flex-wrap</code>, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code> and <code>order</code>.</p>",
 };
 
 function getLevelInstruction(level, language) {
