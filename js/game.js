@@ -764,48 +764,85 @@ var game = {
   },
 
   /**
-   * Handle AI Feedback Request Flow
+   * Handle AI Feedback Request Flow (Hybrid: Serverless Function on Vercel + Direct Fallback with .env on Local)
    */
-  handleAIFeedbackRequest: function(quizData) {
-    const _0xkey = ['QUl6YVN', '5QUZDNllJcnN3SHRr', 'cWFTWElzT1kx', 'c2VFaXVGNll', 'OOWJV'];
-    const apiKey = atob(_0xkey.join(''));
-    this.fetchAIFeedback(apiKey, quizData);
-  },
-
-  /**
-   * Fetch AI Feedback from Gemini API
-   */
-  fetchAIFeedback: async function(apiKey, quizData) {
+  handleAIFeedbackRequest: async function(quizData) {
     const feedbackContent = document.getElementById('ai-feedback-content');
-    if (!feedbackContent) return;
-
-    feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
+    if (feedbackContent) {
+      feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
+    }
 
     const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-      });
+      let data = null;
+      let usedServerless = false;
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || t("aiResponseError", this.language));
+      // 1. Coba lewat Vercel Serverless Function (/api/gemini) terlebih dahulu (paling aman)
+      try {
+        const serverlessResponse = await fetch('/api/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: promptText })
+        });
+
+        if (serverlessResponse.status !== 404 && serverlessResponse.status !== 405) {
+          usedServerless = true;
+          const result = await serverlessResponse.json();
+          if (!serverlessResponse.ok) {
+            throw new Error(result.error || t("aiResponseError", this.language));
+          }
+          data = result;
+        }
+      } catch (serverlessErr) {
+        // Jika serverless endpoint tidak ditemukan (misal di live server lokal), gunakan fallback
+        console.info('[AI] Menggunakan fallback client-side config...');
+      }
+
+      // 2. Jika bukan di Vercel / serverless tidak ada, fallback ke pemanggilan langsung dengan .env lokal
+      if (!usedServerless) {
+        const apiKey = window.CONFIG ? await window.CONFIG.get('GEMINI_API_KEY') : null;
+        if (!apiKey) {
+          throw new Error("GEMINI_API_KEY tidak ditemukan. Pastikan sudah menyetel Environment Variables di Vercel atau membuat file .env lokal.");
+        }
+
+        const directResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+        });
+
+        const directResult = await directResponse.json();
+        if (!directResponse.ok) {
+          throw new Error(directResult.error?.message || t("aiResponseError", this.language));
+        }
+        data = directResult;
+      }
+
+      if (!data || !data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+        throw new Error(t("aiResponseError", this.language));
+      }
 
       const aiText = data.candidates[0].content.parts[0].text;
       const oneParagraphText = aiText.replace(/\s*\n+\s*/g, " ").trim();
       const formattedText = oneParagraphText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-      feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
       
+      if (feedbackContent) {
+        feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
+      }
     } catch (error) {
-      feedbackContent.innerHTML = `
-        <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>
-        <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">${t("tryAgain", this.language)}</button>
-      `;
-      document.getElementById('btn-get-ai-feedback-retry').addEventListener('click', () => {
-        this.handleAIFeedbackRequest(quizData);
-      });
+      if (feedbackContent) {
+        feedbackContent.innerHTML = `
+          <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>
+          <button id="btn-get-ai-feedback-retry" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">${t("tryAgain", this.language)}</button>
+        `;
+        const retryBtn = document.getElementById('btn-get-ai-feedback-retry');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', () => {
+            this.handleAIFeedbackRequest(quizData);
+          });
+        }
+      }
     }
   },
 
