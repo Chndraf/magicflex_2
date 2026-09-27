@@ -128,15 +128,17 @@ var game = {
 
   /**
    * Menangani kondisi ketika website ditinggalkan/ditutup dan waktu permainan terlampaui.
-   * Menghapus data pengerjaan dari Spreadsheet secara otomatis.
+   * Reset permainan dan tetap simpan data dengan penanda meninggalkan permainan.
    */
   handleTimeout: function () {
     this.stopTimer();
-    this.deleteSpreadsheetData();
+    
+    // Simpan data dengan penanda "siswa meninggalkan permainan" tanpa menghapus
+    this.liveSyncData(true, true);
 
     if (typeof Swal !== "undefined") {
       Swal.fire({
-        icon: "error",
+        icon: "warning",
         title: t("timeoutTitle", this.language),
         html: t("timeoutText", this.language),
         confirmButtonText: t("restart", this.language),
@@ -144,16 +146,10 @@ var game = {
         customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       }).then(() => {
         this.resetGame();
-        localStorage.removeItem("playerName");
-        localStorage.removeItem("playerAbsence");
-        location.reload();
       });
     } else {
       alert(t("timeoutFallback", this.language));
       this.resetGame();
-      localStorage.removeItem("playerName");
-      localStorage.removeItem("playerAbsence");
-      location.reload();
     }
   },
 
@@ -198,7 +194,7 @@ var game = {
     }
 
     // Jika siswa menutup website saat bermain dan kembali setelah batas waktu:
-    // Hapus data pengerjaan dari spreadsheet.
+    // Reset permainan dan simpan data dengan penanda meninggalkan permainan.
     if (this.gameStartTime && Date.now() - this.gameStartTime > GAME_DURATION_SECONDS * 1000) {
       this.handleTimeout();
       return;

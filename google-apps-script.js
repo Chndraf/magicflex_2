@@ -42,10 +42,10 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 1. HAPUS DATA: Ketika siswa menutup website dan kembali setelah batas waktu
+    // 1. TIDAK LAGI MENGHAPUS DATA: Simpan data dengan penanda meninggalkan permainan
     if (action === "delete") {
-      deleteRowByNamaAbsen(sheet, nama, absen);
-      return ContentService.createTextOutput("Data dihapus karena website ditutup dan waktu melebihi batas 1 menit.")
+      // Action delete tidak lagi digunakan, tapi tetap dikembalikan sukses untuk kompatibilitas
+      return ContentService.createTextOutput("Data dipertahankan dengan penanda meninggalkan permainan.")
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
@@ -56,7 +56,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, Waktu Pengerjaan, dan Skor
+    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, dan Status Meninggalkan
     var rowIndex = -1;
     var today = new Date();
     var todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -76,8 +76,14 @@ function doPost(e) {
             continue;
           }
           
-          // Jika tanggal sama, periksa waktu pengerjaan
+          // Jika tanggal sama, periksa apakah ada penanda "siswa meninggalkan permainan"
           var existingWaktu = String(data[i][4] || "");
+          if (existingWaktu.indexOf("siswa meninggalkan permainan") !== -1) {
+            // Jika ada penanda meninggalkan, skip baris ini dan buat baris baru
+            continue;
+          }
+          
+          // Jika tanggal sama, periksa waktu pengerjaan
           var existingSeconds = parseWaktuToSeconds(existingWaktu);
           
           // Jika waktu pengerjaan >= batas maksimal, skip baris ini dan buat baris baru
@@ -107,8 +113,15 @@ function doPost(e) {
       sheet.getRange(rowIndex, 4).setValue(skor);
       sheet.getRange(rowIndex, 5).setValue(waktuPengerjaan);
     }
+    
+    // 5. Jika ada penanda "siswa meninggalkan permainan", set warna merah pada kolom waktu
+    if (waktuPengerjaan.indexOf("siswa meninggalkan permainan") !== -1) {
+      sheet.getRange(rowIndex, 5).setFontColor("#ff0000");
+    } else {
+      sheet.getRange(rowIndex, 5).setFontColor("#000000");
+    }
 
-    // 5. Update detail tiap soal (Percobaan, Status, dan Warna)
+    // 6. Update detail tiap soal (Percobaan, Status, dan Warna)
     var rowData = [];
     var backgrounds = [];
 
