@@ -6,7 +6,7 @@ var levels = [
     },
     board: "g",
     style: { "justify-content": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -16,7 +16,7 @@ var levels = [
     },
     board: "gy",
     style: { "justify-content": "center" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -26,7 +26,7 @@ var levels = [
     },
     board: "gyr",
     style: { "justify-content": "space-around" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -36,7 +36,7 @@ var levels = [
     },
     board: "gyr",
     style: { "justify-content": "space-between" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -46,7 +46,7 @@ var levels = [
     },
     board: "gyr",
     style: { "align-items": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -56,7 +56,7 @@ var levels = [
     },
     board: "g",
     style: { "justify-content": "center", "align-items": "center" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -66,7 +66,7 @@ var levels = [
     },
     board: "gyr",
     style: { "justify-content": "space-around", "align-items": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -76,7 +76,7 @@ var levels = [
     },
     board: "gyr",
     style: { "flex-direction": "row-reverse" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -86,7 +86,7 @@ var levels = [
     },
     board: "gyr",
     style: { "flex-direction": "column" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -96,7 +96,7 @@ var levels = [
     },
     board: "gyr",
     style: { "flex-direction": "row-reverse", "justify-content": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -106,7 +106,7 @@ var levels = [
     },
     board: "gyr",
     style: { "flex-direction": "column", "justify-content": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -119,7 +119,7 @@ var levels = [
       "flex-direction": "column-reverse",
       "justify-content": "space-between",
     },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -133,7 +133,7 @@ var levels = [
       "justify-content": "center",
       "align-items": "flex-end",
     },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -143,9 +143,9 @@ var levels = [
     },
     board: "gyr",
     selector: "> :nth-child(2)",
-    classes: { "#galaxy, #background": "wrap" },
+    classes: { "#pond, #background": "wrap" },
     style: { order: "2" },
-    before: "#galaxy {\n  display: flex;\n}\n\n.yellow {\n",
+    before: "#magic-room {\n  display: flex;\n}\n\n.yellow {\n",
     after: "}",
   },
   {
@@ -155,9 +155,9 @@ var levels = [
     },
     board: "gggrg",
     selector: "> :nth-child(4)",
-    classes: { "#galaxy, #background": "wrap" },
+    classes: { "#pond, #background": "wrap" },
     style: { order: "-1" },
-    before: "#galaxy {\n  display: flex;\n}\n\n.red {\n",
+    before: "#magic-room {\n  display: flex;\n}\n\n.red {\n",
     after: "}",
   },
   {
@@ -169,7 +169,7 @@ var levels = [
     selector: "> :nth-child(3)",
     style: { "align-self": "flex-end" },
     before:
-      "#galaxy {\n  display: flex;\n  align-items: flex-start;\n}\n\n.yellow {\n",
+      "#magic-room {\n  display: flex;\n  align-items: flex-start;\n}\n\n.yellow {\n",
     after: "}",
   },
   {
@@ -181,7 +181,7 @@ var levels = [
     selector: "> .yellow",
     style: { "align-self": "flex-end", order: "2" },
     before:
-      "#galaxy {\n  display: flex;\n  align-items: flex-start;\n}\n\n.yellow {\n",
+      "#magic-room {\n  display: flex;\n  align-items: flex-start;\n}\n\n.yellow {\n",
     after: "}",
   },
   {
@@ -191,7 +191,7 @@ var levels = [
     },
     board: "ygggggr",
     style: { "flex-wrap": "wrap" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -201,7 +201,7 @@ var levels = [
     },
     board: "gggggrrrrryyyyy",
     style: { "flex-direction": "column", "flex-wrap": "wrap" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -211,7 +211,7 @@ var levels = [
     },
     board: "gggggrrrrryyyyy",
     style: { "flex-flow": "column wrap" },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -222,7 +222,7 @@ var levels = [
     board: "ggggggggggggggg",
     classes: { "#pond, #background": "wrap" },
     style: { "align-content": "flex-start" },
-    before: "#galaxy {\n  display: flex;\n  flex-wrap: wrap;\n",
+    before: "#magic-room {\n  display: flex;\n  flex-wrap: wrap;\n",
     after: "}",
   },
   {
@@ -233,7 +233,7 @@ var levels = [
     board: "ggggggggggggggg",
     classes: { "#pond, #background": "wrap" },
     style: { "align-content": "flex-end" },
-    before: "#galaxy {\n  display: flex;\n  flex-wrap: wrap;\n",
+    before: "#magic-room {\n  display: flex;\n  flex-wrap: wrap;\n",
     after: "}",
   },
   {
@@ -244,7 +244,7 @@ var levels = [
     board: "rgggyrgggyrgggy",
     classes: { "#pond, #background": "wrap" },
     style: { "flex-direction": "column-reverse", "align-content": "center" },
-    before: "#galaxy {\n  display: flex;\n  flex-wrap: wrap;\n",
+    before: "#magic-room {\n  display: flex;\n  flex-wrap: wrap;\n",
     after: "}",
   },
   {
@@ -259,7 +259,7 @@ var levels = [
       "align-content": "space-between",
       "justify-content": "center",
     },
-    before: "#galaxy {\n  display: flex;\n",
+    before: "#magic-room {\n  display: flex;\n",
     after: "}",
   },
   {
@@ -275,7 +275,7 @@ var levels = [
       "justify-content": "space-around",
       "align-items": "stretch",
     },
-    before: "#galaxy {\n  display: flex;\n  height: 400px;\n",
+    before: "#magic-room {\n  display: flex;\n  height: 400px;\n",
     after: "}",
   },
 ];

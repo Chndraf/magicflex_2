@@ -14,8 +14,10 @@ var dashboardTranslations = {
       "Kuasai konsep-konsep Flexbox melalui penjelasan praktis dan interaktif": "Kuasai konsep-konsep Flexbox melalui penjelasan praktis dan interaktif",
       "Mulai Belajar": "Mulai Belajar",
       "Lihat Semua Bahan Ajar": "Lihat Semua Bahan Ajar",
-      "Website MagicFlex dibuat sebagai media pembelajaran interaktif untuk memahami Flexbox CSS dengan tema petualangan kosmik.": "Website MagicFlex dibuat sebagai media pembelajaran interaktif untuk memahami Flexbox CSS dengan tema petualangan kosmik.",
-      "© 2026 MagicFlex. Semua hak dilindungi.": "© 2026 MagicFlex. Semua hak dilindungi."
+      "© 2026 MagicFlex. Semua hak dilindungi.": "© 2026 MagicFlex. Semua hak dilindungi.",
+      heroBackgroundAlt: "Latar Dunia Sihir MagicFlex",
+      languageSelectorLabel: "Pilih bahasa",
+      aboutDescription: "Website <span class=\"font-bold text-primary\">MagicFlex</span> dibuat sebagai media pembelajaran interaktif untuk memahami <span class=\"italic text-tertiary\">Flexbox CSS</span> dalam dunia sihir."
     }
   },
   en: {
@@ -33,8 +35,10 @@ var dashboardTranslations = {
       "Kuasai konsep-konsep Flexbox melalui penjelasan praktis dan interaktif": "Master Flexbox concepts through practical, interactive explanations.",
       "Mulai Belajar": "Start Learning",
       "Lihat Semua Bahan Ajar": "View All Learning Materials",
-      "Website MagicFlex dibuat sebagai media pembelajaran interaktif untuk memahami Flexbox CSS dengan tema petualangan kosmik.": "MagicFlex is an interactive learning platform designed to help you understand CSS Flexbox through a cosmic adventure theme.",
-      "© 2026 MagicFlex. Semua hak dilindungi.": "© 2026 MagicFlex. All rights reserved."
+      "© 2026 MagicFlex. Semua hak dilindungi.": "© 2026 MagicFlex. All rights reserved.",
+      heroBackgroundAlt: "MagicFlex Magical World Background",
+      languageSelectorLabel: "Choose language",
+      aboutDescription: "<span class=\"font-bold text-primary\">MagicFlex</span> is an interactive learning platform designed to help you understand <span class=\"italic text-tertiary\">CSS Flexbox</span> in a magical world."
     }
   }
 };
@@ -60,5 +64,17 @@ function translateDashboard(language) {
     var leadingWhitespace = node.nodeValue.match(/^\s*/)[0];
     var trailingWhitespace = node.nodeValue.match(/\s*$/)[0];
     node.nodeValue = leadingWhitespace + dictionary[sourceText] + trailingWhitespace;
+  });
+
+  document.querySelectorAll("[data-i18n-html]").forEach(function (element) {
+    element.innerHTML = dictionary[element.dataset.i18nHtml] || element.innerHTML;
+  });
+
+  document.querySelectorAll("[data-i18n-alt]").forEach(function (element) {
+    element.alt = dictionary[element.dataset.i18nAlt] || element.alt;
+  });
+
+  document.querySelectorAll("[data-i18n-aria-label]").forEach(function (element) {
+    element.setAttribute("aria-label", dictionary[element.dataset.i18nAriaLabel] || element.getAttribute("aria-label"));
   });
 }

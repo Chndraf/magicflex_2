@@ -5,12 +5,14 @@
  * Pasang skrip ini di Extensions > Apps Script pada Google Spreadsheet Anda.
  *
  * LOGIKA:
- * - Waktu habis (30 menit) saat siswa AKTIF mengerjakan → data TETAP tersimpan.
- * - Siswa MENUTUP/MENINGGALKAN website lalu buka lagi setelah > 30 menit → data DIHAPUS.
+ * - Waktu habis (1 menit untuk pengujian) saat siswa AKTIF mengerjakan → data TETAP tersimpan.
+ * - Siswa MENUTUP/MENINGGALKAN website lalu buka lagi setelah > 1 menit → data DIHAPUS.
  *   (Frontend mengirim action: "delete" ketika mendeteksi skenario ini)
- * - Jika ada bug dan waktu yang dikirim > 30 menit → data DIHAPUS sebagai proteksi.
+ * - Jika ada bug dan waktu yang dikirim melebihi batas → data DIHAPUS sebagai proteksi.
  * =========================================================================================
  */
+
+var GAME_DURATION_SECONDS = 60;
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -40,17 +42,17 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 1. HAPUS DATA: Ketika siswa menutup website dan kembali setelah > 30 menit
+    // 1. HAPUS DATA: Ketika siswa menutup website dan kembali setelah batas waktu
     if (action === "delete") {
       deleteRowByNamaAbsen(sheet, nama, absen);
-      return ContentService.createTextOutput("Data dihapus karena website ditutup dan waktu > 30 menit.")
+      return ContentService.createTextOutput("Data dihapus karena website ditutup dan waktu melebihi batas 1 menit.")
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 2. PROTEKSI BUG: Jika waktu pengerjaan yang dikirim melebihi 30 menit (tidak mungkin terjadi secara normal)
-    if (isOver30Minutes(waktuPengerjaan)) {
+    // 2. PROTEKSI BUG: Jika waktu pengerjaan yang dikirim melebihi batas permainan
+    if (isOverGameDuration(waktuPengerjaan)) {
       deleteRowByNamaAbsen(sheet, nama, absen);
-      return ContentService.createTextOutput("Data dihapus: bug terdeteksi, waktu melebihi 30 menit.")
+      return ContentService.createTextOutput("Data dihapus: bug terdeteksi, waktu melebihi batas 1 menit.")
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
@@ -138,19 +140,15 @@ function normalizeAbsence(absen) {
 }
 
 /**
- * Memeriksa apakah waktu pengerjaan melebihi 30 menit
- * Digunakan sebagai deteksi bug (seharusnya frontend selalu mengirim waktu ≤ 30 menit)
+ * Memeriksa apakah waktu pengerjaan melebihi batas permainan.
+ * Mendukung format Indonesia dan Inggris yang dikirim dari frontend.
  */
-function isOver30Minutes(waktuStr) {
+function isOverGameDuration(waktuStr) {
   if (!waktuStr || waktuStr === "N/A") return false;
-  var match = waktuStr.match(/(\d+)\s*menit/i);
-  if (match) {
-    var mins = parseInt(match[1], 10);
-    if (mins > 30) return true;
-    if (mins === 30) {
-      var secMatch = waktuStr.match(/(\d+)\s*detik/i);
-      if (secMatch && parseInt(secMatch[1], 10) > 0) return true;
-    }
-  }
-  return false;
+
+  var minuteMatch = waktuStr.match(/(\d+)\s*(?:menit|minute)/i);
+  var secondMatch = waktuStr.match(/(\d+)\s*(?:detik|second)/i);
+  var minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+  var seconds = secondMatch ? parseInt(secondMatch[1], 10) : 0;
+  return minutes * 60 + seconds > GAME_DURATION_SECONDS;
 }

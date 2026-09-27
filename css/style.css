@@ -29,8 +29,8 @@
   --accent-color: #ffdf9e;
   --accent-secondary: #cebdff;
   --accent-tertiary: #e3beb8;
-  --cosmic-blue: #7d4efa;
-  --space-purple: #6935e5;
+  --magic-blue: #7d4efa;
+  --mystic-purple: #6935e5;
 
   /* Utility Colors */
   --success-green: #2ed573;
@@ -221,7 +221,7 @@ body.swal2-shown {
    SPACE BACKGROUND ANIMATION
    ========================================================================== */
 
-.space-background {
+.magic-background {
   position: fixed;
   top: 0;
   left: 0;
@@ -238,7 +238,7 @@ body.swal2-shown {
   background-repeat: no-repeat;
 }
 
-.space-background::before {
+.magic-background::before {
   content: "";
   position: absolute;
   top: 0;
@@ -269,7 +269,7 @@ body.swal2-shown {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   border-right: 1px solid var(--glass-border);
-  border-image: linear-gradient(45deg, var(--cosmic-blue), var(--space-purple))
+  border-image: linear-gradient(45deg, var(--magic-blue), var(--mystic-purple))
     1;
   box-shadow: 0 0 50px rgba(0, 212, 255, 0.1);
 }
@@ -284,7 +284,7 @@ body.swal2-shown {
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: var(--cosmic-blue);
+  background: var(--magic-blue);
   border-radius: 1px;
 }
 
@@ -342,7 +342,7 @@ body.swal2-shown {
 
   /* Background and border */
   background: linear-gradient(135deg, var(--card-bg), rgba(116, 185, 255, 0.1));
-  border: 1px solid var(--cosmic-blue);
+  border: 1px solid var(--magic-blue);
 
   /* Effects */
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
@@ -390,7 +390,7 @@ body.swal2-shown {
 
   /* Background and border */
   background: linear-gradient(135deg, var(--card-bg), rgba(116, 185, 255, 0.1));
-  border: 1px solid var(--cosmic-blue);
+  border: 1px solid var(--magic-blue);
   color: var(--text-primary);
 
   /* Transition */
@@ -398,8 +398,8 @@ body.swal2-shown {
 }
 
 .nav-button:hover:not(.disabled) {
-  background: linear-gradient(135deg, var(--cosmic-blue), var(--space-purple));
-  border-color: var(--cosmic-blue);
+  background: linear-gradient(135deg, var(--magic-blue), var(--mystic-purple));
+  border-color: var(--magic-blue);
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
 }
@@ -419,7 +419,7 @@ body.swal2-shown {
 
   /* Background and border */
   background: linear-gradient(135deg, var(--card-bg), rgba(116, 185, 255, 0.1));
-  border: 1px solid var(--cosmic-blue);
+  border: 1px solid var(--magic-blue);
 
   /* Transition */
   transition: all var(--transition-normal);
@@ -481,7 +481,7 @@ body.swal2-shown {
   opacity: 0;
 
   /* Background */
-  background: linear-gradient(45deg, var(--cosmic-blue), var(--space-purple));
+  background: linear-gradient(45deg, var(--magic-blue), var(--mystic-purple));
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -503,8 +503,8 @@ body.swal2-shown {
 
 .progress-dot.current {
   color: var(--primary-bg);
-  border-color: var(--cosmic-blue);
-  background: linear-gradient(135deg, var(--cosmic-blue), var(--space-purple));
+  border-color: var(--magic-blue);
+  background: linear-gradient(135deg, var(--magic-blue), var(--mystic-purple));
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
 }
 
@@ -552,8 +552,8 @@ body.swal2-shown {
   /* Background */
   background: linear-gradient(
     90deg,
-    var(--cosmic-blue),
-    var(--space-purple),
+    var(--magic-blue),
+    var(--mystic-purple),
     var(--warning-yellow)
   );
 }
@@ -561,7 +561,7 @@ body.swal2-shown {
 .instructions h3 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--cosmic-blue);
+  color: var(--magic-blue);
   margin-bottom: 1rem;
   text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
 }
@@ -570,7 +570,7 @@ body.swal2-shown {
   padding: 0.3rem 0.6rem;
   font-family: "JetBrains Mono", monospace;
   font-size: 0.875rem;
-  color: var(--cosmic-blue);
+  color: var(--magic-blue);
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid transparent;
@@ -589,7 +589,7 @@ body.swal2-shown {
 
 .instructions code:hover {
   color: var(--primary-bg);
-  background: linear-gradient(135deg, var(--cosmic-blue), var(--space-purple));
+  background: linear-gradient(135deg, var(--magic-blue), var(--mystic-purple));
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
 }
@@ -727,7 +727,7 @@ body.swal2-shown {
     var(--secondary-bg),
     rgba(116, 185, 255, 0.05)
   );
-  border-right: 1px solid var(--cosmic-blue);
+  border-right: 1px solid var(--magic-blue);
 }
 
 #code {
@@ -817,7 +817,7 @@ body.swal2-shown {
   color: var(--primary-bg);
 
   /* Background */
-  background: linear-gradient(135deg, var(--cosmic-blue), var(--space-purple));
+  background: linear-gradient(135deg, var(--magic-blue), var(--mystic-purple));
 }
 
 .btn-primary:hover:not(.disabled) {
@@ -836,11 +836,11 @@ body.swal2-shown {
 
   /* Background and border */
   background: linear-gradient(135deg, var(--card-bg), rgba(116, 185, 255, 0.1));
-  border: 1px solid var(--cosmic-blue);
+  border: 1px solid var(--magic-blue);
 }
 
 .btn-secondary:hover {
-  background: linear-gradient(135deg, var(--cosmic-blue), var(--space-purple));
+  background: linear-gradient(135deg, var(--magic-blue), var(--mystic-purple));
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
 }
@@ -1092,20 +1092,20 @@ body.swal2-shown {
     var(--card-bg),
     rgba(116, 185, 255, 0.1)
   ) !important;
-  border: 1px solid var(--cosmic-blue) !important;
+  border: 1px solid var(--magic-blue) !important;
   color: var(--text-primary) !important;
 }
 
 .swal2-title {
-  color: var(--cosmic-blue) !important;
+  color: var(--magic-blue) !important;
   font-family: "Orbitron", sans-serif !important;
 }
 
 .swal2-confirm {
   background: linear-gradient(
     135deg,
-    var(--cosmic-blue),
-    var(--space-purple)
+    var(--magic-blue),
+    var(--mystic-purple)
   ) !important;
   border: none !important;
   font-family: "Orbitron", sans-serif !important;
@@ -1119,7 +1119,7 @@ body.swal2-shown {
     var(--card-bg),
     rgba(116, 185, 255, 0.1)
   ) !important;
-  border: 1px solid var(--cosmic-blue) !important;
+  border: 1px solid var(--magic-blue) !important;
   font-family: "Orbitron", sans-serif !important;
   font-weight: 600 !important;
 }
@@ -1215,7 +1215,7 @@ body.swal2-shown {
 }
 
 /* ==========================================================================
-   RESULTS CONTAINER STYLES (Dark Cosmic Theme)
+   RESULTS CONTAINER STYLES (Dark Magic Theme)
    ========================================================================== */
 
 .results-container {

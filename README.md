@@ -47,7 +47,7 @@
 - 🎨 **Visual Feedback** - Lihat hasil kode CSS secara langsung
 - 📊 **Tracking Otomatis** - Data kemajuan tersimpan di Google Sheets
 - 🤖 **AI-Powered Hints** - Tips cerdas dari Google Gemini AI
-- ⏱️ **Timer System** - Tantangan 30 menit untuk mengasah fokus
+- ⏱️ **Timer System** - Mode pengujian dengan timer 1 menit
 - 🌐 **Multilingual** - Mendukung Bahasa Indonesia & English
 - 📱 **Responsive Design** - Optimal di desktop dan mobile
 
@@ -64,7 +64,7 @@
 - Navigasi level: Previous/Next + direct jump
 
 ### 2. **Sistem Timer**
-- Countdown 30 menit per sesi
+- Countdown 1 menit per sesi untuk pengujian
 - Tampilan ganda (desktop & mobile)
 - Sinkronisasi waktu real-time ke spreadsheet
 
@@ -218,7 +218,7 @@ magicflex_2/
 1. **🚀 Start Game**
    - Buka `game.html`
    - Masukkan Nama & No Absen
-   - Timer 30 menit dimulai
+   - Timer pengujian 1 menit dimulai
 
 2. **📝 Solve Levels**
    - Baca instruksi di panel kiri
@@ -252,7 +252,7 @@ magicflex_2/
 💡 **Test berkala**: Klik Cast Spell untuk lihat efek setiap perubahan  
 💡 **Baca error**: Error analysis memberikan hint spesifik  
 💡 **Manfaatkan AI**: Klik "Dapatkan Masukan dari Gemini AI" jika stuck  
-💡 **Kelola waktu**: 30 menit untuk 25 level = ~1.2 menit per level  
+💡 **Kelola waktu**: Timer 1 menit ini khusus untuk pengujian cepat  
 
 ---
 <a id="sistem-scoring"></a>
@@ -270,7 +270,7 @@ Score = (Jumlah Level Solved / 25) × 100%
 - Nama
 - No Absen
 - Skor akhir (%)
-- Waktu pengerjaan (max 30 menit)
+- Waktu pengerjaan (maks. 1 menit untuk pengujian)
 - Timestamp submission
 
 **Per Level (1-25):**
@@ -301,7 +301,7 @@ graph LR
     C -->|Update/Insert| D[Google Sheets]
     A -->|Timer Expires| E[endGame]
     E -->|Final Submit| C
-    A -->|Close Tab > 30min| F[handleTimeout]
+    A -->|Close Tab > 1min| F[handleTimeout]
     F -->|DELETE Request| C
     C -->|Delete Row| D
 ```
@@ -317,7 +317,7 @@ Menerima POST request dari frontend:
 
 **Validasi:**
 - Nama & No Absen wajib
-- Proteksi bug: Hapus data jika waktu > 30 menit
+- Proteksi bug: Hapus data jika waktu > 1 menit
 
 **Data Stored:**
 ```javascript
@@ -337,9 +337,9 @@ Menerima POST request dari frontend:
 
 | Skenario | Data di Spreadsheet |
 |----------|---------------------|
-| Timer countdown habis (30:00 → 0:00) saat siswa aktif | ✅ **TERSIMPAN** |
-| Siswa close website, buka lagi setelah > 30 menit | ❌ **DIHAPUS** |
-| Bug sistem mengirim waktu > 30 menit | ❌ **DIHAPUS** (proteksi) |
+| Timer countdown habis (01:00 → 0:00) saat siswa aktif | ✅ **TERSIMPAN** |
+| Siswa close website, buka lagi setelah > 1 menit | ❌ **DIHAPUS** |
+| Bug sistem mengirim waktu > 1 menit | ❌ **DIHAPUS** (proteksi) |
 
 ### Format Spreadsheet
 

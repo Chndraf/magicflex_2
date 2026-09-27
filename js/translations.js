@@ -65,6 +65,13 @@ var translations = {
     aiResponseError: "Gagal mengambil respons dari AI.",
     aiErrorTitle: "Kesalahan:",
     tryAgain: "Coba Lagi",
+    durationFormat: "{minutes} menit {seconds} detik",
+    timeoutTitle: "⏰ Sesi Dibatalkan!",
+    timeoutText: '<p style="font-size:1em;">Waktu permainan telah mencapai batas <strong>1 menit</strong> karena halaman ditutup atau ditinggalkan.</p><p style="font-size:0.9em;color:#ef4444;margin-top:8px;">Data pengerjaan kamu di spreadsheet telah <strong>dihapus secara otomatis</strong>.</p>',
+    timeoutFallback: "Sesi dibatalkan! Waktu permainan telah mencapai batas 1 menit karena halaman ditutup. Data kamu di spreadsheet telah dihapus.",
+    restart: "🔄 Mulai Ulang",
+    cannotAdvanceTitle: "⚠️ Belum Bisa Lanjut",
+    cannotAdvanceText: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
     aiPrompt: function (quizData) {
       return `Saya baru saja bermain game edukasi MagicFlex untuk belajar CSS Flexbox. Skor saya ${quizData.score}%, performa ${quizData.performanceLevel}, jawaban benar ${quizData.correctAnswers}, jawaban salah ${quizData.wrongAnswers}, dan konsep yang masih salah: ${quizData.wrongDetails}. Berikan masukan yang singkat, ramah, memotivasi, serta praktis untuk memperbaiki konsep yang salah. Tulis tepat satu paragraf saja, tanpa judul, daftar, atau markdown, dan jangan merekomendasikan website lain.`;
     },
@@ -135,6 +142,13 @@ var translations = {
     aiResponseError: "Failed to get a response from AI.",
     aiErrorTitle: "Error:",
     tryAgain: "Try Again",
+    durationFormat: "{minutes} minute(s) {seconds} second(s)",
+    timeoutTitle: "⏰ Session Cancelled!",
+    timeoutText: '<p style="font-size:1em;">The game reached its <strong>1-minute</strong> limit because the page was closed or left.</p><p style="font-size:0.9em;color:#ef4444;margin-top:8px;">Your progress data in the spreadsheet has been <strong>deleted automatically</strong>.</p>',
+    timeoutFallback: "Session cancelled! The game reached its 1-minute limit because the page was closed. Your spreadsheet data has been deleted.",
+    restart: "🔄 Restart",
+    cannotAdvanceTitle: "⚠️ Cannot Continue Yet",
+    cannotAdvanceText: '<p style="font-size:0.95em;">You must <strong>complete the current question</strong> before moving to another question.</p>',
     aiPrompt: function (quizData) {
       return `I have just played the MagicFlex educational game to learn CSS Flexbox. My score is ${quizData.score}%, my performance is ${quizData.performanceLevel}, I have ${quizData.correctAnswers} correct answers and ${quizData.wrongAnswers} incorrect answers, and the concepts I missed are: ${quizData.wrongDetails}. Give brief, friendly, motivating, and practical feedback to improve the concepts I missed. Write exactly one paragraph, with no heading, list, or Markdown, and do not recommend other websites.`;
     },

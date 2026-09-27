@@ -25,6 +25,8 @@ var AlertHelper = {
   },
 };
 
+var GAME_DURATION_SECONDS = 60;
+
 var game = {
   // ===========================================
   // PROPERTIES
@@ -53,7 +55,7 @@ var game = {
   timerStarted: false,
   timeLeft: localStorage.getItem("timeLeft")
     ? parseInt(localStorage.getItem("timeLeft"), 10)
-    : 1800, // 30 menit
+    : GAME_DURATION_SECONDS,
 
   // ===========================================
   // TIMER METHODS
@@ -87,7 +89,7 @@ var game = {
         var mobileTimer = document.getElementById("timer-mobile");
         if (mobileTimer) mobileTimer.textContent = display;
       } else {
-        // Waktu normal 30 menit habis: simpan hasil data dan akhiri game
+        // Waktu permainan habis: simpan hasil data dan akhiri game
         game.endGame();
       }
     }, 1000);
@@ -102,19 +104,30 @@ var game = {
   },
 
   /**
+   * Format duration for the active interface language.
+   */
+  formatDuration: function (totalSeconds) {
+    var minutes = Math.floor(totalSeconds / 60);
+    var seconds = totalSeconds % 60;
+    return t("durationFormat", this.language)
+      .replace("{minutes}", minutes)
+      .replace("{seconds}", String(seconds).padStart(2, "0"));
+  },
+
+  /**
    * Reset timer to initial state
    */
   resetTimer: function () {
     this.timerStarted = false;
     clearInterval(this.timer);
-    this.timeLeft = 1800; // 30 menit
+    this.timeLeft = GAME_DURATION_SECONDS;
     localStorage.removeItem("timeLeft");
     this.gameStartTime = null;
     localStorage.removeItem("gameStartTime");
   },
 
   /**
-   * Menangani kondisi ketika website ditinggalkan/ditutup dan waktu pengerjaan melebihi 30 menit
+   * Menangani kondisi ketika website ditinggalkan/ditutup dan waktu permainan terlampaui.
    * Menghapus data pengerjaan dari Spreadsheet secara otomatis.
    */
   handleTimeout: function () {
@@ -124,9 +137,9 @@ var game = {
     if (typeof Swal !== "undefined") {
       Swal.fire({
         icon: "error",
-        title: "⏰ Sesi Dibatalkan!",
-        html: '<p style="font-size:1em;">Waktu pengerjaan telah melebihi batas <strong>30 menit</strong> karena halaman ditutup atau ditinggalkan.</p><p style="font-size:0.9em;color:#ef4444;margin-top:8px;">Data pengerjaan kamu di spreadsheet telah <strong>dihapus secara otomatis</strong>.</p>',
-        confirmButtonText: "🔄 Mulai Ulang",
+        title: t("timeoutTitle", this.language),
+        html: t("timeoutText", this.language),
+        confirmButtonText: t("restart", this.language),
         allowOutsideClick: false,
         customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       }).then(() => {
@@ -136,7 +149,7 @@ var game = {
         location.reload();
       });
     } else {
-      alert("Sesi Dibatalkan! Waktu pengerjaan melebihi 30 menit karena halaman ditutup. Data kamu di spreadsheet telah dihapus.");
+      alert(t("timeoutFallback", this.language));
       this.resetGame();
       localStorage.removeItem("playerName");
       localStorage.removeItem("playerAbsence");
@@ -184,9 +197,9 @@ var game = {
       return;
     }
 
-    // Jika siswa menutup website saat bermain dan kembali setelah lebih dari 30 menit:
-    // Hapus data pengerjaan dari spreadsheet
-    if (this.gameStartTime && Date.now() - this.gameStartTime > 1800 * 1000) {
+    // Jika siswa menutup website saat bermain dan kembali setelah batas waktu:
+    // Hapus data pengerjaan dari spreadsheet.
+    if (this.gameStartTime && Date.now() - this.gameStartTime > GAME_DURATION_SECONDS * 1000) {
       this.handleTimeout();
       return;
     }
@@ -656,14 +669,12 @@ var game = {
       performanceIcon = "💪";
     }
 
-    // Hitung waktu pengerjaan (maksimal 30 menit jika selesai tepat waktu)
-    let waktuPengerjaan = "30 menit 00 detik";
+    // Hitung waktu pengerjaan hingga batas durasi permainan.
+    let waktuPengerjaan = this.formatDuration(GAME_DURATION_SECONDS);
     if (this.gameStartTime) {
       const elapsedMs = Date.now() - this.gameStartTime;
-      const totalSeconds = Math.min(Math.floor(elapsedMs / 1000), 1800);
-      const mins = Math.floor(totalSeconds / 60);
-      const secs = totalSeconds % 60;
-      waktuPengerjaan = `${mins} menit ${secs < 10 ? "0" : ""}${secs} detik`;
+      const totalSeconds = Math.min(Math.floor(elapsedMs / 1000), GAME_DURATION_SECONDS);
+      waktuPengerjaan = this.formatDuration(totalSeconds);
     }
 
     // KIRIM DATA OTOMATIS KE SPREADSHEET (Tetap Berjalan)
@@ -932,8 +943,8 @@ var game = {
             if (typeof Swal !== "undefined") {
               Swal.fire({
                 icon: "warning",
-                title: "⚠️ Belum Bisa Lanjut",
-                html: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
+                title: t("cannotAdvanceTitle", self.language),
+                html: t("cannotAdvanceText", self.language),
                 confirmButtonText: "OK",
                 customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
               });
@@ -1655,14 +1666,12 @@ var game = {
     
     const score = Math.round((this.solved.length / levels.length) * 100);
     
-    // Hitung waktu pengerjaan secara live (di-cap maksimal 30 menit)
+    // Hitung waktu pengerjaan secara live hingga batas durasi permainan.
     let waktuPengerjaan = "N/A";
     if (this.gameStartTime) {
       const elapsedMs = Date.now() - this.gameStartTime;
-      const totalSeconds = Math.min(Math.floor(elapsedMs / 1000), 1800);
-      const mins = Math.floor(totalSeconds / 60);
-      const secs = totalSeconds % 60;
-      waktuPengerjaan = `${mins} menit ${secs < 10 ? "0" : ""}${secs} detik`;
+      const totalSeconds = Math.min(Math.floor(elapsedMs / 1000), GAME_DURATION_SECONDS);
+      waktuPengerjaan = this.formatDuration(totalSeconds);
     }
     
     const detailJawaban = levels.map(level => {
@@ -2023,6 +2032,9 @@ var game = {
     });
     $("[data-i18n-placeholder]").each(function () {
       $(this).attr("placeholder", t($(this).data("i18n-placeholder"), game.language));
+    });
+    $("[data-i18n-aria-label]").each(function () {
+      $(this).attr("aria-label", t($(this).data("i18n-aria-label"), game.language));
     });
 
     $(".language-button")

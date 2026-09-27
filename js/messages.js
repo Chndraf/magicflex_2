@@ -18,7 +18,7 @@ var messages = {
     id: "dari",
   },
   title: {
-    id: "MagicFlex - Kuasai CSS Flexbox di Luar Angkasa",
+    id: "MagicFlex - Kuasai CSS Flexbox di Dunia Sihir",
   },
   labelReset: {
     id: "Atur Ulang",
