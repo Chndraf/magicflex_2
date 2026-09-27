@@ -34,7 +34,7 @@ var game = {
 
   // Game state
   googleScriptUrl:
-    "https://script.google.com/macros/s/AKfycbyrZXr_8GCrcJ4cuRUeGgbhQMfH6uwYupLNJjycL1oniIN2lx_XBqOdaislauUGYl6Wxg/exec",
+    "https://script.google.com/macros/s/AKfycbxpS8_NnOI3DVi--df7J3ffVxem0S6vQTmcQoJ6ogtSmnYc3bkADZPg6d_foSDWbGpwDQ/exec",
   language: ["id", "en"].includes(window.location.hash.substring(1))
     ? window.location.hash.substring(1)
     : localStorage.getItem("language") || "id",
