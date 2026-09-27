@@ -56,19 +56,43 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 3. Cari baris siswa berdasarkan Nama dan No Absen
+    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, dan Waktu Pengerjaan
     var rowIndex = -1;
+    var today = new Date();
+    var todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    
     for (var i = 1; i < data.length; i++) {
-      if (
-        String(data[i][1]).trim().toLowerCase() === nama.toLowerCase() &&
-        normalizeAbsence(data[i][2]) === absen
-      ) {
-        rowIndex = i + 1;
-        break;
+      var namaMatch = String(data[i][1]).trim().toLowerCase() === nama.toLowerCase();
+      var absenMatch = normalizeAbsence(data[i][2]) === absen;
+      
+      if (namaMatch && absenMatch) {
+        // Periksa tanggal submission
+        var existingDate = data[i][0];
+        if (existingDate instanceof Date) {
+          var existingDateOnly = new Date(existingDate.getFullYear(), existingDate.getMonth(), existingDate.getDate());
+          
+          // Jika tanggal berbeda, skip baris ini dan buat baris baru
+          if (existingDateOnly.getTime() !== todayDateOnly.getTime()) {
+            continue;
+          }
+          
+          // Jika tanggal sama, periksa waktu pengerjaan
+          var existingWaktu = String(data[i][4] || "");
+          var existingSeconds = parseWaktuToSeconds(existingWaktu);
+          
+          // Jika waktu pengerjaan >= batas maksimal, skip baris ini dan buat baris baru
+          if (existingSeconds >= GAME_DURATION_SECONDS) {
+            continue;
+          }
+          
+          // Jika lolos semua pengecekan, update baris ini
+          rowIndex = i + 1;
+          break;
+        }
       }
     }
 
-    // 4. Jika belum ada buat baris baru, jika sudah ada update
+    // 4. Jika belum ada atau tidak memenuhi kriteria update, buat baris baru
     if (rowIndex === -1) {
       rowIndex = sheet.getLastRow() + 1;
       sheet.getRange(rowIndex, 1, 1, 5).setValues([[new Date(), nama, absen, skor, waktuPengerjaan]]);
@@ -151,4 +175,18 @@ function isOverGameDuration(waktuStr) {
   var minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
   var seconds = secondMatch ? parseInt(secondMatch[1], 10) : 0;
   return minutes * 60 + seconds > GAME_DURATION_SECONDS;
+}
+
+/**
+ * Convert waktu pengerjaan string ke detik untuk perbandingan.
+ * Format: "X menit Y detik" atau "X minute(s) Y second(s)"
+ */
+function parseWaktuToSeconds(waktuStr) {
+  if (!waktuStr || waktuStr === "N/A") return 0;
+  
+  var minuteMatch = waktuStr.match(/(\d+)\s*(?:menit|minute)/i);
+  var secondMatch = waktuStr.match(/(\d+)\s*(?:detik|second)/i);
+  var minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+  var seconds = secondMatch ? parseInt(secondMatch[1], 10) : 0;
+  return minutes * 60 + seconds;
 }
