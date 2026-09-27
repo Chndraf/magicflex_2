@@ -56,7 +56,7 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, dan Waktu Pengerjaan
+    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, Waktu Pengerjaan, dan Skor
     var rowIndex = -1;
     var today = new Date();
     var todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -82,6 +82,12 @@ function doPost(e) {
           
           // Jika waktu pengerjaan >= batas maksimal, skip baris ini dan buat baris baru
           if (existingSeconds >= GAME_DURATION_SECONDS) {
+            continue;
+          }
+          
+          // Jika skor sebelumnya sudah 100, skip baris ini dan buat baris baru
+          var existingScore = parseInt(data[i][3]) || 0;
+          if (existingScore === 100) {
             continue;
           }
           

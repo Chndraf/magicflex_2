@@ -281,14 +281,14 @@ var game = {
   },
 
   /**
-   * Simpan data terakhir ke Spreadsheet, lalu bersihkan cache sesi lokal.
+   * Simpan data terakhir ke Spreadsheet dengan penanda "siswa meninggalkan permainan", lalu bersihkan cache sesi lokal.
    */
   saveAndClearSession: function () {
     if (this.isLeavingGame) return;
     this.isLeavingGame = true;
 
     this.saveAnswer();
-    this.liveSyncData(true);
+    this.liveSyncData(true, true); // Pass flag untuk menandai siswa meninggalkan permainan
     this.clearStudentSession();
   },
 
@@ -1633,8 +1633,10 @@ var game = {
   
   /**
    * Sinkronisasi data real-time ke Spreadsheet
+   * @param {boolean} keepalive - Gunakan keepalive flag untuk request saat page unload
+   * @param {boolean} isLeaving - Tandai bahwa siswa meninggalkan permainan
    */
-  liveSyncData: function (keepalive) {
+  liveSyncData: function (keepalive, isLeaving) {
     const playerName = localStorage.getItem("playerName");
     const playerAbsence = localStorage.getItem("playerAbsence");
     if (!playerName || !playerAbsence) return;
@@ -1647,6 +1649,11 @@ var game = {
       const elapsedMs = Date.now() - this.gameStartTime;
       const totalSeconds = Math.min(Math.floor(elapsedMs / 1000), GAME_DURATION_SECONDS);
       waktuPengerjaan = this.formatDuration(totalSeconds);
+    }
+    
+    // Jika siswa meninggalkan permainan, tambahkan penanda
+    if (isLeaving && waktuPengerjaan !== "N/A") {
+      waktuPengerjaan = waktuPengerjaan + " (siswa meninggalkan permainan)";
     }
     
     const detailJawaban = levels.map(level => {
