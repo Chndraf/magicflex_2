@@ -43,35 +43,12 @@ const CONFIG = {
   },
 
   /**
-   * Load environment variables from .env file
+   * Browser configuration must never load API keys. Gemini requests are handled by /api/gemini.
    * @returns {Promise<Object>}
    */
   load: function () {
-    if (this.loadPromise) {
-      return this.loadPromise;
-    }
-
-    this.loadPromise = (async () => {
-      try {
-        // Try fetching .env from root / relative path
-        const response = await fetch('.env');
-        if (response.ok) {
-          const text = await response.text();
-          this.env = this.parseEnv(text);
-          this.loaded = true;
-          return this.env;
-        } else {
-          console.warn('⚠️ [CONFIG] File .env tidak ditemukan atau tidak dapat diakses (Status:', response.status, '). Pastikan file .env ada di root project.');
-        }
-      } catch (err) {
-        console.warn('⚠️ [CONFIG] Gagal memuat file .env:', err.message);
-      }
-
-      this.loaded = true;
-      return this.env;
-    })();
-
-    return this.loadPromise;
+    this.loaded = true;
+    return Promise.resolve(this.env);
   },
 
   /**
@@ -91,5 +68,5 @@ const CONFIG = {
 // Expose to window
 window.CONFIG = CONFIG;
 
-// Start loading immediately
+// Mark browser configuration as ready. Sensitive values remain server-side.
 CONFIG.load();

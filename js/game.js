@@ -775,7 +775,7 @@ var game = {
   },
 
   /**
-   * Handle AI Feedback Request Flow (Hybrid: Serverless Function on Vercel + Direct Fallback with .env on Local)
+   * Request AI feedback through the server-side endpoint so the API key is never exposed to browsers.
    */
   handleAIFeedbackRequest: async function(quizData) {
     const feedbackContent = document.getElementById('ai-feedback-content');
@@ -786,55 +786,29 @@ var game = {
     const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
-      let data = null;
-      let usedServerless = false;
+      const serverlessResponse = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptText })
+      });
+      const responseText = await serverlessResponse.text();
+      let result;
 
-      // 1. Coba lewat Vercel Serverless Function (/api/gemini) terlebih dahulu (paling aman)
       try {
-        const serverlessResponse = await fetch('/api/gemini', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: promptText })
-        });
-
-        if (serverlessResponse.status !== 404 && serverlessResponse.status !== 405) {
-          usedServerless = true;
-          const result = await serverlessResponse.json();
-          if (!serverlessResponse.ok) {
-            throw new Error(result.error || t("aiResponseError", this.language));
-          }
-          data = result;
-        }
-      } catch (serverlessErr) {
-        // Jika serverless endpoint tidak ditemukan (misal di live server lokal), gunakan fallback
-        console.info('[AI] Menggunakan fallback client-side config...');
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        throw new Error(t("aiInvalidServerResponse", this.language));
       }
 
-      // 2. Jika bukan di Vercel / serverless tidak ada, fallback ke pemanggilan langsung dengan .env lokal
-      if (!usedServerless) {
-        const apiKey = window.CONFIG ? await window.CONFIG.get('GEMINI_API_KEY') : null;
-        if (!apiKey) {
-          throw new Error("GEMINI_API_KEY tidak ditemukan. Pastikan sudah menyetel Environment Variables di Vercel atau membuat file .env lokal.");
-        }
-
-        const directResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-        });
-
-        const directResult = await directResponse.json();
-        if (!directResponse.ok) {
-          throw new Error(directResult.error?.message || t("aiResponseError", this.language));
-        }
-        data = directResult;
+      if (!serverlessResponse.ok) {
+        throw new Error(result.error || `${t("aiEndpointError", this.language)} (HTTP ${serverlessResponse.status})`);
       }
 
-      if (!data || !data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-        throw new Error(t("aiResponseError", this.language));
+      const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!aiText) {
+        throw new Error(t("aiEmptyResponse", this.language));
       }
 
-      const aiText = data.candidates[0].content.parts[0].text;
       const oneParagraphText = aiText.replace(/\s*\n+\s*/g, " ").trim();
       const formattedText = oneParagraphText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       
@@ -842,6 +816,7 @@ var game = {
         feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
       }
     } catch (error) {
+      console.error("AI feedback request failed:", error);
       if (feedbackContent) {
         feedbackContent.innerHTML = `
           <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>

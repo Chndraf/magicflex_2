@@ -22,17 +22,17 @@
     <!-- TopNavBar Component -->
     <header class="docked z-50 sticky top-0">
       <div
-        class="flex justify-between items-center px-margin-desktop py-4 w-full mx-auto absolute bg-surface-container top-0 border-b border-secondary-fixed-variant/30 shadow-[0px_4px_20px_rgba(125,78,250,0.1)] shadow-md"
+        class="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-margin-desktop lg:py-4 w-full mx-auto absolute bg-surface-container top-0 border-b border-secondary-fixed-variant/30 shadow-[0px_4px_20px_rgba(125,78,250,0.1)] shadow-md"
       >
-        <div class="flex items-center gap-1">
-          <img src="images/logo.svg" alt="MagicFlex Logo" width="60" height="60" class="opacity-90" />
+        <div class="flex shrink-0 items-center gap-1">
+          <img src="images/logo.svg" alt="MagicFlex Logo" width="40" height="40" class="opacity-90 sm:w-[60px] sm:h-[60px]" />
           <span
-            class="font-headline-lg text-headline-lg text-secondary-fixed-dim tracking-tight"
+            class="font-headline-lg text-lg sm:text-headline-lg text-secondary-fixed-dim tracking-tight"
             >MagicFlex</span
           >
         </div>
         <nav
-          class="hidden md:flex items-center gap-gutter relative"
+          class="hidden lg:flex items-center gap-gutter relative"
           id="main-nav"
         >
           <a
@@ -61,31 +61,30 @@
             class="absolute bottom-0 h-0.5 bg-secondary-fixed transition-all duration-300 ease-out z-0 pointer-events-none"
           ></div>
         </nav>
-        <div class="flex items-center gap-3 text-secondary dark:text-secondary">
+        <div class="flex shrink-0 items-center gap-1.5 sm:gap-3 text-secondary dark:text-secondary">
           <div
-            class="flex items-center gap-1 rounded-full border border-secondary-fixed-variant/30 bg-surface-bright/20 p-1"
+            class="flex items-center rounded-full border border-secondary-fixed-variant/30 bg-surface-bright/20 p-1"
             role="group"
             aria-label="Pilih bahasa"
             data-i18n-aria-label="languageSelectorLabel"
           >
-            <span class="material-symbols-outlined ml-2 text-lg">language</span>
             <button
               type="button"
-              class="dashboard-language-button rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+              class="dashboard-language-button rounded-full px-2.5 py-1 text-xs sm:px-3 sm:text-sm font-semibold transition-colors"
               data-language="id"
               aria-pressed="true"
               title="Gunakan Bahasa Indonesia"
             >ID</button>
             <button
               type="button"
-              class="dashboard-language-button rounded-full px-3 py-1 text-sm font-semibold transition-colors"
+              class="dashboard-language-button rounded-full px-2.5 py-1 text-xs sm:px-3 sm:text-sm font-semibold transition-colors"
               data-language="en"
               aria-pressed="false"
               title="Use English"
             >EN</button>
           </div>
           <span
-            class="material-symbols-outlined cursor-pointer hover:bg-surface-bright/20 transition-all duration-300 active:scale-95 transition-transform p-2 rounded-full"
+            class="material-symbols-outlined cursor-pointer hover:bg-surface-bright/20 transition-all duration-300 active:scale-95 transition-transform p-1.5 sm:p-2 rounded-full"
             data-modal="handout"
             >auto_stories</span
           >
@@ -564,7 +563,7 @@
               <img
                 alt="Ima Umiatul Chusnah"
                 class="w-full h-full object-cover"
-                src="images/cahya.jpg"
+                src="images/woman.jpg"
               />
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
@@ -586,7 +585,7 @@
               <img
                 alt="Hanydhar Rose Manicha"
                 class="w-full h-full object-cover"
-                src="images/cahya.jpg"
+                src="images/woman.jpg"
               />
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
@@ -608,7 +607,7 @@
               <img
                 alt="Maridho Anike Putri"
                 class="w-full h-full object-cover"
-                src="images/cahya.jpg"
+                src="images/woman.jpg"
               />
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
@@ -630,7 +629,7 @@
               <img
                 alt="Candra Febriyanto"
                 class="w-full h-full object-cover"
-                src="images/izul.jpg"
+                src="images/man.jpg"
               />
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"

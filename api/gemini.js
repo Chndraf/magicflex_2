@@ -43,15 +43,27 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data;
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch (parseError) {
+      console.error('Gemini returned a non-JSON response:', response.status);
+      return res.status(502).json({
+        error: 'Gemini API mengembalikan respons tidak valid. Periksa Vercel Function Logs.'
+      });
+    }
+
     if (!response.ok) {
+      console.error('Gemini API request failed:', response.status, data.error?.message);
       return res.status(response.status).json({
-        error: data.error?.message || 'Gagal memproses request ke Gemini API.'
+        error: data.error?.message || `Gemini API gagal diproses (HTTP ${response.status}).`
       });
     }
 
     return res.status(200).json(data);
   } catch (error) {
+    console.error('Gemini serverless function failed:', error);
     return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 }
