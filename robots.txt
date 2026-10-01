@@ -1,0 +1,16 @@
+# Robots.txt untuk MagicFlex
+# https://magicflex.vercel.app
+
+User-agent: *
+Allow: /
+Allow: /game.html
+Allow: /js/
+Allow: /css/
+Allow: /images/
+Allow: /api/
+
+# Sitemap
+Sitemap: https://magicflex.vercel.app/sitemap.xml
+
+# Allow all robots to access the site
+Disallow: 

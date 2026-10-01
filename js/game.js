@@ -258,19 +258,16 @@ var game = {
   },
 
   /**
-   * Hapus cache sesi siswa agar kunjungan game berikutnya selalu meminta nama dan nomor absen baru.
+   * Hapus cache sesi siswa KECUALI level, answers, solved, dan levelRunCounts.
+   * Data progress tetap disimpan ketika siswa meninggalkan permainan.
    * Preferensi bahasa sengaja tidak dihapus.
    */
   clearStudentSession: function () {
     [
       "playerName",
       "playerAbsence",
-      "level",
-      "answers",
-      "solved",
       "timeLeft",
       "gameStartTime",
-      "levelRunCounts",
     ].forEach(function (key) {
       localStorage.removeItem(key);
     });
