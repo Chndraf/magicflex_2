@@ -35,9 +35,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt text is required.' });
     }
 
-    // Use gemini-1.5-flash - stable and widely available
+    // Use gemini-1.0-pro-latest - most stable and universally available
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-latest:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
