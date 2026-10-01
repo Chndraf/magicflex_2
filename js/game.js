@@ -768,7 +768,7 @@ var game = {
   },
 
   /**
-   * Request AI feedback through the Groq serverless endpoint.
+   * Request AI feedback through the Gemini serverless endpoint.
    */
   handleAIFeedbackRequest: async function(quizData) {
     const feedbackContent = document.getElementById('ai-feedback-content');
@@ -779,7 +779,7 @@ var game = {
     const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
-      const serverlessResponse = await fetch('/api/groq', {
+      const serverlessResponse = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: promptText })
