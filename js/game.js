@@ -768,6 +768,7 @@ var game = {
   },
 
   /**
+  /**
    * Request AI feedback through the Gemini serverless endpoint.
    */
   handleAIFeedbackRequest: async function(quizData) {
