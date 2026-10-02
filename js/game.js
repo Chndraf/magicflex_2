@@ -25,7 +25,7 @@ var AlertHelper = {
   },
 };
 
-var GAME_DURATION_SECONDS = 30;
+var GAME_DURATION_SECONDS = 1800; // 30 minutes
 
 var game = {
   // ===========================================
