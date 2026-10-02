@@ -25,7 +25,7 @@ var AlertHelper = {
   },
 };
 
-var GAME_DURATION_SECONDS = 60;
+var GAME_DURATION_SECONDS = 30;
 
 var game = {
   // ===========================================
@@ -391,73 +391,6 @@ var game = {
   /**
    * Show player input popup
    */
-  // showInputPopup: function () {
-  //   const savedName = localStorage.getItem("playerName");
-  //   const savedAbsence = localStorage.getItem("playerAbsence");
-
-  //   if (!savedName || !savedAbsence) {
-  //     // Check if Swal is available
-  //     if (typeof Swal === "undefined") {
-  //       console.warn("SweetAlert2 is not loaded, using fallback");
-  //       const name = prompt("Enter your name:");
-  //       const absence = prompt("Enter your absence number:");
-  //       if (name && absence) {
-  //         localStorage.setItem("playerName", name);
-  //         localStorage.setItem("playerAbsence", absence);
-  //         location.reload();
-  //       }
-  //       return;
-  //     }
-
-  //     try {
-  //       Swal.fire({
-  //         title: "Welcome!",
-  //         html: `
-  //           <input id="nameInput" class="swal2-input" placeholder="Enter your name" value="${savedName || ""}">
-  //           <input id="absenceInput" class="swal2-input" placeholder="Enter your absence number" value="${savedAbsence || ""}">
-  //         `,
-  //         confirmButtonText: "Start Game",
-  //         focusConfirm: false,
-  //         allowOutsideClick: false,
-  //         customClass: {
-  //           confirmButton: "swal2-biru-btn",
-  //         },
-  //         preConfirm: () => {
-  //           const playerName = document.getElementById("nameInput").value;
-  //           const playerAbsence = document.getElementById("absenceInput").value;
-
-  //           if (!playerName || !playerAbsence) {
-  //             Swal.showValidationMessage(
-  //               "Name and absence number are required!",
-  //             );
-  //             return false;
-  //           }
-
-  //           localStorage.setItem("playerName", playerName);
-  //           localStorage.setItem("playerAbsence", playerAbsence);
-  //           location.reload();
-  //           return true;
-  //         },
-  //       }).then((result) => {
-  //         if (result.isConfirmed) {
-  //           this.initializeGame();
-  //         }
-  //       });
-  //     } catch (e) {
-  //       console.error("Error with SweetAlert2:", e);
-  //       const name = prompt("Enter your name:");
-  //       const absence = prompt("Enter your absence number:");
-  //       if (name && absence) {
-  //         localStorage.setItem("playerName", name);
-  //         localStorage.setItem("playerAbsence", absence);
-  //         location.reload();
-  //       }
-  //     }
-  //   } else {
-  //     this.initializeGame();
-  //   }
-  // },
-
   showInputPopup: function () {
     const savedName = localStorage.getItem("playerName");
     const savedAbsence = localStorage.getItem("playerAbsence");
@@ -569,182 +502,6 @@ var game = {
   },
 
   /**
-   * Show game results with SweetAlert2
-   */
-  // showResults: function () {
-  //   const playerName = localStorage.getItem("playerName") || "Unknown";
-  //   const playerAbsence = localStorage.getItem("playerAbsence") || "-";
-  //   const totalQuestions = levels.length;
-  //   const correctAnswers = this.solved.length;
-  //   const wrongAnswers = totalQuestions - correctAnswers;
-  //   const score = Math.round((correctAnswers / totalQuestions) * 100);
-
-  //   // Determine performance level and styling
-  //   let performanceLevel = "";
-  //   let performanceColor = "";
-  //   let performanceIcon = "";
-
-  //   if (score >= 90) {
-  //     performanceLevel = "Excellent!";
-  //     performanceColor = "#10b981";
-  //     performanceIcon = "🌟";
-  //   } else if (score >= 80) {
-  //     performanceLevel = "Very Good!";
-  //     performanceColor = "#3b82f6";
-  //     performanceIcon = "🎯";
-  //   } else if (score >= 70) {
-  //     performanceLevel = "Good!";
-  //     performanceColor = "#8b5cf6";
-  //     performanceIcon = "👍";
-  //   } else if (score >= 60) {
-  //     performanceLevel = "Fair";
-  //     performanceColor = "#f59e0b";
-  //     performanceIcon = "📈";
-  //   } else {
-  //     performanceLevel = "Keep Trying!";
-  //     performanceColor = "#ef4444";
-  //     performanceIcon = "💪";
-  //   }
-
-  //   // Check if Swal is available
-  //   if (typeof Swal === "undefined") {
-  //     console.warn("SweetAlert2 is not loaded for results, using fallback");
-  //     const resultText = `QUIZ RESULTS\n\nPlayer: ${playerName}\nAbsence: ${playerAbsence}\nScore: ${score}%\nCorrect: ${correctAnswers}/${totalQuestions}`;
-  //     alert(resultText);
-  //     this.saveResults(score);
-  //     return;
-  //   }
-  //   try {
-  //     const correctDetails =
-  //       this.solved.length > 0
-  //         ? `<div class="question-list correct-list">${this.solved
-  //             .map(
-  //               (q) =>
-  //                 `<div class="question-item correct-item">
-  //                 <span class="question-icon">✅</span>
-  //                 <span class="question-text">${q}</span>
-  //             </div>`,
-  //             )
-  //             .join("")}</div>`
-  //         : '<div class="empty-state">No correct answers</div>';
-
-  //     const wrongDetails =
-  //       totalQuestions > 0
-  //         ? `<div class="question-list wrong-list">${levels
-  //             .map((level) => level.name)
-  //             .filter((name) => !this.solved.includes(name))
-  //             .map(
-  //               (q) =>
-  //                 `<div class="question-item wrong-item">
-  //                     <span class="question-icon">❌</span>
-  //                     <span class="question-text">${q}</span>
-  //                 </div>`,
-  //             )
-  //             .join("")}</div>`
-  //         : '<div class="empty-state">All questions answered correctly!</div>';
-
-  //     Swal.fire({
-  //       title: `${performanceIcon} Quiz Results`,
-  //       html: `
-  //             <style>
-  //                 .performance-badge {
-  //                     background: linear-gradient(135deg, ${performanceColor}20, ${performanceColor}35);
-  //                     border: 2px solid ${performanceColor};
-  //                     border-radius: 25px;
-  //                     padding: 12px 20px;
-  //                     margin: 15px 0;
-  //                     text-align: center;
-  //                     font-weight: bold;
-  //                     color: ${performanceColor};
-  //                     font-size: 1.1em;
-  //                     text-shadow: 0 0 10px ${performanceColor}40;
-  //                     box-shadow: 0 0 20px ${performanceColor}15;
-  //                 }
-  //             </style>
-              
-  //             <div class="results-container">
-  //                 <div class="performance-badge">
-  //                     ${performanceLevel} Your score: ${score}%
-  //                 </div>
-                  
-  //                 <div class="player-info">
-  //                     <div class="player-row">
-  //                         <span class="player-label"> Player Name:</span>
-  //                         <span class="player-value">${playerName}</span>
-  //                     </div>
-  //                     <div class="player-row">
-  //                         <span class="player-label"> Absence Number:</span>
-  //                         <span class="player-value">${playerAbsence}</span>
-  //                     </div>
-  //                 </div>
-                  
-  //                 <div class="stats-grid">
-  //                     <div class="stat-card">
-  //                         <div class="stat-value score-value">${score}%</div>
-  //                         <div class="stat-label">Final Score</div>
-  //                     </div>
-  //                     <div class="stat-card">
-  //                         <div class="stat-value total-value">${totalQuestions}</div>
-  //                         <div class="stat-label">Total Questions</div>
-  //                     </div>
-  //                     <div class="stat-card">
-  //                         <div class="stat-value correct-value">${correctAnswers}</div>
-  //                         <div class="stat-label">Correct Answers</div>
-  //                     </div>
-  //                     <div class="stat-card">
-  //                         <div class="stat-value wrong-value">${wrongAnswers}</div>
-  //                         <div class="stat-label">Wrong Answers</div>
-  //                     </div>
-  //                 </div>
-                  
-  //                 <div class="section-divider"></div>
-                  
-  //                 <div class="section-title correct-title">✅ Correct Questions (${correctAnswers})</div>
-  //                 ${correctDetails}
-                  
-  //                 <div class="section-title wrong-title">❌ Wrong Questions (${wrongAnswers})</div>
-  //                 ${wrongDetails}
-  //             </div>
-  //         `,
-  //       showCancelButton: true,
-  //       focusConfirm: false,
-  //       allowOutsideClick: false,
-  //       confirmButtonText: "🔄 Play Again",
-  //       cancelButtonText: "📤 Share Results",
-  //       customClass: {
-  //         confirmButton: "swal2-krem-btn",
-  //         cancelButton: "swal2-biru-btn",
-  //         popup: "swal2-enhanced-popup",
-  //       },
-  //       preConfirm: () => this.resetGame(),
-  //     }).then((result) => {
-  //       if (result.isDismissed) {
-  //         this.shareResults({
-  //           playerName,
-  //           playerAbsence,
-  //           score,
-  //           totalQuestions,
-  //           correctAnswers,
-  //           wrongAnswers,
-  //           performanceLevel,
-  //           correctDetails: this.solved.join(", ") || "None",
-  //           wrongDetails:
-  //             levels
-  //               .map((level) => level.name)
-  //               .filter((name) => !this.solved.includes(name))
-  //               .join(", ") || "None",
-  //         });
-  //       }
-  //     });
-  //   } catch (e) {
-  //     console.error("Error showing results with SweetAlert2:", e);
-  //     const resultText = `QUIZ RESULTS\n\nPlayer: ${playerName}\nAbsence: ${playerAbsence}\nScore: ${score}%\nCorrect: ${correctAnswers}/${totalQuestions}`;
-  //     alert(resultText);
-  //     this.saveResults(score);
-  //   }
-  // },
-
-/**
    * Show game results with SweetAlert2
    */
   showResults: function () {
@@ -1520,57 +1277,6 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
    * Bind game-specific events
    */
   bindGameEvents: function () {
-    // Next button (Cast Spell)
-    // $("#next").on("click", function () {
-    //   $("#code").focus();
-
-    //   if ($(this).hasClass("disabled")) {
-    //     if (!$(".frog").hasClass("animated")) {
-    //       game.tryagain();
-    //     }
-    //     return;
-    //   }
-
-    //   $(this).removeClass("animated animation");
-    //   $(".frog").addClass("animated bounceOutUp");
-    //   $(".arrow, #next").addClass("disabled");
-
-    //   setTimeout(function () {
-    //     if (game.level >= levels.length - 1) {
-    //       game.endGame();
-    //     } else {
-    //       game.next();
-    //     }
-    //   }, 2000);
-    // });
-
-    // // Next Level / Finish button
-    // $("#nextLevelBtn").on("click", function () {
-    //   game.saveAnswer();
-    //   if (game.level >= levels.length - 1) {
-    //     game.endGame();
-    //   } else {
-    //     game.next();
-    //     game.generateProgressDots();
-    //   }
-    // });
-
-    // // Code input events
-    // $("#code")
-    //   .on("keydown", this.handleCodeKeydown.bind(this))
-    //   .on("input", this.debounce(this.check.bind(this), 500))
-    //   .on("input", function () {
-    //     game.changed = true;
-    //     $("#next").removeClass("animated animation").addClass("disabled");
-    //   });
-
-    // // Animation end event
-    // $("#editor").on(
-    //   "webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
-    //   function () {
-    //     $(this).removeClass();
-    //   },
-    // );
     // Tombol Cast Spell (Dihitung sebagai uji coba, menguji visual CSS, dan mencatat data pengujian ke spreadsheet)
     $("#next").off("click").on("click", async function () {
       $("#code").focus();
@@ -1648,11 +1354,8 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
     // Code input events
     $("#code")
       .on("keydown", this.handleCodeKeydown.bind(this))
-      // PENYEBAB AUTO-RUN DIHAPUS DARI SINI
-      // (Sebelumnya ada baris: .on("input", this.debounce(this.check.bind(this), 500))
       .on("input", function () {
         game.changed = true;
-        // Pastikan tombol "Cast Spell" selalu bisa diklik setelah mengetik
         $("#next").removeClass("animated animation disabled");
       });
 
@@ -1767,71 +1470,6 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
     this.saveAnswer();
   },
 
-  // /**
-  //  * Check if current solution is correct
-  //  */
-  // check: async function () {
-  //   if (!document.startViewTransition) {
-  //     this.applyStyles();
-  //     this.compare();
-  //     return;
-  //   }
-
-  //   const transition = document.startViewTransition(() => this.applyStyles());
-  //   try {
-  //     await transition.finished;
-  //   } finally {
-  //     this.compare();
-  //   }
-  // },
-
-  // /**
-  //  * Compare frog and lilypad positions
-  //  */
-  // compare: function () {
-  //   const level = levels[this.level];
-  //   const lilypads = {};
-  //   const frogs = {};
-  //   let correct = true;
-
-  //   // Get frog positions
-  //   $(".frog").each(function () {
-  //     const position = $(this).position();
-  //     position.top = Math.floor(position.top);
-  //     position.left = Math.floor(position.left);
-
-  //     const key = JSON.stringify(position);
-  //     const val = $(this).data("color");
-  //     frogs[key] = val;
-  //   });
-
-  //   // Check if frogs match lilypads
-  //   $(".lilypad").each(function () {
-  //     const position = $(this).position();
-  //     position.top = Math.floor(position.top);
-  //     position.left = Math.floor(position.left);
-
-  //     const key = JSON.stringify(position);
-  //     const val = $(this).data("color");
-
-  //     if (!(key in frogs) || frogs[key] !== val) {
-  //       correct = false;
-  //     }
-  //   });
-
-  //   // Update UI based on correctness
-  //   if (correct) {
-  //     if ($.inArray(level.name, this.solved) === -1) {
-  //       this.solved.push(level.name);
-  //     }
-  //     $("[data-level=" + this.level + "]").addClass("solved");
-  //     $("#next").removeClass("disabled").addClass("animated animation");
-  //   } else {
-  //     this.changed = true;
-  //     $("#next").removeClass("animated animation").addClass("disabled");
-  //   }
-  // },
-
   /**
    * Check if current solution is correct and apply visual styles
    */
@@ -1853,51 +1491,6 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
   /**
    * Compare frog and lilypad positions
    */
-  // compare: function () {
-  //   const level = levels[this.level];
-  //   const lilypads = {};
-  //   const frogs = {};
-  //   let correct = true;
-
-  //   $(".frog").each(function () {
-  //     const position = $(this).position();
-  //     position.top = Math.floor(position.top);
-  //     position.left = Math.floor(position.left);
-  //     frogs[JSON.stringify(position)] = $(this).data("color");
-  //   });
-
-  //   $(".lilypad").each(function () {
-  //     const position = $(this).position();
-  //     position.top = Math.floor(position.top);
-  //     position.left = Math.floor(position.left);
-  //     const key = JSON.stringify(position);
-  //     const val = $(this).data("color");
-
-  //     if (!(key in frogs) || frogs[key] !== val) {
-  //       correct = false;
-  //     }
-  //   });
-
-  //   if (correct) {
-  //     if ($.inArray(level.name, this.solved) === -1) {
-  //       this.solved.push(level.name);
-  //     }
-  //     $("[data-level=" + this.level + "]").addClass("solved");
-  //     $("#next").removeClass("disabled").addClass("animated animation");
-  //   } else {
-  //     // Menghapus dari daftar 'solved' jika jawaban diubah menjadi salah
-  //     const index = $.inArray(level.name, this.solved);
-  //     if (index !== -1) {
-  //       this.solved.splice(index, 1);
-  //       $("[data-level=" + this.level + "]").removeClass("solved");
-  //     }
-  //     this.changed = true;
-  //     $("#next").removeClass("animated animation").addClass("disabled");
-  //   }
-
-  //   // 2. LANGSUNG REKAM/UPDATE KE SPREADSHEET
-  //   this.liveSyncData();
-  // },
   compare: function () {
     const level = levels[this.level];
     const lilypads = {};
@@ -2129,7 +1722,7 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
       errorHtml += '</div>';
     }
     // Container untuk AI Hint - langsung ditampilkan (tidak hidden)
-    errorHtml += '<div style="margin-top:16px;padding:12px;background:rgba(59,130,246,0.08);border-left:4px solid #3b82f6;border-radius:4px;"><div style="font-size:0.9em;color:#3b82f6;font-weight:bold;margin-bottom:8px;">💡 ' + t("requestingAiHint", game.language) + '</div><div id="ai-hint-content" style="font-size:0.9em;color:#334155;line-height:1.6;"></div></div>';
+    errorHtml += '<div style="margin-top:16px;padding:12px;background:rgba(59,130,246,0.08);border-left:4px solid #3b82f6;border-radius:4px;"><div style="font-size:0.9em;color:#3b82f6;font-weight:bold;margin-bottom:8px;">' + t("requestingAiHint", game.language) + '</div><div id="ai-hint-content" style="font-size:0.9em;color:#334155;line-height:1.6;"></div></div>';
     errorHtml += '</div>';
 
     Swal.fire({
