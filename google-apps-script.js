@@ -12,7 +12,7 @@
  * =========================================================================================
  */
 
-var GAME_DURATION_SECONDS = 60;
+var GAME_DURATION_SECONDS = 1800; // 30 minutes
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
