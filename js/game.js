@@ -1470,7 +1470,11 @@ var game = {
   bindWindowEvents: function () {
     $(window)
       .on("pagehide", function () {
-        game.saveAndClearSession();
+        // Hanya simpan data jika permainan BELUM selesai
+        // Jika sudah selesai, biarkan siswa keluar tanpa penanda
+        if (!game.isGameCompleted) {
+          game.saveAndClearSession();
+        }
       })
       .on("hashchange", function () {
         var languageFromHash = window.location.hash.substring(1);
