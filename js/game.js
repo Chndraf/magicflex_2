@@ -196,6 +196,11 @@ var game = {
       return;
     }
 
+    // Jika permainan sudah selesai, jangan trigger timeout
+    if (this.isGameCompleted) {
+      return;
+    }
+
     // Jika siswa menutup website saat bermain dan kembali setelah batas waktu:
     // Reset permainan dan simpan data dengan penanda meninggalkan permainan.
     if (this.gameStartTime && Date.now() - this.gameStartTime > GAME_DURATION_SECONDS * 1000) {
