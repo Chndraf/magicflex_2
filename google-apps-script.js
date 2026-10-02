@@ -5,8 +5,8 @@
  * Pasang skrip ini di Extensions > Apps Script pada Google Spreadsheet Anda.
  *
  * LOGIKA:
- * - Waktu habis (1 menit untuk pengujian) saat siswa AKTIF mengerjakan → data TETAP tersimpan.
- * - Siswa MENUTUP/MENINGGALKAN website lalu buka lagi setelah > 1 menit → data DIHAPUS.
+ * - Waktu habis (30 menit) saat siswa AKTIF mengerjakan → data TETAP tersimpan.
+ * - Siswa MENUTUP/MENINGGALKAN website lalu buka lagi setelah > 30 menit → data DIHAPUS.
  *   (Frontend mengirim action: "delete" ketika mendeteksi skenario ini)
  * - Jika ada bug dan waktu yang dikirim melebihi batas → data DIHAPUS sebagai proteksi.
  * =========================================================================================
@@ -52,7 +52,7 @@ function doPost(e) {
 
     // 2. PROTEKSI BUG: Jika waktu pengerjaan yang dikirim melebihi batas permainan
     if (isOverGameDuration(waktuPengerjaan)) {
-      return ContentService.createTextOutput("Data ditolak: waktu melebihi batas 1 menit.")
+      return ContentService.createTextOutput("Data ditolak: waktu melebihi batas 30 menit.")
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
