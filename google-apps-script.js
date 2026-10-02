@@ -29,6 +29,7 @@ function doPost(e) {
     var absen = normalizeAbsence(params.absen);
     var skor = params.skor || 0;
     var waktuPengerjaan = params.waktuPengerjaan || "N/A";
+    var sessionId = params.sessionId || "";  // Session ID dari frontend
     var detailJawaban = [];
 
     if (params.detailJawaban) {
@@ -51,67 +52,33 @@ function doPost(e) {
 
     // 2. PROTEKSI BUG: Jika waktu pengerjaan yang dikirim melebihi batas permainan
     if (isOverGameDuration(waktuPengerjaan)) {
-      deleteRowByNamaAbsen(sheet, nama, absen);
-      return ContentService.createTextOutput("Data dihapus: bug terdeteksi, waktu melebihi batas 1 menit.")
+      return ContentService.createTextOutput("Data ditolak: waktu melebihi batas 1 menit.")
         .setMimeType(ContentService.MimeType.TEXT);
     }
 
-    // 3. Cari baris siswa berdasarkan Nama, No Absen, Tanggal, dan Status Meninggalkan
+    // 3. Cari baris dengan sessionId yang sama (update sesi yang sedang berjalan)
     var rowIndex = -1;
-    var today = new Date();
-    var todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     
-    for (var i = 1; i < data.length; i++) {
-      var namaMatch = String(data[i][1]).trim().toLowerCase() === nama.toLowerCase();
-      var absenMatch = normalizeAbsence(data[i][2]) === absen;
-      
-      if (namaMatch && absenMatch) {
-        // Periksa tanggal submission
-        var existingDate = data[i][0];
-        if (existingDate instanceof Date) {
-          var existingDateOnly = new Date(existingDate.getFullYear(), existingDate.getMonth(), existingDate.getDate());
-          
-          // Jika tanggal berbeda, skip baris ini dan buat baris baru
-          if (existingDateOnly.getTime() !== todayDateOnly.getTime()) {
-            continue;
-          }
-          
-          // Jika tanggal sama, periksa apakah ada penanda "siswa meninggalkan permainan"
-          var existingWaktu = String(data[i][4] || "");
-          if (existingWaktu.indexOf("siswa meninggalkan permainan") !== -1) {
-            // Jika ada penanda meninggalkan, skip baris ini dan buat baris baru
-            continue;
-          }
-          
-          // Jika tanggal sama, periksa waktu pengerjaan
-          var existingSeconds = parseWaktuToSeconds(existingWaktu);
-          
-          // Jika waktu pengerjaan >= batas maksimal, skip baris ini dan buat baris baru
-          if (existingSeconds >= GAME_DURATION_SECONDS) {
-            continue;
-          }
-          
-          // Jika skor sebelumnya sudah 100, skip baris ini dan buat baris baru
-          var existingScore = parseInt(data[i][3]) || 0;
-          if (existingScore === 100) {
-            continue;
-          }
-          
-          // Jika lolos semua pengecekan, update baris ini
+    if (sessionId) {
+      // Cari baris dengan sessionId yang sama
+      for (var i = 1; i < data.length; i++) {
+        var existingSessionId = String(data[i][30] || "");  // Kolom 31 (index 30) untuk sessionId
+        if (existingSessionId === sessionId) {
           rowIndex = i + 1;
           break;
         }
       }
     }
 
-    // 4. Jika belum ada atau tidak memenuhi kriteria update, buat baris baru
+    // 4. Jika tidak ketemu (sesi baru), buat baris baru
     if (rowIndex === -1) {
       rowIndex = sheet.getLastRow() + 1;
       sheet.getRange(rowIndex, 1, 1, 5).setValues([[new Date(), nama, absen, skor, waktuPengerjaan]]);
+      // Simpan sessionId di kolom 31 (hidden column untuk internal tracking)
+      sheet.getRange(rowIndex, 31).setValue(sessionId);
     } else {
-      sheet.getRange(rowIndex, 1).setValue(new Date());
-      sheet.getRange(rowIndex, 4).setValue(skor);
-      sheet.getRange(rowIndex, 5).setValue(waktuPengerjaan);
+      // Update baris yang sudah ada (sesi yang sama) dalam satu batch
+      sheet.getRange(rowIndex, 1, 1, 5).setValues([[new Date(), nama, absen, skor, waktuPengerjaan]]);
     }
     
     // 5. Jika ada penanda "siswa meninggalkan permainan", set warna merah pada kolom waktu

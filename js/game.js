@@ -34,7 +34,7 @@ var game = {
 
   // Game state
   googleScriptUrl:
-    "https://script.google.com/macros/s/AKfycbxpS8_NnOI3DVi--df7J3ffVxem0S6vQTmcQoJ6ogtSmnYc3bkADZPg6d_foSDWbGpwDQ/exec",
+    "https://script.google.com/macros/s/AKfycby4JH5frZEbguXReBxASzhwF3oEb-j3_3YLzXFbMwPw2uvi4dDZOAbwF_88X3paQL7J_Q/exec",
   language: ["id", "en"].includes(window.location.hash.substring(1))
     ? window.location.hash.substring(1)
     : localStorage.getItem("language") || "id",
@@ -44,6 +44,9 @@ var game = {
   changed: false,
   clickedCode: null,
   levelRunCounts: (localStorage.levelRunCounts && JSON.parse(localStorage.levelRunCounts)) || {},
+  isGameCompleted: (localStorage.getItem("isGameCompleted") === "true") || false,
+  isDataSubmitted: false,  // Flag untuk mencegah double submission
+  sessionId: localStorage.getItem("sessionId") || null,  // Session ID untuk membedakan sesi permainan
 
   // Time tracking
   gameStartTime: localStorage.getItem("gameStartTime")
@@ -261,6 +264,7 @@ var game = {
    * Hapus cache sesi siswa KECUALI level, answers, solved, dan levelRunCounts.
    * Data progress tetap disimpan ketika siswa meninggalkan permainan.
    * Preferensi bahasa sengaja tidak dihapus.
+   * Session ID tetap dipertahankan sampai permainan benar-benar selesai.
    */
   clearStudentSession: function () {
     [
@@ -271,18 +275,46 @@ var game = {
     ].forEach(function (key) {
       localStorage.removeItem(key);
     });
+    // JANGAN hapus sessionId di sini, biarkan tetap ada sampai game benar-benar selesai
   },
 
   /**
-   * Simpan data terakhir ke Spreadsheet dengan penanda "siswa meninggalkan permainan", lalu bersihkan cache sesi lokal.
+   * Simpan data terakhir ke Spreadsheet.
+   * - Jika permainan sudah selesai (100% solved atau waktu habis): simpan tanpa penanda meninggalkan
+   * - Jika permainan belum selesai: simpan dengan penanda "siswa meninggalkan permainan"
    */
   saveAndClearSession: function () {
+    // Jika data sudah disimpan (duplikasi dicegah), jangan simpan lagi
+    if (this.isDataSubmitted) return;
+    
+    // Jika permainan sudah selesai, jangan simpan lagi saat page hide/refresh
+    if (this.isGameCompleted) return;
+    
     if (this.isLeavingGame) return;
     this.isLeavingGame = true;
 
-    this.saveAnswer();
-    this.liveSyncData(true, true); // Pass flag untuk menandai siswa meninggalkan permainan
-    this.clearStudentSession();
+    // Cek apakah permainan sudah selesai (100% solved atau waktu habis)
+    const totalLevels = levels.length;
+    const solvedCount = this.solved.length;
+    const isGameCompleted = solvedCount >= totalLevels || this.timeLeft <= 0;
+
+    if (isGameCompleted) {
+      // Tandai permainan sebagai selesai dan data sebagai sudah disimpan
+      this.isGameCompleted = true;
+      this.isDataSubmitted = true;
+      localStorage.setItem("isGameCompleted", "true");
+      localStorage.setItem("isDataSubmitted", "true");
+      
+      // Simpan tanpa penanda meninggalkan permainan
+      this.saveAnswer();
+      this.liveSyncData(true, false); // false = tidak meninggalkan
+      this.clearStudentSession();
+    } else {
+      // Simpan dengan penanda "siswa meninggalkan permainan"
+      this.saveAnswer();
+      this.liveSyncData(true, true); // true = meninggalkan permainan
+      this.clearStudentSession();
+    }
   },
 
   /**
@@ -294,9 +326,21 @@ var game = {
     this.answers = {};
     this.solved = [];
     
-    // Tambahkan dua baris ini untuk mereset riwayat percobaan
+    // Reset riwayat percobaan
     this.levelRunCounts = {};
     localStorage.removeItem("levelRunCounts");
+    
+    // Reset status permainan selesai
+    this.isGameCompleted = false;
+    localStorage.removeItem("isGameCompleted");
+    
+    // Reset flag submission
+    this.isDataSubmitted = false;
+    localStorage.removeItem("isDataSubmitted");
+    
+    // Reset session ID - akan dibuat session baru
+    this.sessionId = null;
+    localStorage.removeItem("sessionId");
 
     this.loadLevel(levels[0]);
     this.clearStudentSession();
@@ -382,6 +426,26 @@ var game = {
     const savedAbsence = localStorage.getItem("playerAbsence");
 
     if (!savedName || !savedAbsence) {
+      // Clear ALL game data in memory and localStorage when starting fresh (new player)
+      this.level = 0;
+      this.answers = {};
+      this.solved = [];
+      this.levelRunCounts = {};
+      this.isGameCompleted = false;
+      this.isDataSubmitted = false;
+
+      localStorage.removeItem("level");
+      localStorage.removeItem("answers");
+      localStorage.removeItem("solved");
+      localStorage.removeItem("levelRunCounts");
+      localStorage.removeItem("isGameCompleted");
+      localStorage.removeItem("isDataSubmitted");
+      
+      // Generate new session ID for this game session
+      const newSessionId = Date.now() + "-" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("sessionId", newSessionId);
+      this.sessionId = newSessionId;
+
       if (typeof Swal === "undefined") {
         const name = prompt(t("namePrompt", game.language));
         const absence = prompt(t("absencePrompt", game.language));
@@ -858,6 +922,7 @@ var game = {
     formData.append("skor", quizData.score);
     formData.append("waktuPengerjaan", quizData.waktuPengerjaan || "N/A");
     formData.append("detailJawaban", JSON.stringify(detailJawaban));
+    formData.append("sessionId", this.sessionId || "");  // Tambahkan sessionId di autoSaveData
 
     fetch(this.googleScriptUrl, {
       method: "POST",
@@ -865,6 +930,8 @@ var game = {
       body: formData,
     }).then(() => {
       console.log("Data berhasil terkirim otomatis ke Spreadsheet");
+      this.isDataSubmitted = true;
+      localStorage.setItem("isDataSubmitted", "true");
     }).catch((error) => {
       console.error("Gagal mengirim data:", error);
     });
@@ -1666,6 +1733,7 @@ var game = {
     formData.append("skor", score);
     formData.append("waktuPengerjaan", waktuPengerjaan);
     formData.append("detailJawaban", JSON.stringify(detailJawaban));
+    formData.append("sessionId", this.sessionId || "");  // Tambahkan session ID
 
     fetch(this.googleScriptUrl, {
       method: "POST",
