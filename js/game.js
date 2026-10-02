@@ -1728,7 +1728,6 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
     Swal.fire({
       icon: "error",
       title: t("incorrectTitle", game.language),
-      html: errorHtml,
       confirmButtonText: "OK, Saya Perbaiki",
       customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       width: 500,
