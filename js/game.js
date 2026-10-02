@@ -533,6 +533,24 @@ var game = {
             this.generateProgressDots();
           }
         });
+        
+        // Add Enter key listener to input fields
+        setTimeout(() => {
+          const nameInput = document.getElementById("nameInput");
+          const absenceInput = document.getElementById("absenceInput");
+          
+          if (nameInput && absenceInput) {
+            const handleEnter = (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                document.querySelector('.swal2-confirm').click();
+              }
+            };
+            
+            nameInput.addEventListener("keydown", handleEnter);
+            absenceInput.addEventListener("keydown", handleEnter);
+          }
+        }, 100);
       } catch (e) {
         const name = prompt(t("namePrompt", game.language));
         const absence = prompt(t("absencePrompt", game.language));
@@ -1712,28 +1730,11 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
    */
   handleCodeKeydown: function (e) {
     if (e.keyCode === 13) {
-      // Enter key
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        this.check();
-        $("#next").click();
-        return;
-      }
-
-      const max = $(e.target).data("lines");
-      const code = $(e.target).val();
-      const trim = code.trim();
-      const codeLength = code.split("\n").length;
-      const trimLength = trim.split("\n").length;
-
-      if (codeLength >= max) {
-        if (codeLength === trimLength) {
-          e.preventDefault();
-          // $("#next").click();
-        } else {
-          $("#code").focus().val("").val(trim);
-        }
-      }
+      // Enter key - jalankan sihir / soal berikutnya
+      e.preventDefault();
+      this.check();
+      $("#next").click();
+      return;
     }
   },
 
