@@ -994,8 +994,11 @@ var game = {
       body: formData,
     }).then(() => {
       console.log("Data berhasil terkirim otomatis ke Spreadsheet");
+      // Tandai permainan sebagai selesai dan data sudah disimpan
       this.isDataSubmitted = true;
+      this.isGameCompleted = true;
       localStorage.setItem("isDataSubmitted", "true");
+      localStorage.setItem("isGameCompleted", "true");
     }).catch((error) => {
       console.error("Gagal mengirim data:", error);
     });
