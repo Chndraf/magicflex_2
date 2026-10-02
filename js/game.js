@@ -199,8 +199,37 @@ var game = {
     // Reload isGameCompleted dari localStorage untuk memastikan state terbaru
     this.isGameCompleted = (localStorage.getItem("isGameCompleted") === "true");
 
-    // Jika permainan sudah selesai, jangan trigger timeout
+    // Jika permainan sudah selesai, tampilkan popup konfirmasi
     if (this.isGameCompleted) {
+      if (typeof Swal !== "undefined") {
+        Swal.fire({
+          icon: "success",
+          title: t("gameAlreadyCompleted", this.language),
+          text: t("gameAlreadyCompletedText", this.language),
+          showDenyButton: true,
+          confirmButtonText: t("playAgain", this.language),
+          denyButtonText: t("backToHome", this.language),
+          allowOutsideClick: false,
+          customClass: {
+            confirmButton: "swal2-krem-btn",
+            denyButton: "swal2-biru-btn",
+            popup: "swal2-enhanced-popup",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.resetGame();
+          } else if (result.isDenied) {
+            window.location.href = "index.html";
+          }
+        });
+      } else {
+        const choice = confirm(t("gameAlreadyCompletedText", this.language) + "\n\n" + t("playAgain", this.language) + "?");
+        if (choice) {
+          this.resetGame();
+        } else {
+          window.location.href = "index.html";
+        }
+      }
       return;
     }
 
