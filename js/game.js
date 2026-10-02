@@ -2126,13 +2126,18 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       denyButtonText: t("askForHint", game.language),
       customClass: { confirmButton: "swal2-biru-btn", denyButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       width: 500,
-    }).then((result) => {
-      if (result.isDenied) {
-        // Tampilkan AI hint container
-        var hintContent = document.getElementById('ai-hint-content');
-        if (hintContent) {
-          hintContent.style.display = 'block';
-          game.handleAIHintRequest();
+      didOpen: function(popup) {
+        // Setup event listener untuk deny button (hint button)
+        const denyBtn = popup.querySelector('.swal2-deny');
+        if (denyBtn) {
+          denyBtn.addEventListener('click', function() {
+            // Tampilkan AI hint container dan request hint
+            var hintContent = document.getElementById('ai-hint-content');
+            if (hintContent) {
+              hintContent.style.display = 'block';
+              game.handleAIHintRequest();
+            }
+          });
         }
       }
     });
