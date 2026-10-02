@@ -272,6 +272,10 @@ var game = {
     this.isAdvancing = false;
     this.level++;
     this.changed = false;
+    
+    // Simpan level ke localStorage
+    localStorage.setItem("level", this.level);
+    
     this.loadLevel(levels[this.level]);
     this.generateProgressDots();
     this.updateNextLevelBtn();
@@ -1300,8 +1304,8 @@ var game = {
    * Handle keydown events in code editor
    */
   handleCodeKeydown: function (e) {
-    if (e.keyCode === 13) {
-      // Enter key - jalankan sihir / soal berikutnya
+    // Ctrl+Enter atau Shift+Enter - jalankan sihir / soal berikutnya
+    if (e.keyCode === 13 && (e.ctrlKey || e.shiftKey)) {
       e.preventDefault();
       
       // Cek apakah sudah selesai (nextLevelBtn visible) atau masih perlu cast spell
@@ -1318,6 +1322,8 @@ var game = {
       
       return;
     }
+    
+    // Enter biasa - biarkan membuat newline (default behavior)
   },
 
   // ===========================================
@@ -1384,6 +1390,8 @@ var game = {
     if (correct) {
       if ($.inArray(level.name, this.solved) === -1) {
         this.solved.push(level.name);
+        // Simpan solved ke localStorage
+        localStorage.setItem("solved", JSON.stringify(this.solved));
       }
       $("[data-level=" + this.level + "]").addClass("solved");
       $("#next").removeClass("disabled").addClass("animated animation");
@@ -1391,6 +1399,8 @@ var game = {
       const index = $.inArray(level.name, this.solved);
       if (index !== -1) {
         this.solved.splice(index, 1);
+        // Update solved di localStorage
+        localStorage.setItem("solved", JSON.stringify(this.solved));
         $("[data-level=" + this.level + "]").removeClass("solved");
       }
       $("#next").removeClass("animated animation").addClass("disabled");
