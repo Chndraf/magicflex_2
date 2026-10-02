@@ -196,6 +196,9 @@ var game = {
       return;
     }
 
+    // Reload isGameCompleted dari localStorage untuk memastikan state terbaru
+    this.isGameCompleted = (localStorage.getItem("isGameCompleted") === "true");
+
     // Jika permainan sudah selesai, jangan trigger timeout
     if (this.isGameCompleted) {
       return;
