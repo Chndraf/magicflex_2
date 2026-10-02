@@ -1026,24 +1026,27 @@ var game = {
       return;
     }
 
-    const hintPrompt = `Student sedang belajar CSS Flexbox dan mengerjakan soal: "${level.description}". 
+    const hintPrompt = `Siswa belajar CSS Flexbox. Soal: "${level.description}"
 
-Kode CSS yang ditulis:
+Kode siswa:
 \`\`\`css
 ${userCode}
 \`\`\`
 
-Properti CSS yang diharapkan: ${level.style}
+Jawaban yang diharapkan: ${JSON.stringify(level.style)}
 
-Berikan PETUNJUK SINGKAT untuk membantu siswa TANPA memberikan jawaban langsung. Petunjuk harus:
-1. Mengarahkan siswa ke arah yang benar
-2. Jangan berikan jawaban langsung (jangan tulis kode CSS yang benar)
-3. Gunakan 2-3 kalimat saja
-4. Dalam bahasa Indonesia
-5. Bersifat mendorong dan positif
+Berikan petunjuk SANGAT SINGKAT (1 kalimat pendek, maksimal 15 kata) yang LANGSUNG menunjukkan kesalahan spesifik. Format: "Cek [bagian yang salah], kamu [kesalahan spesifik]"
 
-Contoh petunjuk BAIK: "Perhatikan apa yang diminta pada instruksi. Coba periksa nilai properti yang kamu gunakan, apakah sudah sesuai dengan apa yang diharapkan?"
-Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!)`;
+Contoh BAIK:
+- "Cek penulisan kode kamu, kamu lupa tanda ';' di akhir"
+- "Cek nilai properti, seharusnya pakai 'center' bukan 'middle'"
+- "Cek nama properti, kamu salah ketik 'justfy-content'"
+- "Cek kode kamu, properti 'align-items' belum ditambahkan"
+
+Contoh BURUK (terlalu panjang, tidak spesifik):
+- "Perhatikan apa yang diminta pada instruksi. Coba periksa nilai properti yang kamu gunakan, apakah sudah sesuai dengan apa yang diharapkan?"
+
+JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kesalahannya.`;
 
     try {
       const serverlessResponse = await fetch('/api/groq', {
