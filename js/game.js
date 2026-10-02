@@ -2113,8 +2113,8 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       errorHtml += '<div style="font-size:0.85em;color:#94a3b8;">' + t("tryAdding", game.language) + ' ' + hints.join(", ") + '</div>';
       errorHtml += '</div>';
     }
-    // Container untuk AI Hint
-    errorHtml += '<div id="ai-hint-content" style="margin-top:12px;display:none;"></div>';
+    // Container untuk AI Hint - langsung ditampilkan (tidak hidden)
+    errorHtml += '<div style="margin-top:16px;padding:12px;background:rgba(59,130,246,0.08);border-left:4px solid #3b82f6;border-radius:4px;"><div style="font-size:0.9em;color:#3b82f6;font-weight:bold;margin-bottom:8px;">💡 ' + t("requestingAiHint", game.language) + '</div><div id="ai-hint-content" style="font-size:0.9em;color:#334155;line-height:1.6;"></div></div>';
     errorHtml += '</div>';
 
     Swal.fire({
@@ -2122,23 +2122,11 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       title: t("incorrectTitle", game.language),
       html: errorHtml,
       confirmButtonText: "OK, Saya Perbaiki",
-      showDenyButton: true,
-      denyButtonText: t("askForHint", game.language),
-      customClass: { confirmButton: "swal2-biru-btn", denyButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
+      customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       width: 500,
       didOpen: function(popup) {
-        // Setup event listener untuk deny button (hint button)
-        const denyBtn = popup.querySelector('.swal2-deny');
-        if (denyBtn) {
-          denyBtn.addEventListener('click', function() {
-            // Tampilkan AI hint container dan request hint
-            var hintContent = document.getElementById('ai-hint-content');
-            if (hintContent) {
-              hintContent.style.display = 'block';
-              game.handleAIHintRequest();
-            }
-          });
-        }
+        // Request AI hint otomatis saat error notification muncul
+        game.handleAIHintRequest();
       }
     });
   },
