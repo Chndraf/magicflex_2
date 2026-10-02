@@ -2100,7 +2100,7 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       errorMessages.push(t("incorrectDefault", game.language));
     }
 
-    var errorHtml = '<div style="text-align:left;max-height:300px;overflow-y:auto;">';
+    var errorHtml = '<div style="text-align:left;max-height:400px;overflow-y:auto;">';
     errorHtml += '<div style="font-size:0.9em;color:#cbd5e1;margin-bottom:12px;">' + t("issuesFound", game.language) + ' <strong style="color:#f87171;">' + errorMessages.length + '</strong> ' + t("issuesSuffix", game.language) + '</div>';
     errorHtml += '<ul style="list-style:none;padding:0;margin:0;">';
     for (var mi = 0; mi < errorMessages.length; mi++) {
@@ -2113,6 +2113,8 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       errorHtml += '<div style="font-size:0.85em;color:#94a3b8;">' + t("tryAdding", game.language) + ' ' + hints.join(", ") + '</div>';
       errorHtml += '</div>';
     }
+    // Container untuk AI Hint
+    errorHtml += '<div id="ai-hint-content" style="margin-top:12px;display:none;"></div>';
     errorHtml += '</div>';
 
     Swal.fire({
@@ -2120,8 +2122,19 @@ Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!
       title: t("incorrectTitle", game.language),
       html: errorHtml,
       confirmButtonText: "OK, Saya Perbaiki",
-      customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
+      showDenyButton: true,
+      denyButtonText: t("askForHint", game.language),
+      customClass: { confirmButton: "swal2-biru-btn", denyButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
       width: 500,
+    }).then((result) => {
+      if (result.isDenied) {
+        // Tampilkan AI hint container
+        var hintContent = document.getElementById('ai-hint-content');
+        if (hintContent) {
+          hintContent.style.display = 'block';
+          game.handleAIHintRequest();
+        }
+      }
     });
   },
 
