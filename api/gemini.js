@@ -35,9 +35,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt text is required.' });
     }
 
-    // Use gemini-3.8-live - unlimited quota model with better performance
+    // Use gemini-3.8-flash - stable model with optimization for reduced API calls
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-live:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

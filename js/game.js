@@ -841,12 +841,25 @@ var game = {
 
   /**
   /**
-   * Request AI feedback through the Gemini serverless endpoint.
+   * Request AI feedback through the Gemini serverless endpoint with caching.
    */
   handleAIFeedbackRequest: async function(quizData) {
     const feedbackContent = document.getElementById('ai-feedback-content');
     if (feedbackContent) {
       feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
+    }
+
+    // Generate cache key based on score and performance level
+    const cacheKey = `ai_feedback_${quizData.score}_${quizData.performanceLevel}`;
+    
+    // Check if cached feedback exists (valid for 24 hours)
+    const cachedData = this.getAIFeedbackCache(cacheKey);
+    if (cachedData) {
+      console.log("Using cached AI feedback");
+      if (feedbackContent) {
+        feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${cachedData}</div>`;
+      }
+      return;
     }
 
     const promptText = t("aiPrompt", this.language)(quizData);
@@ -878,6 +891,9 @@ var game = {
       const oneParagraphText = aiText.replace(/\s*\n+\s*/g, " ").trim();
       const formattedText = oneParagraphText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       
+      // Cache the AI feedback for 24 hours
+      this.setAIFeedbackCache(cacheKey, formattedText);
+      
       if (feedbackContent) {
         feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${formattedText}</div>`;
       }
@@ -895,6 +911,46 @@ var game = {
           });
         }
       }
+    }
+  },
+
+  /**
+   * Get cached AI feedback if still valid (24 hours)
+   */
+  getAIFeedbackCache: function(cacheKey) {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
+      
+      const { feedback, timestamp } = JSON.parse(cached);
+      const now = Date.now();
+      const cacheAge = now - timestamp;
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+      
+      if (cacheAge < CACHE_DURATION) {
+        return feedback;
+      } else {
+        // Cache expired, remove it
+        localStorage.removeItem(cacheKey);
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /**
+   * Save AI feedback to cache with timestamp
+   */
+  setAIFeedbackCache: function(cacheKey, feedback) {
+    try {
+      const cacheData = {
+        feedback: feedback,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (e) {
+      console.warn("Failed to cache AI feedback:", e);
     }
   },
 
