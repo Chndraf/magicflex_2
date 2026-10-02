@@ -984,6 +984,138 @@ var game = {
   },
 
   /**
+   * Request AI hint when student answers incorrectly
+   */
+  handleAIHintRequest: async function() {
+    const hintContent = document.getElementById('ai-hint-content');
+    if (!hintContent) return;
+
+    hintContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("requestingAiHint", this.language) + '</div>';
+
+    const userCode = $("#code").val().trim();
+    const level = levels[this.level];
+    
+    // Generate cache key based on level and error
+    const cacheKey = `ai_hint_${level.name}_${userCode.substring(0, 50)}`;
+    
+    // Check if cached hint exists
+    const cachedHint = this.getAIHintCache(cacheKey);
+    if (cachedHint) {
+      console.log("Using cached AI hint");
+      if (hintContent) {
+        hintContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155; padding: 10px; background: #f0f9ff; border-left: 4px solid #3b82f6; border-radius: 4px;">💡 ${cachedHint}</div>`;
+      }
+      return;
+    }
+
+    const hintPrompt = `Student sedang belajar CSS Flexbox dan mengerjakan soal: "${level.description}". 
+
+Kode CSS yang ditulis:
+\`\`\`css
+${userCode}
+\`\`\`
+
+Properti CSS yang diharapkan: ${level.style}
+
+Berikan PETUNJUK SINGKAT untuk membantu siswa TANPA memberikan jawaban langsung. Petunjuk harus:
+1. Mengarahkan siswa ke arah yang benar
+2. Jangan berikan jawaban langsung (jangan tulis kode CSS yang benar)
+3. Gunakan 2-3 kalimat saja
+4. Dalam bahasa Indonesia
+5. Bersifat mendorong dan positif
+
+Contoh petunjuk BAIK: "Perhatikan apa yang diminta pada instruksi. Coba periksa nilai properti yang kamu gunakan, apakah sudah sesuai dengan apa yang diharapkan?"
+Contoh petunjuk BURUK: "Gunakan justify-content: center;" (ini jawaban langsung!)`;
+
+    try {
+      const serverlessResponse = await fetch('/api/groq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: hintPrompt })
+      });
+      const responseText = await serverlessResponse.text();
+      let result;
+
+      try {
+        result = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        throw new Error(t("aiInvalidServerResponse", this.language));
+      }
+
+      if (!serverlessResponse.ok) {
+        throw new Error(result.error || `${t("aiEndpointError", this.language)} (HTTP ${serverlessResponse.status})`);
+      }
+
+      const hintText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!hintText) {
+        throw new Error(t("aiEmptyResponse", this.language));
+      }
+
+      const formattedHint = hintText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      
+      // Cache the hint
+      this.setAIHintCache(cacheKey, formattedHint);
+      
+      if (hintContent) {
+        hintContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155; padding: 10px; background: #f0f9ff; border-left: 4px solid #3b82f6; border-radius: 4px;">💡 ${formattedHint}</div>`;
+      }
+    } catch (error) {
+      console.error("AI hint request failed:", error);
+      if (hintContent) {
+        hintContent.innerHTML = `
+          <div style="color: #ef4444; font-size: 0.9em; margin-bottom: 10px; padding: 10px; background: #fee2e2; border-radius: 8px;">❌ <strong>${t("aiErrorTitle", this.language)}</strong> ${error.message}</div>
+          <button id="btn-get-ai-hint-retry" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;">${t("tryAgain", this.language)}</button>
+        `;
+        const retryBtn = document.getElementById('btn-get-ai-hint-retry');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', () => {
+            this.handleAIHintRequest();
+          });
+        }
+      }
+    }
+  },
+
+  /**
+   * Get cached AI hint if still valid (24 hours)
+   */
+  getAIHintCache: function(cacheKey) {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (!cached) return null;
+      
+      const { hint, timestamp } = JSON.parse(cached);
+      const now = Date.now();
+      const cacheAge = now - timestamp;
+      const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+      
+      if (cacheAge < CACHE_DURATION) {
+        return hint;
+      } else {
+        localStorage.removeItem(cacheKey);
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /**
+   * Save AI hint to cache with timestamp
+   */
+  setAIHintCache: function(cacheKey, hint) {
+    try {
+      const cacheData = {
+        hint: hint,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    } catch (e) {
+      console.warn("Failed to cache AI hint:", e);
+    }
+  },
+
+  /**
    * Share results via WhatsApp only
    */
   shareResults: function (score) {
