@@ -35,9 +35,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt text is required.' });
     }
 
-    // Use gemini-1.0-pro - universally available on all Google AI Studio accounts
+    // Use gemini-3.8-flash - tested and working model
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
