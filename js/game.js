@@ -1735,8 +1735,19 @@ JANGAN berikan jawaban langsung! Hanya tunjukkan BAGIAN yang salah dan JENIS kes
     if (e.keyCode === 13) {
       // Enter key - jalankan sihir / soal berikutnya
       e.preventDefault();
-      this.check();
-      $("#next").click();
+      
+      // Cek apakah sudah selesai (nextLevelBtn visible) atau masih perlu cast spell
+      const nextLevelBtn = $("#nextLevelBtn");
+      const castSpellBtn = $("#next");
+      
+      if (nextLevelBtn.is(":visible") && !nextLevelBtn.hasClass("disabled")) {
+        // Jika button "Soal Berikutnya" tersedia dan tidak disabled, klik itu
+        nextLevelBtn.click();
+      } else if (!castSpellBtn.hasClass("disabled")) {
+        // Jika button "Jalankan Sihir" tidak disabled, klik itu
+        castSpellBtn.click();
+      }
+      
       return;
     }
   },
