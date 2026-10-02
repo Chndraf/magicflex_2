@@ -1,6 +1,7 @@
 /**
  * Vercel Serverless Function for Groq AI Feedback
  * Endpoint: /api/groq
+ * Model: openai/gpt-oss-120b
  */
 
 export default async function handler(req, res) {
@@ -41,11 +42,11 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gemma2-9b-it',
+        model: 'openai/gpt-oss-120b',
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful and friendly educational assistant. Provide brief, friendly, motivating, and practical feedback to help improve learning. Keep responses concise (1 paragraph max).'
+            content: 'You are a helpful and friendly educational assistant for CSS Flexbox learning. Provide brief, friendly, motivating, and practical feedback in 2-3 sentences. Keep responses concise and encouraging.'
           },
           {
             role: 'user',
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
           }
         ],
         temperature: 0.7,
-        max_tokens: 512
+        max_tokens: 300
       })
     });
 
@@ -62,7 +63,7 @@ export default async function handler(req, res) {
     try {
       data = responseText ? JSON.parse(responseText) : {};
     } catch (parseError) {
-      console.error('Groq API returned a non-JSON response:', response.status);
+      console.error('Groq returned a non-JSON response:', response.status);
       return res.status(502).json({
         error: 'Groq API mengembalikan respons tidak valid. Periksa Vercel Function Logs.'
       });
@@ -83,7 +84,14 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({ candidates: [{ content: { parts: [{ text: aiText }] } }] });
+    // Return in Gemini-compatible format for frontend compatibility
+    return res.status(200).json({ 
+      candidates: [{ 
+        content: { 
+          parts: [{ text: aiText }] 
+        } 
+      }] 
+    });
   } catch (error) {
     console.error('Groq serverless function failed:', error);
     return res.status(500).json({ error: error.message || 'Internal Server Error' });

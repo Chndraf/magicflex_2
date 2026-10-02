@@ -865,7 +865,7 @@ var game = {
     const promptText = t("aiPrompt", this.language)(quizData);
 
     try {
-      const serverlessResponse = await fetch('/api/gemini', {
+      const serverlessResponse = await fetch('/api/groq', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: promptText })
