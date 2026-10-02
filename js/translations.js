@@ -73,7 +73,7 @@ var translations = {
     durationFormat: "{minutes} menit {seconds} detik",
     timeoutTitle: "Sesi Berakhir!",
     timeoutText: '<p style="font-size:1em;">Waktu permainan telah mencapai batas <strong>30 menit</strong> karena halaman ditutup atau ditinggalkan.</p><p style="font-size:0.9em;color:#ef4444;margin-top:8px;">Data kamu tetap tersimpan dengan penanda <strong>"siswa meninggalkan permainan"</strong>.</p>',
-    timeoutFallback: "Sesi berakhir! Waktu permainan telah mencapai batas 1 menit. Data kamu tersimpan dengan penanda meninggalkan permainan.",
+    timeoutFallback: "Sesi berakhir! Waktu permainan telah mencapai batas 30 menit. Data kamu tersimpan dengan penanda meninggalkan permainan.",
     restart: "Mulai Ulang",
     cannotAdvanceTitle: "Belum Bisa Lanjut",
     cannotAdvanceText: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
