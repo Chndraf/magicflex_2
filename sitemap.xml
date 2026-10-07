@@ -3,7 +3,7 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://magicflex.my.id/</loc>
+    <loc>https://www.magicflex.my.id/</loc>
     <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
 
   <!-- Game Page -->
   <url>
-    <loc>https://magicflex.my.id/game</loc>
+    <loc>https://www.magicflex.my.id/game</loc>
     <lastmod>2026-10-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
