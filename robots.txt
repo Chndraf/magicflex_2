@@ -6,7 +6,7 @@ Allow: /
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://magicflex.my.id/sitemap.xml
+Sitemap: https://www.magicflex.my.id/sitemap.xml
 
 # Crawl-delay for all bots
 Crawl-delay: 1
