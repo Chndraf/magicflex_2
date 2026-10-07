@@ -87,6 +87,9 @@
     <!-- TopNav - Desktop -->
     <nav class="hidden lg:flex justify-between items-center px-margin-desktop py-2 w-full bg-surface dark:bg-surface border-b border-outline-variant shadow-md z-50">
       <div class="flex items-center gap-1">
+        <a href="index.html" class="flex items-center">
+          <span class="material-symbols-outlined text-secondary">arrow_back</span>
+        </a>
         <img src="images/logo.svg" alt="MagicFlex Logo" width="60" height="60" class="opacity-90 py-2" />
         <span class="font-headline-lg text-headline-lg font-bold text-secondary-container dark:text-secondary">MagicFlex</span>
       </div>
@@ -100,10 +103,10 @@
             <button type="button" class="language-button px-3 py-1 rounded-full text-sm font-semibold transition-colors" data-language="id">ID</button>
             <button type="button" class="language-button px-3 py-1 rounded-full text-sm font-semibold transition-colors" data-language="en">EN</button>
           </div>
-          <a href="index.html" class="flex items-center gap-2 bg-surface-bright/50 hover:bg-surface-variant hover:-translate-y-0.5 transition-all duration-300 px-4 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold">
-            <span class="material-symbols-outlined text-sm">home</span>
-            <span data-i18n="navHome">Kembali ke Beranda</span>
-          </a>
+          <button type="button" class="flex items-center gap-2 bg-surface-bright/50 hover:bg-surface-variant hover:-translate-y-0.5 transition-all duration-300 px-4 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold cursor-pointer" id="restartGameBtn">
+            <span class="material-symbols-outlined text-sm">replay</span>
+            <span data-i18n="restartGame">Mulai Permainan Baru</span>
+          </button>
         </div>
       </div>
     </nav>
@@ -124,12 +127,16 @@
           <span class="font-body-md text-on-surface font-bold text-xs timer-display" id="timer-mobile">30:00</span>
         </div>
       </div>
-      <!-- Second Row: Language Selector Centered -->
-      <div class="flex items-center justify-center">
+      <!-- Second Row: Language Selector + Restart Button -->
+      <div class="flex items-center justify-center gap-2">
         <div class="flex items-center glass-panel p-1 rounded-full border border-secondary-container/30" role="group" aria-label="Pilih bahasa" data-i18n-aria-label="languageLabel">
           <button type="button" class="language-button px-3 py-1 rounded-full text-xs font-semibold transition-colors" data-language="id">ID</button>
           <button type="button" class="language-button px-3 py-1 rounded-full text-xs font-semibold transition-colors" data-language="en">EN</button>
         </div>
+        <button type="button" class="flex items-center gap-1 bg-surface-bright/50 hover:bg-surface-variant transition-all px-3 py-1 rounded-full border border-outline-variant/30 text-xs font-semibold cursor-pointer" id="restartGameBtnMobile">
+          <span class="material-symbols-outlined text-xs">replay</span>
+          <span data-i18n="restartGame">Mulai Baru</span>
+        </button>
       </div>
     </nav>
 
@@ -169,7 +176,7 @@
           <div class="flex justify-between items-center mb-4 border-b border-outline-variant/50 pb-2">
             <span class="text-secondary font-bold text-sm tracking-widest uppercase" data-i18n="editorTitle">Editor Buku Sihir</span>
             <div class="flex items-center gap-3">
-              <button class="bg-surface-bright hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-lg font-bold transition-all text-xs border border-outline-variant/50" id="labelReset" data-i18n="reset">Atur Ulang</button>
+              <button class="bg-surface-bright hover:bg-surface-container-highest text-on-surface px-3 py-1.5 rounded-lg font-bold transition-all text-xs border border-outline-variant/50" id="clearCodeBtn" data-i18n="clearCode">Atur Ulang</button>
               <button class="bg-primary-container text-on-primary-container px-5 py-1.5 rounded-lg font-bold hover:bg-primary transition-all shadow-lg text-xs border border-primary/30" id="next" data-i18n="runCode">Jalankan Sihir</button>
             </div>
           </div>

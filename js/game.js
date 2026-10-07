@@ -1136,7 +1136,7 @@ var game = {
    * Lepaskan handler yang dapat terpasang ulang ketika game dimulai kembali.
    */
   unbindHandlers: function () {
-    $("#next, #nextLevelBtn, #labelReset, #labelSettings, .language-button, .level-marker, .arrow, #level-indicator, #code, #editor")
+    $("#next, #nextLevelBtn, #restartGameBtn, #restartGameBtnMobile, #clearCodeBtn, #labelSettings, .language-button, .level-marker, .arrow, #level-indicator, #code, #editor")
       .off();
     $(window).off("pagehide hashchange");
     $("body").off("click");
@@ -1241,25 +1241,77 @@ var game = {
    * Bind UI events
    */
   bindUIEvents: function () {
-    // Reset button
-    $("#labelReset").on("click", function () {
-      Swal.fire({
-        title: t("resetWarningTitle", game.language),
-        text: t("resetWarningText", game.language),
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: t("confirmReset", game.language),
-        cancelButtonText: t("cancel", game.language),
-        customClass: {
-          confirmButton: "swal2-krem-btn",
-          cancelButton: "swal2-biru-btn",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
+    // Restart Game button (Mulai Permainan Baru) - Desktop
+    $("#restartGameBtn").on("click", function () {
+      if (typeof Swal !== "undefined") {
+        Swal.fire({
+          title: t("resetWarningTitle", game.language),
+          text: t("resetWarningText", game.language),
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: t("confirmReset", game.language),
+          cancelButtonText: t("cancel", game.language),
+          customClass: {
+            confirmButton: "swal2-krem-btn",
+            cancelButton: "swal2-biru-btn",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            game.resetGame();
+            $(".level-marker").removeClass("solved");
+          }
+        });
+      } else {
+        if (confirm(t("resetWarningText", game.language))) {
           game.resetGame();
           $(".level-marker").removeClass("solved");
         }
-      });
+      }
+    });
+
+    // Restart Game button (Mulai Permainan Baru) - Mobile
+    $("#restartGameBtnMobile").on("click", function () {
+      if (typeof Swal !== "undefined") {
+        Swal.fire({
+          title: t("resetWarningTitle", game.language),
+          text: t("resetWarningText", game.language),
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: t("confirmReset", game.language),
+          cancelButtonText: t("cancel", game.language),
+          customClass: {
+            confirmButton: "swal2-krem-btn",
+            cancelButton: "swal2-biru-btn",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            game.resetGame();
+            $(".level-marker").removeClass("solved");
+          }
+        });
+      } else {
+        if (confirm(t("resetWarningText", game.language))) {
+          game.resetGame();
+          $(".level-marker").removeClass("solved");
+        }
+      }
+    });
+
+    // Clear Code button (Atur Ulang) - Menghapus kode di soal saat ini saja
+    $("#clearCodeBtn").on("click", function () {
+      // Hapus kode di textarea
+      $("#code").val("").focus();
+      game.changed = true;
+      
+      // Hapus jawaban yang tersimpan untuk level ini
+      var levelName = levels[game.level].name;
+      delete game.answers[levelName];
+      
+      // Update localStorage
+      localStorage.setItem("answers", JSON.stringify(game.answers));
+      
+      // Reset tampilan visual
+      game.applyStyles();
     });
 
     // Settings button

@@ -21,7 +21,7 @@ var messages = {
     id: "MagicFlex - Kuasai CSS Flexbox di Dunia Sihir",
   },
   labelReset: {
-    id: "Atur Ulang",
+    id: "Mulai Permainan Baru",
   },
   warningReset: {
     id: "Apakah Anda yakin ingin mengatur ulang game?\n\nProgres tersimpan Anda akan hilang dan Anda akan kembali ke awal game.",
