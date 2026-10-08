@@ -73,46 +73,66 @@
           -webkit-backdrop-filter: blur(10px);
         }
         
-        /* Main container - COLUMN (bukan column-reverse) */
+        /* Main container - COLUMN dengan overflow visible */
         .game-main { 
           flex-direction: column !important; 
           height: auto !important; 
           overflow: visible !important;
           flex: 1;
           display: flex;
+          position: relative !important;
         }
         
-        /* Workspace Area - Sticky di bawah navbar, ORDER 1 */
+        /* Workspace Area - TRULY Sticky dengan proper positioning */
         .game-workspace {
           order: 1 !important;
-          position: sticky;
-          top: 88px; /* Height navbar mobile (2 rows) */
-          z-index: 40;
-          min-height: 45vh !important;
-          height: 45vh !important;
-          max-height: 45vh !important;
-          padding: 12px !important;
-          background: #1c1427;
+          position: -webkit-sticky !important;
+          position: sticky !important;
+          top: 88px !important; /* Height navbar mobile (2 rows) */
+          z-index: 40 !important;
+          min-height: 40vh !important;
+          height: 40vh !important;
+          max-height: 40vh !important;
+          padding: 8px !important;
+          background: #1c1427 !important;
+          overflow: hidden !important;
+          flex-shrink: 0 !important;
+        }
+        
+        /* Remove background image space */
+        .game-workspace > img {
+          display: none !important;
         }
         
         .game-workspace .board-wrapper {
-          max-width: 90vw !important;
-          width: 90vw !important;
-          max-height: calc(45vh - 24px) !important;
+          max-width: 85vw !important;
+          width: 85vw !important;
+          max-height: calc(40vh - 16px) !important;
+          margin: 0 auto !important;
         }
         
-        /* Sidebar - Scrollable di bawah workspace sticky, ORDER 2 */
+        .game-workspace .glass-panel {
+          height: 100% !important;
+        }
+        
+        /* Sidebar - Scrollable di bawah workspace sticky */
         .game-sidebar {
           order: 2 !important;
           width: 100% !important;
           min-width: 100% !important;
           max-height: none !important;
           height: auto !important;
-          min-height: auto !important;
+          min-height: 50vh !important;
           border-right: none !important;
-          border-top: 1px solid rgba(148,142,161,0.2) !important;
+          border-top: 2px solid rgba(148,142,161,0.3) !important;
           overflow-y: visible !important;
-          flex: 1;
+          flex: 1 1 auto !important;
+          padding-bottom: 20px !important;
+        }
+        
+        /* Remove extra spacing/padding */
+        .game-sidebar > * {
+          margin-bottom: 12px !important;
         }
       }
       
