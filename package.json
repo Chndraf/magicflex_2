@@ -1,0 +1,23 @@
+{
+  "name": "magicflex",
+  "version": "1.0.0",
+  "description": "MagicFlex - Interactive CSS Flexbox Learning Game",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "css",
+    "flexbox",
+    "education",
+    "game",
+    "learning"
+  ],
+  "author": "MagicFlex Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.x"
+  }
+}
