@@ -219,7 +219,7 @@ var game = {
           if (result.isConfirmed) {
             this.resetGame();
           } else if (result.isDenied) {
-            window.location.href = "index.html";
+            window.location.href = "/";
           }
         });
       } else {
@@ -227,7 +227,7 @@ var game = {
         if (choice) {
           this.resetGame();
         } else {
-          window.location.href = "index.html";
+          window.location.href = "/";
         }
       }
       return;
@@ -639,7 +639,7 @@ var game = {
       }).then((result) => {
         if (result.isDenied) {
           this.clearStudentSession();
-          window.location.href = "index.html";
+          window.location.href = "/";
         }
       });
     } catch (e) {
