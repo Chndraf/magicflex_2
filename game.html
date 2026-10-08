@@ -73,7 +73,7 @@
           -webkit-backdrop-filter: blur(10px);
         }
         
-        /* Main container untuk workspace dan sidebar */
+        /* Main container - COLUMN (bukan column-reverse) */
         .game-main { 
           flex-direction: column !important; 
           height: auto !important; 
@@ -82,14 +82,15 @@
           display: flex;
         }
         
-        /* Workspace Area - Sticky di bawah navbar */
+        /* Workspace Area - Sticky di bawah navbar, ORDER 1 */
         .game-workspace {
+          order: 1 !important;
           position: sticky;
           top: 88px; /* Height navbar mobile (2 rows) */
           z-index: 40;
-          min-height: 50vh !important;
-          height: 50vh !important;
-          max-height: 50vh !important;
+          min-height: 45vh !important;
+          height: 45vh !important;
+          max-height: 45vh !important;
           padding: 12px !important;
           background: #1c1427;
         }
@@ -97,11 +98,12 @@
         .game-workspace .board-wrapper {
           max-width: 90vw !important;
           width: 90vw !important;
-          max-height: calc(50vh - 24px) !important;
+          max-height: calc(45vh - 24px) !important;
         }
         
-        /* Sidebar - Scrollable di bawah workspace sticky */
+        /* Sidebar - Scrollable di bawah workspace sticky, ORDER 2 */
         .game-sidebar {
+          order: 2 !important;
           width: 100% !important;
           min-width: 100% !important;
           max-height: none !important;
