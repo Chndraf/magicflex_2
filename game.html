@@ -66,10 +66,16 @@
           border-right: none !important;
           border-bottom: 1px solid rgba(148,142,161,0.2) !important;
         }
+        /* Workspace - Sticky di bawah navbar */
         .game-workspace {
-          min-height: 60vw !important;
-          height: auto !important;
+          position: -webkit-sticky !important;
+          position: sticky !important;
+          top: 88px !important; /* Height navbar mobile (sekitar 88px untuk 2 rows) */
+          z-index: 30 !important;
+          min-height: 50vh !important;
+          height: 50vh !important;
           padding: 12px !important;
+          background: #1c1427 !important;
         }
         .game-workspace .board-wrapper {
           max-width: 80vw !important;
