@@ -87,6 +87,19 @@ var translations = {
     aiPrompt: function (quizData) {
       return `Saya baru saja bermain game edukasi MagicFlex untuk belajar CSS Flexbox. Skor saya ${quizData.score}%, performa ${quizData.performanceLevel}, jawaban benar ${quizData.correctAnswers}, jawaban salah ${quizData.wrongAnswers}, dan konsep yang masih salah: ${quizData.wrongDetails}. Berikan masukan yang singkat, ramah, memotivasi, serta praktis untuk memperbaiki konsep yang salah. Tulis tepat satu paragraf saja, tanpa judul, daftar, atau markdown, dan jangan merekomendasikan website lain.`;
     },
+    // Materi Pembelajaran Section
+    materiTitle: "Materi Pembelajaran",
+    materiSubtitle: "Kuasai konsep-konsep Flexbox melalui penjelasan praktis dan interaktif",
+    startLearning: "Mulai Belajar",
+    // Card Descriptions
+    justifyContentDesc: "Mengatur perataan item secara horizontal di sepanjang main axis container.",
+    alignItemsDesc: "Menentukan perataan item secara vertikal pada cross axis container.",
+    flexDirectionDesc: "Mengatur arah susunan item dalam container (baris atau kolom).",
+    flexWrapDesc: "Menentukan apakah item akan dibungkus ke baris baru jika ruang tidak cukup.",
+    alignSelfDesc: "Mengubah perataan item individual, mengabaikan nilai align-items.",
+    flexDesc: "Mengatur fleksibilitas item untuk tumbuh atau menyusut dalam container.",
+    alignContentDesc: "Mengatur posisi beberapa baris item pada cross axis saat multi-baris.",
+    orderDesc: "Mengubah urutan visual item tanpa mengubah struktur HTML."
   },
   en: {
     pageTitle: "MagicFlex - Master CSS Flexbox",
@@ -176,6 +189,19 @@ var translations = {
     aiPrompt: function (quizData) {
       return `I have just played the MagicFlex educational game to learn CSS Flexbox. My score is ${quizData.score}%, my performance is ${quizData.performanceLevel}, I have ${quizData.correctAnswers} correct answers and ${quizData.wrongAnswers} incorrect answers, and the concepts I missed are: ${quizData.wrongDetails}. Give brief, friendly, motivating, and practical feedback to improve the concepts I missed. Write exactly one paragraph, with no heading, list, or Markdown, and do not recommend other websites.`;
     },
+    // Learning Materials Section
+    materiTitle: "Learning Materials",
+    materiSubtitle: "Master Flexbox concepts through practical and interactive explanations",
+    startLearning: "Start Learning",
+    // Card Descriptions
+    justifyContentDesc: "Aligns items horizontally along the main axis of the container.",
+    alignItemsDesc: "Determines vertical alignment of items along the cross axis of the container.",
+    flexDirectionDesc: "Sets the direction of item arrangement in the container (row or column).",
+    flexWrapDesc: "Determines whether items will wrap to a new line when space is insufficient.",
+    alignSelfDesc: "Changes alignment of individual items, overriding the align-items value.",
+    flexDesc: "Sets the flexibility of items to grow or shrink within the container.",
+    alignContentDesc: "Aligns multiple lines of items on the cross axis when multi-line.",
+    orderDesc: "Changes the visual order of items without modifying the HTML structure."
   },
 };
 
