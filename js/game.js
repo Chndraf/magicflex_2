@@ -1182,7 +1182,7 @@ var game = {
       const isSolved = $.inArray(levelId, game.solved) !== -1;
 
       if (!isSolved) {
-        // Jika jawaban belum benar: getarkan editor & tampilkan peringatan kesalahan
+        // Jika jawaban belum benar: getarkan editor & tampilkan peringatan kesalahan (syntax + logic)
         game.tryagain();
         game.showErrorNotification();
         game.liveSyncData();
@@ -1397,6 +1397,8 @@ var game = {
    * Check if current solution is correct and apply visual styles
    */
   check: async function () {
+    // Langsung apply styles untuk testing visual
+    // Validasi syntax + logic akan dilakukan di showErrorNotification()
     try {
       if (document.startViewTransition) {
         const transition = document.startViewTransition(() => this.applyStyles());
@@ -1409,6 +1411,8 @@ var game = {
     } finally {
       this.compare();
     }
+    
+    return true;
   },
 
   /**
@@ -1526,6 +1530,119 @@ var game = {
   },
 
   /**
+   * Tampilkan alert khusus untuk syntax error (CRITICAL)
+   */
+  showSyntaxError: function (errors) {
+    if (typeof Swal === "undefined") {
+      alert("❌ Syntax Error: Kode CSS tidak lengkap! Periksa titik koma (;) dan titik dua (:)");
+      return;
+    }
+
+    var errorMessages = [];
+    for (var si = 0; si < errors.length; si++) {
+      var err = errors[si];
+      var errorMsg = '⚠️ <code style="color:#f97316;">' + game.escapeHtml(err.line) + '</code> ' + err.message;
+      errorMessages.push(errorMsg);
+    }
+
+    var errorHtml = '<div style="text-align:left;max-height:400px;overflow-y:auto;">';
+    errorHtml += '<div style="font-size:0.9em;color:#cbd5e1;margin-bottom:12px;">' + t("issuesFound", game.language) + ' <strong style="color:#f87171;">' + errorMessages.length + '</strong> ' + t("issuesSuffix", game.language) + '</div>';
+    errorHtml += '<ul style="list-style:none;padding:0;margin:0;">';
+    for (var mi = 0; mi < errorMessages.length; mi++) {
+      errorHtml += '<li style="background:rgba(239,68,68,0.08);border-left:3px solid #ef4444;padding:8px 12px;margin-bottom:6px;border-radius:0 8px 8px 0;font-size:0.88em;line-height:1.5;">' + errorMessages[mi] + '</li>';
+    }
+    errorHtml += '</ul>';
+    errorHtml += '<div style="margin-top:12px;padding:10px;background:rgba(96,165,250,0.1);border-radius:8px;border:1px solid rgba(96,165,250,0.2);">';
+    errorHtml += '<div style="font-size:0.85em;color:#60a5fa;font-weight:bold;margin-bottom:4px;">📝 ' + t("hint", game.language) + '</div>';
+    errorHtml += '<div style="font-size:0.85em;color:#94a3b8;">Format penulisan: <code>property-name: value;</code></div>';
+    errorHtml += '</div>';
+    errorHtml += '</div>';
+
+    Swal.fire({
+      icon: "error",
+      title: t("incorrectTitle", game.language),
+      html: errorHtml,
+      confirmButtonText: "OK, Saya Perbaiki",
+      customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
+      width: 550,
+    });
+  },
+
+  /**
+   * Validasi syntax kode CSS (lengkap dengan titik koma dan titik dua)
+   * Returns: { valid: boolean, errors: array }
+   */
+  validateCSSyntax: function (code) {
+    var errors = [];
+    var lines = code.split("\n");
+    
+    for (var li = 0; li < lines.length; li++) {
+      var line = lines[li].trim();
+      if (line === "") continue;
+
+      // Cek apakah ada titik dua (:)
+      if (line.indexOf(":") === -1) {
+        errors.push({
+          type: "syntax",
+          severity: "critical",
+          line: line,
+          message: t("missingColon", game.language),
+          suggestion: line + ": value;"
+        });
+        continue;
+      }
+
+      var parts = line.split(":");
+      var prop = parts[0].trim();
+      var val = parts.slice(1).join(":").trim();
+
+      // Cek apakah ada titik koma (;) di akhir - WAJIB
+      if (!val.endsWith(";")) {
+        errors.push({
+          type: "syntax",
+          severity: "critical",
+          line: line,
+          property: prop,
+          message: t("missingSemicolon", game.language),
+          suggestion: prop + ": " + val + ";"
+        });
+      }
+
+      // Cek typo pada property name (huruf salah ketik)
+      var cleanVal = val.replace(/;$/, "").trim();
+      if (prop && cleanVal) {
+        // Deteksi typo dengan karakter yang mirip
+        var typoPatterns = [
+          { wrong: /justfy/gi, correct: "justify" },
+          { wrong: /alighn/gi, correct: "align" },
+          { wrong: /directoin/gi, correct: "direction" },
+          { wrong: /wrpa/gi, correct: "wrap" },
+          { wrong: /contennt/gi, correct: "content" },
+          { wrong: /flx/gi, correct: "flex" }
+        ];
+        
+        for (var ti = 0; ti < typoPatterns.length; ti++) {
+          if (typoPatterns[ti].wrong.test(prop)) {
+            errors.push({
+              type: "typo",
+              severity: "critical",
+              line: line,
+              property: prop,
+              message: t("propertyTypoDetected", game.language) + ' "' + prop + '"',
+              suggestion: 'Apakah maksud Anda: "' + typoPatterns[ti].correct + '"?'
+            });
+          }
+        }
+      }
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors: errors
+    };
+  },
+
+  /**
    * Analisis kode user dan tampilkan notifikasi error yang detail
    */
   showErrorNotification: function () {
@@ -1549,36 +1666,37 @@ var game = {
       return;
     }
 
-    // 2. Parse kode user menjadi key-value pairs
+    // 2. VALIDASI SYNTAX (titik koma dan titik dua) - KUMPULKAN ERROR SAJA
+    var syntaxCheck = this.validateCSSyntax(userCode);
+    if (!syntaxCheck.valid) {
+      for (var si = 0; si < syntaxCheck.errors.length; si++) {
+        var err = syntaxCheck.errors[si];
+        var errorMsg = '⚠️ <code style="color:#f97316;">' + game.escapeHtml(err.line) + '</code> ' + err.message;
+        errorMessages.push(errorMsg);
+      }
+    }
+
+    // 3. Parse kode user menjadi key-value pairs
     var userProps = {};
     var lines = userCode.split("\n");
     for (var li = 0; li < lines.length; li++) {
       var line = lines[li].trim();
       if (line === "") continue;
 
-      // Cek apakah ada titik dua
-      if (line.indexOf(":") === -1) {
-        errorMessages.push('<code style="color:#f97316;">' + game.escapeHtml(line) + '</code> ' + t("missingColon", game.language));
-        continue;
-      }
+      if (line.indexOf(":") === -1) continue;
 
       var parts = line.split(":");
       var prop = parts[0].trim();
       var val = parts.slice(1).join(":").trim();
-
-      // Cek apakah ada titik koma di akhir
-      if (!val.endsWith(";")) {
-        errorMessages.push('<code style="color:#f97316;">' + game.escapeHtml(prop) + '</code> ' + t("missingSemicolon", game.language));
-      }
 
       // Hapus titik koma untuk perbandingan
       val = val.replace(/;$/, "").trim();
       userProps[prop] = val;
     }
 
-    // 3. Bandingkan dengan expected style
+    // 4. VALIDASI LOGIC - Bandingkan dengan expected style
     var expectedKeys = Object.keys(expectedStyle);
-    var validCSSProperties = ["justify-content", "align-items", "flex-direction", "flex-wrap", "flex-flow", "align-content", "align-self", "order", "flex-shrink", "flex-basis"];
+    var validCSSProperties = ["justify-content", "align-items", "flex-direction", "flex-wrap", "flex-flow", "align-content", "align-self", "order", "flex-shrink", "flex-basis", "flex-grow"];
 
     for (var ei = 0; ei < expectedKeys.length; ei++) {
       var expectedProp = expectedKeys[ei];
@@ -1586,22 +1704,22 @@ var game = {
 
       if (!(expectedProp in userProps)) {
         // Properti yang dibutuhkan tidak ada
-        errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code> ' + t("propertyMissing", game.language));
+        errorMessages.push('❌ <code style="color:#60a5fa;">' + expectedProp + '</code> ' + t("propertyMissing", game.language));
         hints.push('<code>' + expectedProp + ': ...;</code>');
       } else if (userProps[expectedProp] !== expectedVal) {
-        // Nilainya salah - cek apakah mungkin typo
+        // Nilainya salah
         var userVal = userProps[expectedProp];
         var similarity = game.stringSimilarity(userVal, expectedVal);
 
         if (similarity > 0.5 && similarity < 1) {
-          errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueTypo", game.language));
+          errorMessages.push('⚠️ <code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueTypo", game.language));
         } else {
-          errorMessages.push('<code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueIncorrect", game.language));
+          errorMessages.push('❌ <code style="color:#60a5fa;">' + expectedProp + '</code>: <code style="color:#ef4444;">' + game.escapeHtml(userVal) + '</code> ' + t("valueIncorrect", game.language));
         }
       }
     }
 
-    // 4. Cek properti yang tidak diperlukan
+    // 5. Cek properti yang tidak diperlukan
     var userKeys = Object.keys(userProps);
     for (var ui = 0; ui < userKeys.length; ui++) {
       var userProp = userKeys[ui];
@@ -1609,7 +1727,7 @@ var game = {
         // Cek apakah properti valid tapi tidak diperlukan
         var isValidCSS = validCSSProperties.indexOf(userProp) !== -1;
         if (isValidCSS) {
-          errorMessages.push('<code style="color:#fbbf24;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyNotNeeded", game.language));
+          errorMessages.push('💡 <code style="color:#fbbf24;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyNotNeeded", game.language));
         } else {
           // Kemungkinan typo pada nama properti
           var bestMatch = "";
@@ -1622,15 +1740,15 @@ var game = {
             }
           }
           if (bestScore > 0.5) {
-            errorMessages.push('<code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyTypo", game.language) + ' <code style="color:#10b981;">' + bestMatch + '</code>?');
+            errorMessages.push('⚠️ <code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("propertyTypo", game.language) + ' <code style="color:#10b981;">' + bestMatch + '</code>?');
           } else {
-            errorMessages.push('<code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("invalidProperty", game.language));
+            errorMessages.push('❌ <code style="color:#ef4444;">' + game.escapeHtml(userProp) + '</code> ' + t("invalidProperty", game.language));
           }
         }
       }
     }
 
-    // 5. Tampilkan popup error
+    // 6. Tampilkan popup error dengan SEMUA error (syntax + logic)
     if (errorMessages.length === 0) {
       errorMessages.push(t("incorrectDefault", game.language));
     }
@@ -1656,7 +1774,7 @@ var game = {
       html: errorHtml,
       confirmButtonText: "OK, Saya Perbaiki",
       customClass: { confirmButton: "swal2-biru-btn", popup: "swal2-enhanced-popup" },
-      width: 500,
+      width: 550,
     });
   },
 
