@@ -32,7 +32,7 @@ var translations = {
     cancel: "Batal",
     correctTitle: "✨ Jawaban Benar!",
     correctText: "Hebat! Kode CSS kamu sudah tepat. Melanjutkan ke soal berikutnya...",
-    incorrectTitle: "❌ Jawaban Salah!",
+    incorrectTitle: "Belum Dijawab!",
     incorrectDefault: "Kode CSS kamu belum menghasilkan posisi yang tepat. Coba periksa kembali nilai propertinya.",
     issuesFound: "Ditemukan",
     issuesSuffix: "masalah pada kode kamu:",
@@ -60,9 +60,9 @@ var translations = {
     finalScore: "Skor Akhir",
     totalQuestions: "Total Soal",
     correctAnswers: "Jawaban Benar",
-    wrongAnswers: "Jawaban Salah",
+    wrongAnswers: "Belum Dijawab",
     correctQuestions: "Soal Benar",
-    wrongQuestions: "Soal Salah",
+    wrongQuestions: "Soal Belum Dijawab",
     noCorrectAnswers: "Belum ada jawaban benar",
     allQuestionsCorrect: "Semua soal dijawab dengan benar!",
     playAgain: "Main Lagi",
@@ -86,7 +86,7 @@ var translations = {
     cannotAdvanceTitle: "Belum Bisa Lanjut",
     cannotAdvanceText: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
     aiPrompt: function (quizData) {
-      return `Saya baru saja bermain game edukasi MagicFlex untuk belajar CSS Flexbox. Skor saya ${quizData.score}%, performa ${quizData.performanceLevel}, jawaban benar ${quizData.correctAnswers}, jawaban salah ${quizData.wrongAnswers}, dan konsep yang masih salah: ${quizData.wrongDetails}. Berikan masukan yang singkat, ramah, memotivasi, serta praktis untuk memperbaiki konsep yang salah. Tulis tepat satu paragraf saja, tanpa judul, daftar, atau markdown, dan jangan merekomendasikan website lain.`;
+      return `Saya baru saja bermain game edukasi MagicFlex untuk belajar CSS Flexbox. Skor saya ${quizData.score}%, performa ${quizData.performanceLevel}, jawaban benar ${quizData.correctAnswers}, belum dijawab ${quizData.wrongAnswers}, dan konsep yang masih salah: ${quizData.wrongDetails}. Berikan masukan yang singkat, ramah, memotivasi, serta praktis untuk memperbaiki konsep yang salah. Tulis tepat satu paragraf saja, tanpa judul, daftar, atau markdown, dan jangan merekomendasikan website lain.`;
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
