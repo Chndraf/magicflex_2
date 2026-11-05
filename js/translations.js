@@ -32,7 +32,7 @@ var translations = {
     cancel: "Batal",
     correctTitle: "✨ Jawaban Benar!",
     correctText: "Hebat! Kode CSS kamu sudah tepat. Melanjutkan ke soal berikutnya...",
-    incorrectTitle: "Belum Dijawab!",
+    incorrectTitle: "Jawaban Salah!",
     incorrectDefault: "Kode CSS kamu belum menghasilkan posisi yang tepat. Coba periksa kembali nilai propertinya.",
     issuesFound: "Ditemukan",
     issuesSuffix: "masalah pada kode kamu:",
