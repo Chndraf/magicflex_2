@@ -1156,6 +1156,18 @@ var game = {
       game.levelRunCounts[levelId] = (game.levelRunCounts[levelId] || 0) + 1;
       localStorage.setItem("levelRunCounts", JSON.stringify(game.levelRunCounts));
 
+      // Evaluasi kode terkini
+      await game.check();
+      const isSolved = $.inArray(levelId, game.solved) !== -1;
+
+      if (!isSolved) {
+        // Jika jawaban belum benar: getarkan editor & tampilkan peringatan kesalahan (syntax + logic)
+        game.tryagain();
+        game.showErrorNotification();
+        game.liveSyncData();
+        return;
+      }
+
       // 2. Jalankan & terapkan kode CSS secara visual untuk pengujian
       await game.check();
       game.changed = false;
