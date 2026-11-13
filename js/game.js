@@ -577,7 +577,8 @@ var game = {
       performanceLevel,
       waktuPengerjaan,
       wrongDetails: levels.map(level => level.name).filter(name => !this.solved.includes(name)).join(", ") || "None",
-      perQuestionDetails
+      perQuestionDetails,
+      sessionId: this.sessionId || ""
     };
 
     if (typeof Swal === "undefined") {
@@ -675,8 +676,9 @@ var game = {
       feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
     }
 
-    // Generate cache key based on score, solved count, and wrong details
-    const cacheKey = `ai_feedback_${quizData.score}_${quizData.correctAnswers}_${quizData.wrongDetails.replace(/\s/g, '')}`;
+    // Generate cache key based on sessionId so every unique game session gets its own fresh feedback
+    const sessionId = quizData.sessionId || game.sessionId || 'default';
+    const cacheKey = `ai_feedback_${sessionId}_${quizData.score}_${quizData.correctAnswers}`;
     
     // Check if cached feedback exists (valid for 24 hours)
     const cachedData = this.getAIFeedbackCache(cacheKey);
