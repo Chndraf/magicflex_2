@@ -553,13 +553,31 @@ var game = {
     // KIRIM DATA OTOMATIS KE SPREADSHEET (Tetap Berjalan)
     this.autoSaveData({ playerName, playerAbsence, score, waktuPengerjaan });
 
+    // Data detail per soal untuk Prompt AI
+    const perQuestionDetails = levels.map(level => {
+      const levelId = level.name;
+      const isSolved = this.solved.includes(levelId);
+      const tries = this.levelRunCounts ? (this.levelRunCounts[levelId] || 0) : 0;
+      const studentAnswer = this.answers[levelId] || "";
+      const expectedProps = Object.entries(level.style).map(([k, v]) => k + ": " + v).join("; ");
+      return {
+        soal: levelId,
+        status: isSolved ? "Benar" : "Salah",
+        percobaan: tries,
+        jawabanSiswa: studentAnswer.trim() || "(kosong)",
+        jawabanBenar: expectedProps
+      };
+    });
+
     // Data yang akan dikirim ke Prompt AI
     const quizDataForAI = {
       score,
       correctAnswers,
       wrongAnswers,
       performanceLevel,
-      wrongDetails: levels.map(level => level.name).filter(name => !this.solved.includes(name)).join(", ") || "None"
+      waktuPengerjaan,
+      wrongDetails: levels.map(level => level.name).filter(name => !this.solved.includes(name)).join(", ") || "None",
+      perQuestionDetails
     };
 
     if (typeof Swal === "undefined") {
@@ -657,8 +675,8 @@ var game = {
       feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
     }
 
-    // Generate cache key based on score and performance level
-    const cacheKey = `ai_feedback_${quizData.score}_${quizData.performanceLevel}`;
+    // Generate cache key based on score, solved count, and wrong details
+    const cacheKey = `ai_feedback_${quizData.score}_${quizData.correctAnswers}_${quizData.wrongDetails.replace(/\s/g, '')}`;
     
     // Check if cached feedback exists (valid for 24 hours)
     const cachedData = this.getAIFeedbackCache(cacheKey);

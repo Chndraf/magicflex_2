@@ -86,7 +86,22 @@ var translations = {
     cannotAdvanceTitle: "Belum Bisa Lanjut",
     cannotAdvanceText: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
     aiPrompt: function (quizData) {
-      return `Saya baru saja bermain game edukasi MagicFlex untuk belajar CSS Flexbox. Skor saya ${quizData.score}%, performa ${quizData.performanceLevel}, jawaban benar ${quizData.correctAnswers}, belum dijawab ${quizData.wrongAnswers}, dan konsep yang masih salah: ${quizData.wrongDetails}. Berikan masukan yang singkat, ramah, memotivasi, serta praktis untuk memperbaiki konsep yang salah. Tulis tepat satu paragraf saja, tanpa judul, daftar, atau markdown, dan jangan merekomendasikan website lain.`;
+      var detailSoal = quizData.perQuestionDetails.map(function (d) {
+        return d.soal + " [" + (d.status === "Benar" ? "Selesai" : "Belum Selesai") + ", " + d.percobaan + "x coba, jawaban: " + d.jawabanSiswa + ", benar: " + d.jawabanBenar + "]";
+      }).join("; ");
+      return "Kamu adalah tutor CSS Flexbox yang ramah. Analisis hasil belajar siswa berikut dari game MagicFlex.\n\n" +
+        "DATA SISWA:\n" +
+        "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " selesai, " + quizData.wrongAnswers + " belum dijawab dari 25 soal)\n" +
+        "- Waktu pengerjaan: " + quizData.waktuPengerjaan + "\n" +
+        "- Performa: " + quizData.performanceLevel + "\n" +
+        "- Soal yang belum dijawab: " + quizData.wrongDetails + "\n\n" +
+        "DETAIL PER SOAL:\n" + detailSoal + "\n\n" +
+        "INSTRUKSI:\n" +
+        "1. Puji pencapaian siswa secara singkat sesuai proporsi skornya.\n" +
+        "2. Identifikasi pola kelemahan spesifik dari soal yang belum dijawab atau yang membutuhkan banyak percobaan (misal: siswa sering keliru di flex-direction vs justify-content, atau lupa semicolon).\n" +
+        "3. Jika ada soal dengan percobaan banyak (>3x), sebutkan bahwa konsep itu perlu diperkuat.\n" +
+        "4. Berikan 2-3 langkah konkret yang harus dilakukan siswa selanjutnya untuk memperbaiki pemahaman konsep Flexbox tersebut.\n" +
+        "5. Tulis dalam 1 paragraf utuh, bahasa Indonesia, tanpa heading/list/markdown, maksimal 150 kata. Jangan rekomendasikan website lain.";
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
@@ -189,7 +204,22 @@ var translations = {
     cannotAdvanceTitle: "Cannot Continue Yet",
     cannotAdvanceText: '<p style="font-size:0.95em;">You must <strong>complete the current question</strong> before moving to another question.</p>',
     aiPrompt: function (quizData) {
-      return `I have just played the MagicFlex educational game to learn CSS Flexbox. My score is ${quizData.score}%, my performance is ${quizData.performanceLevel}, I have ${quizData.correctAnswers} correct answers and ${quizData.wrongAnswers} incorrect answers, and the concepts I missed are: ${quizData.wrongDetails}. Give brief, friendly, motivating, and practical feedback to improve the concepts I missed. Write exactly one paragraph, with no heading, list, or Markdown, and do not recommend other websites.`;
+      var detailSoal = quizData.perQuestionDetails.map(function (d) {
+        return d.soal + " [" + d.status + ", " + d.percobaan + "x tries, answer: " + d.jawabanSiswa + ", correct: " + d.jawabanBenar + "]";
+      }).join("; ");
+      return "You are a friendly CSS Flexbox tutor. Analyze the following student results from the MagicFlex game.\n\n" +
+        "STUDENT DATA:\n" +
+        "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " completed, " + quizData.wrongAnswers + " unanswered out of 25 questions)\n" +
+        "- Time spent: " + quizData.waktuPengerjaan + "\n" +
+        "- Performance: " + quizData.performanceLevel + "\n" +
+        "- Unanswered questions: " + quizData.wrongDetails + "\n\n" +
+        "PER-QUESTION DETAIL:\n" + detailSoal + "\n\n" +
+        "INSTRUCTIONS:\n" +
+        "1. Briefly praise the student's achievement proportional to their score.\n" +
+        "2. Identify specific weakness patterns from unanswered questions or those with multiple attempts (e.g. confusing flex-direction with justify-content, or forgetting semicolons).\n" +
+        "3. If any question took many attempts (>3x), mention that concept needs reinforcement.\n" +
+        "4. Give 2-3 concrete next steps the student should take to improve those Flexbox concepts.\n" +
+        "5. Write in 1 cohesive paragraph, in English, no headings/lists/markdown, max 150 words. Do not recommend other websites.";
     },
     // Learning Materials Section
     materiTitle: "Learning Materials",
