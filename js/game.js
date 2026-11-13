@@ -1450,6 +1450,21 @@ var game = {
    */
   compare: function () {
     const level = levels[this.level];
+    const userCode = $("#code").val();
+    const syntaxCheck = this.validateCSSyntax(userCode);
+
+    // Jika syntax tidak valid (misal kurang titik koma), JANGAN anggap benar
+    if (!syntaxCheck.valid) {
+      const index = $.inArray(level.name, this.solved);
+      if (index !== -1) {
+        this.solved.splice(index, 1);
+        localStorage.setItem("solved", JSON.stringify(this.solved));
+        $("[data-level=" + this.level + "]").removeClass("solved");
+      }
+      $("#next").removeClass("animated animation").addClass("disabled");
+      return;
+    }
+
     const lilypads = {};
     const frogs = {};
     let correct = true;
