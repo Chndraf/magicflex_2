@@ -1003,7 +1003,7 @@ var game = {
         }
 
         game.isAdvancing = true;
-        $(".frog").addClass("animated bounceOutUp");
+        $(".ball").addClass("animated bounceOutUp");
         $(".arrow, #next, #nextLevelBtn").addClass("disabled");
 
         if (typeof Swal !== "undefined") {
@@ -1102,21 +1102,21 @@ var game = {
       const c = string.charAt(i);
       const color = colors[c];
 
-      // Create lilypad
-      const lilypad = $("<div/>")
-        .addClass("lilypad " + color)
+      // Create portal
+      const portal = $("<div/>")
+        .addClass("portal " + color)
         .css("animation-delay", (i * 0.08) + "s")
         .data("color", color);
-      $("<div/>").addClass("bg").appendTo(lilypad);
-      $("#background").append(lilypad);
+      $("<div/>").addClass("bg").appendTo(portal);
+      $("#background").append(portal);
 
-      // Create frog
-      const frog = $("<div/>")
-        .addClass("frog " + color)
+      // Create ball
+      const ball = $("<div/>")
+        .addClass("ball " + color)
         .css("animation-delay", (i * 0.08) + "s")
         .data("color", color);
-      $("<div/>").addClass("bg animated pulse infinite").appendTo(frog);
-      $("#pond").append(frog);
+      $("<div/>").addClass("bg animated pulse infinite").appendTo(ball);
+      $("#pond").append(ball);
     }
 
     // Apply level classes
@@ -1221,7 +1221,7 @@ var game = {
 
       // Jika jawaban benar: tampilkan validasi sukses & animasi sebelum lanjut
       game.isAdvancing = true;
-      $(".frog").addClass("animated bounceOutUp");
+      $(".ball").addClass("animated bounceOutUp");
       $(".arrow, #next, #nextLevelBtn").addClass("disabled");
 
       if (typeof Swal !== "undefined") {
@@ -1446,7 +1446,7 @@ var game = {
   },
 
   /**
-   * Compare frog and lilypad positions
+   * Compare ball and portal positions
    */
   compare: function () {
     const level = levels[this.level];
@@ -1465,25 +1465,25 @@ var game = {
       return;
     }
 
-    const lilypads = {};
-    const frogs = {};
+    const portals = {};
+    const balls = {};
     let correct = true;
 
-    $(".frog").each(function () {
+    $(".ball").each(function () {
       const position = $(this).position();
       position.top = Math.floor(position.top);
       position.left = Math.floor(position.left);
-      frogs[JSON.stringify(position)] = $(this).data("color");
+      balls[JSON.stringify(position)] = $(this).data("color");
     });
 
-    $(".lilypad").each(function () {
+    $(".portal").each(function () {
       const position = $(this).position();
       position.top = Math.floor(position.top);
       position.left = Math.floor(position.left);
       const key = JSON.stringify(position);
       const val = $(this).data("color");
 
-      if (!(key in frogs) || frogs[key] !== val) {
+      if (!(key in balls) || balls[key] !== val) {
         correct = false;
       }
     });

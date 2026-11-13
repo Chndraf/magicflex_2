@@ -934,95 +934,99 @@ body.swal2-shown {
 }
 
 /* ==========================================================================
-   GAME ELEMENTS (FROGS & LILYPADS)
+   GAME ELEMENTS (BALLS & PORTALS)
    ========================================================================== */
 
-.lilypad,
-.frog {
+.portal,
+.ball {
   position: relative;
   width: 20%;
   height: 20%;
   overflow: visible;
-  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* Tambahan optimasi GPU acceleration agar ringan */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* Frog View Transitions */
-.frog:nth-child(1) {
-  view-transition-name: frog1;
+/* Ball View Transitions */
+.ball:nth-child(1) {
+  view-transition-name: ball1;
 }
-.frog:nth-child(2) {
-  view-transition-name: frog2;
+.ball:nth-child(2) {
+  view-transition-name: ball2;
 }
-.frog:nth-child(3) {
-  view-transition-name: frog3;
+.ball:nth-child(3) {
+  view-transition-name: ball3;
 }
-.frog:nth-child(4) {
-  view-transition-name: frog4;
+.ball:nth-child(4) {
+  view-transition-name: ball4;
 }
-.frog:nth-child(5) {
-  view-transition-name: frog5;
+.ball:nth-child(5) {
+  view-transition-name: ball5;
 }
-.frog:nth-child(6) {
-  view-transition-name: frog6;
+.ball:nth-child(6) {
+  view-transition-name: ball6;
 }
-.frog:nth-child(7) {
-  view-transition-name: frog7;
+.ball:nth-child(7) {
+  view-transition-name: ball7;
 }
-.frog:nth-child(8) {
-  view-transition-name: frog8;
+.ball:nth-child(8) {
+  view-transition-name: ball8;
 }
-.frog:nth-child(9) {
-  view-transition-name: frog9;
+.ball:nth-child(9) {
+  view-transition-name: ball9;
 }
-.frog:nth-child(10) {
-  view-transition-name: frog10;
+.ball:nth-child(10) {
+  view-transition-name: ball10;
 }
-.frog:nth-child(11) {
-  view-transition-name: frog11;
+.ball:nth-child(11) {
+  view-transition-name: ball11;
 }
-.frog:nth-child(12) {
-  view-transition-name: frog12;
+.ball:nth-child(12) {
+  view-transition-name: ball12;
 }
-.frog:nth-child(13) {
-  view-transition-name: frog13;
+.ball:nth-child(13) {
+  view-transition-name: ball13;
 }
-.frog:nth-child(14) {
-  view-transition-name: frog14;
+.ball:nth-child(14) {
+  view-transition-name: ball14;
 }
-.frog:nth-child(15) {
-  view-transition-name: frog15;
+.ball:nth-child(15) {
+  view-transition-name: ball15;
 }
 
-::view-transition-old(frog1),
-::view-transition-new(frog1),
-::view-transition-old(frog2),
-::view-transition-new(frog2),
-::view-transition-old(frog3),
-::view-transition-new(frog3),
-::view-transition-old(frog4),
-::view-transition-new(frog4),
-::view-transition-old(frog5),
-::view-transition-new(frog5),
-::view-transition-old(frog6),
-::view-transition-new(frog6),
-::view-transition-old(frog7),
-::view-transition-new(frog7),
-::view-transition-old(frog8),
-::view-transition-new(frog8),
-::view-transition-old(frog9),
-::view-transition-new(frog9),
-::view-transition-old(frog10),
-::view-transition-new(frog10),
-::view-transition-old(frog11),
-::view-transition-new(frog11),
-::view-transition-old(frog12),
-::view-transition-new(frog12),
-::view-transition-old(frog13),
-::view-transition-new(frog13),
-::view-transition-old(frog14),
-::view-transition-new(frog14),
-::view-transition-old(frog15),
-::view-transition-new(frog15) {
+::view-transition-old(ball1),
+::view-transition-new(ball1),
+::view-transition-old(ball2),
+::view-transition-new(ball2),
+::view-transition-old(ball3),
+::view-transition-new(ball3),
+::view-transition-old(ball4),
+::view-transition-new(ball4),
+::view-transition-old(ball5),
+::view-transition-new(ball5),
+::view-transition-old(ball6),
+::view-transition-new(ball6),
+::view-transition-old(ball7),
+::view-transition-new(ball7),
+::view-transition-old(ball8),
+::view-transition-new(ball8),
+::view-transition-old(ball9),
+::view-transition-new(ball9),
+::view-transition-old(ball10),
+::view-transition-new(ball10),
+::view-transition-old(ball11),
+::view-transition-new(ball11),
+::view-transition-old(ball12),
+::view-transition-new(ball12),
+::view-transition-old(ball13),
+::view-transition-new(ball13),
+::view-transition-old(ball14),
+::view-transition-new(ball14),
+::view-transition-old(ball15),
+::view-transition-new(ball15) {
   height: 100%;
 }
 
@@ -1030,8 +1034,8 @@ body.swal2-shown {
    BACKGROUND IMAGES
    ========================================================================== */
 
-.lilypad .bg,
-.frog .bg {
+.portal .bg,
+.ball .bg {
   width: 100%;
   height: 100%;
   background-position: center center;
@@ -1043,7 +1047,7 @@ body.swal2-shown {
   z-index: 20;
 }
 
-.lilypad .bg {
+.portal .bg {
   background-size: 100% 100%; /* Ubah persentase ini untuk menyesuaikan ukuran bola */
   background-position: center; /* Memastikan bola tetap persis di tengah */
   background-repeat: no-repeat;
@@ -1051,34 +1055,34 @@ body.swal2-shown {
   transform: scale(1.1); /* Silakan ubah angka 1.4 ini (misal 1.3 atau 1.5) sampai ukurannya pas */
 }
 
-.frog .bg {
+.ball .bg {
   background-size: 75% 75%;
 }
 
 
-/* Color Variants - Lilypads */
-.lilypad.green .bg {
+/* Color Variants - Portals */
+.portal.green .bg {
   background-image: url("../images/portalAir.png");
 }
 
-.lilypad.red .bg {
+.portal.red .bg {
   background-image: url("../images/PortalTanah.png");
 }
 
-.lilypad.yellow .bg {
+.portal.yellow .bg {
   background-image: url("../images/portalApi.png");
 }
 
-/* Color Variants - Frogs */
-.frog.green .bg {
+/* Color Variants - Balls */
+.ball.green .bg {
   background-image: url("../images/BolaAir.svg");
 }
 
-.frog.red .bg {
+.ball.red .bg {
   background-image: url("../images/BolaTanah.svg");
 }
 
-.frog.yellow .bg {
+.ball.yellow .bg {
   background-image: url("../images/BolaApi.svg");
 }
 
