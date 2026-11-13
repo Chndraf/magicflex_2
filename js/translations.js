@@ -101,7 +101,7 @@ var translations = {
         "2. Identifikasi pola kelemahan spesifik dari soal yang belum dijawab atau yang membutuhkan banyak percobaan (misal: siswa sering keliru di flex-direction vs justify-content, atau lupa semicolon).\n" +
         "3. Jika ada soal dengan percobaan banyak (>3x), sebutkan bahwa konsep itu perlu diperkuat.\n" +
         "4. Berikan 2-3 langkah konkret yang harus dilakukan siswa selanjutnya untuk memperbaiki pemahaman konsep Flexbox tersebut.\n" +
-        "5. Tulis dalam 1 paragraf utuh, bahasa Indonesia, tanpa heading/list/markdown, maksimal 150 kata. Jangan rekomendasikan website lain.";
+        "5. Tulis dalam 1 paragraf utuh, bahasa Indonesia, tanpa heading/list/markdown, maksimal 100 kata. Selesaikan kalimat dengan sempurna dan jangan sampai terpotong di tengah jalan. Jangan rekomendasikan website lain.";
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
@@ -219,7 +219,7 @@ var translations = {
         "2. Identify specific weakness patterns from unanswered questions or those with multiple attempts (e.g. confusing flex-direction with justify-content, or forgetting semicolons).\n" +
         "3. If any question took many attempts (>3x), mention that concept needs reinforcement.\n" +
         "4. Give 2-3 concrete next steps the student should take to improve those Flexbox concepts.\n" +
-        "5. Write in 1 cohesive paragraph, in English, no headings/lists/markdown, max 150 words. Do not recommend other websites.";
+        "5. Write in 1 cohesive paragraph, in English, no headings/lists/markdown, max 100 words. Complete all sentences fully and do not cut off. Do not recommend other websites.";
     },
     // Learning Materials Section
     materiTitle: "Learning Materials",
