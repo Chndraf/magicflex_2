@@ -36,11 +36,10 @@ export default async function handler(req, res) {
     }
 
     // List of active, supported Groq models to try in order of preference
-    const modelsToTry = [
-      'llama-3.1-8b-instant',
-      'llama-3.3-70b-versatile',
-      'deepseek-r1-distill-llama-70b'
-    ];
+   const modelsToTry = [
+     'openai/gpt-oss-20b',
+     'openai/gpt-oss-120b'
+   ];
 
     let lastError = null;
     let aiText = null;
@@ -54,20 +53,21 @@ export default async function handler(req, res) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: modelName,
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a friendly and encouraging CSS Flexbox tutor. Provide concise, practical learning feedback in 1 coherent paragraph (max 100-120 words). Complete your sentences fully and never cut off mid-sentence.'
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
-            ],
-            temperature: 0.7,
-            max_tokens: 600
-          })
+  model: modelName,
+  messages: [
+    {
+      role: 'system',
+      content: 'You are a friendly and encouraging CSS Flexbox tutor. Provide concise, practical learning feedback in 1 coherent paragraph (max 100-120 words). Complete your sentences fully and never cut off mid-sentence.'
+    },
+    {
+      role: 'user',
+      content: prompt
+    }
+  ],
+  temperature: 0.7,
+  max_completion_tokens: 2000,
+  reasoning_effort: 'low'
+})
         });
 
         const responseText = await response.text();
