@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function for Groq AI Feedback
  * Endpoint: /api/groq
- * Model: llama-3.3-70b-versatile
+ * Multi-model fallback support for high reliability
  */
 
 export default async function handler(req, res) {
@@ -35,52 +35,75 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt text is required.' });
     }
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a friendly and encouraging CSS Flexbox tutor. Provide concise, practical learning feedback in 1 coherent paragraph (max 100-120 words). Complete your sentences fully and never cut off mid-sentence.'
+    // List of reliable Groq models to try in order of preference
+    const modelsToTry = [
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-versatile',
+      'llama3-70b-8192',
+      'mixtral-8x7b-32768',
+      'gemma2-9b-it'
+    ];
+
+    let lastError = null;
+    let aiText = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
           },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 600
-      })
-    });
+          body: JSON.stringify({
+            model: modelName,
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a friendly and encouraging CSS Flexbox tutor. Provide concise, practical learning feedback in 1 coherent paragraph (max 100-120 words). Complete your sentences fully and never cut off mid-sentence.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            temperature: 0.7,
+            max_tokens: 600
+          })
+        });
 
-    const responseText = await response.text();
-    let data;
-    try {
-      data = responseText ? JSON.parse(responseText) : {};
-    } catch (parseError) {
-      console.error('Groq returned a non-JSON response:', response.status);
-      return res.status(502).json({
-        error: 'Groq API mengembalikan respons tidak valid. Periksa Vercel Function Logs.'
-      });
+        const responseText = await response.text();
+        let data;
+        try {
+          data = responseText ? JSON.parse(responseText) : {};
+        } catch (parseError) {
+          lastError = 'Groq returned a non-JSON response.';
+          continue;
+        }
+
+        if (!response.ok) {
+          lastError = data.error?.message || `Groq API failed with HTTP ${response.status}`;
+          console.warn(`Model ${modelName} failed:`, lastError);
+          continue;
+        }
+
+        aiText = data.choices?.[0]?.message?.content;
+        if (!aiText) {
+          lastError = 'Groq API did not return valid content.';
+          continue;
+        }
+
+        // Successfully got response from modelName
+        break;
+      } catch (err) {
+        lastError = err.message;
+        console.warn(`Model ${modelName} encountered error:`, err);
+      }
     }
 
-    if (!response.ok) {
-      console.error('Groq API request failed:', response.status, data.error?.message);
-      return res.status(response.status).json({
-        error: data.error?.message || `Groq API gagal diproses (HTTP ${response.status}).`
-      });
-    }
-
-    // Extract the AI response text from Groq's response format
-    const aiText = data.choices?.[0]?.message?.content;
     if (!aiText) {
-      return res.status(500).json({
-        error: 'Groq API tidak mengembalikan respons yang valid.'
+      return res.status(502).json({
+        error: lastError || 'Groq API tidak mengembalikan respons yang valid dari model yang dicoba.'
       });
     }
 
