@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function for Groq AI Feedback
  * Endpoint: /api/groq
- * Multi-model fallback support for high reliability
+ * Multi-model fallback support using active Groq models
  */
 
 export default async function handler(req, res) {
@@ -35,13 +35,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Prompt text is required.' });
     }
 
-    // List of reliable Groq models to try in order of preference
+    // List of active, supported Groq models to try in order of preference
     const modelsToTry = [
       'llama-3.1-8b-instant',
       'llama-3.3-70b-versatile',
-      'llama3-70b-8192',
-      'mixtral-8x7b-32768',
-      'gemma2-9b-it'
+      'deepseek-r1-distill-llama-70b'
     ];
 
     let lastError = null;
