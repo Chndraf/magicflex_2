@@ -88,35 +88,34 @@ var translations = {
     aiPrompt: function (quizData) {
       var r = summarizeQuizForAI(quizData);
       var sulit = r.hard.map(function (d) {
-        return d.soal + " (" + (d.solved ? "selesai tapi butuh " + d.percobaan + "x coba" : "belum selesai, " + d.percobaan + "x coba") + "; jawaban siswa: " + d.jawabanSiswa + "; yang benar: " + d.jawabanBenar + ")";
+        return d.soal + " (" + (d.solved ? "selesai tapi butuh " + d.percobaan + "x coba" : "belum selesai, " + d.percobaan + "x coba") + "; jawaban murid: " + d.jawabanSiswa + "; yang benar: " + d.jawabanBenar + ")";
       }).join("\n") || "(tidak ada)";
-      return "Kamu adalah tutor CSS Flexbox yang ramah untuk siswa pemula. Beri saran belajar dari hasil game MagicFlex berikut.\n\n" +
-        "DATA SISWA:\n" +
+      return "Kamu adalah guru CSS Flexbox yang sabar dan ramah. Seorang murid pemula baru selesai bermain game MagicFlex. Tugasmu: jelaskan materi Flexbox yang perlu dia pelajari supaya paham cara kerjanya, seolah kamu mengajar langsung di kelas.\n\n" +
+        "DATA MURID:\n" +
         "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " dari 25 soal selesai)\n" +
-        "- Waktu pengerjaan: " + quizData.waktuPengerjaan + "\n" +
-        "- Soal selesai dengan lancar: " + (r.done.join(", ") || "(tidak ada)") + "\n" +
-        "- Soal yang sudah dicoba tapi sulit:\n" + sulit + "\n" +
-        "- Soal yang belum dicoba: " + (r.untouched.join(", ") || "(tidak ada)") + "\n" +
-        "- Properti di soal yang belum dicoba: " + (r.topics.join(", ") || "(tidak ada)") + "\n\n" +
+        "- Soal yang terasa sulit (sudah dicoba tapi butuh banyak percobaan atau belum selesai):\n" + sulit + "\n" +
+        "- Soal yang belum dicoba: " + r.untouched.length + " soal\n\n" +
+        "MATERI YANG PERLU DIJELASKAN (urut dari yang paling penting):\n" + flexNotesForAI(r, "id") + "\n\n" +
+        "ATURAN MENGAJAR:\n" +
+        "- Pilih 2 atau 3 materi dari daftar di atas, mulai dari yang paling atas. Jelaskan seperti ke murid yang belum pernah belajar Flexbox.\n" +
+        "- Untuk tiap materi: (1) fungsinya dalam satu kalimat sederhana, (2) perumpamaan singkat, bisa pakai bola sihir dan portal di game atau benda sehari-hari, (3) satu contoh kode pendek dalam backtick beserta hasilnya, misalnya `justify-content: center` (bola ke tengah).\n" +
+        "- Jangan memberi tugas atau perintah seperti \"kerjakan soal Q6\". Fokus menjelaskan materi. Nomor soal boleh disebut hanya untuk menunjuk soal yang terasa sulit.\n" +
+        "- Materi dari soal yang belum dicoba BUKAN kelemahan. Jangan bilang murid lemah atau bingung di situ. Katakan saja materi itu akan dia temui nanti.\n" +
+        "- Jika tidak ada soal yang sulit, jelaskan materi sebagai pendalaman.\n\n" +
         "ATURAN BAHASA:\n" +
-        "- Tulis untuk siswa yang baru belajar. Pakai kata sehari-hari dan kalimat pendek (maksimal 15 kata per kalimat).\n" +
-        "- Sapa dengan \"kamu\". Nada ramah dan menyemangati seperti teman, tetap sopan.\n" +
-        "- Hindari kata rumit seperti \"pola kelemahan\", \"konsep dasar\", \"distribusi\", \"kombinasi\", \"main axis\", \"cross axis\".\n" +
-        "- Tulis nama properti CSS dengan tanda backtick, misalnya `flex-direction`. Saat menyebut properti, jelaskan fungsinya dengan kata sederhana, misalnya `justify-content` (mengatur posisi bola ke kiri-kanan).\n\n" +
-        "ATURAN ISI:\n" +
-        "- Soal yang belum dicoba BUKAN kelemahan. Jangan bilang siswa bingung atau lemah di soal itu. Cukup ajak mencobanya.\n" +
-        "- Kelemahan hanya boleh disimpulkan dari soal yang sudah dicoba tapi sulit.\n" +
-        "- Jika tidak ada soal sulit, bagian \"Yang perlu dilatih\" diisi tantangan kecil, misalnya mengerjakan soal berikutnya tanpa melihat petunjuk.\n" +
-        "- Setiap langkah harus bisa langsung dilakukan di game. Sebut nomor soalnya jika perlu.\n\n" +
+        "- Pakai kata sehari-hari dan kalimat pendek (maksimal 15 kata per kalimat).\n" +
+        "- Sapa dengan \"kamu\". Nada ramah dan menyemangati seperti guru yang peduli, tetap sopan.\n" +
+        "- Hindari kata rumit seperti \"pola kelemahan\", \"konsep dasar\", \"distribusi\", \"kombinasi\". Istilah \"main axis\" dan \"cross axis\" cukup disebut sekali dalam kurung setelah penjelasan sederhana, misalnya \"arah utama (main axis)\".\n" +
+        "- Tulis nama properti CSS dan nilainya dengan tanda backtick.\n\n" +
         "FORMAT JAWABAN (ikuti persis, tanpa judul lain, tanpa tabel):\n" +
         "Satu atau dua kalimat apresiasi sesuai skor.\n\n" +
-        "**Yang perlu dilatih**\n" +
-        "Satu atau dua kalimat.\n\n" +
-        "**Langkah selanjutnya**\n" +
-        "1. Langkah pertama, satu kalimat.\n" +
-        "2. Langkah kedua, satu kalimat.\n" +
-        "3. Langkah ketiga, satu kalimat.\n\n" +
-        "Total maksimal 110 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan rekomendasikan website lain.";
+        "**Yang perlu kamu pelajari**\n" +
+        "1. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode.\n" +
+        "2. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode.\n" +
+        "3. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode. (boleh hanya 2 materi)\n\n" +
+        "**Kunci mengingat**\n" +
+        "Satu kalimat trik mudah untuk mengingat materi di atas.\n\n" +
+        "Total maksimal 170 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan rekomendasikan website lain.";
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
@@ -223,33 +222,32 @@ var translations = {
       var hard = r.hard.map(function (d) {
         return d.soal + " (" + (d.solved ? "solved but needed " + d.percobaan + " tries" : "not solved, " + d.percobaan + " tries") + "; student answer: " + d.jawabanSiswa + "; correct: " + d.jawabanBenar + ")";
       }).join("\n") || "(none)";
-      return "You are a friendly CSS Flexbox tutor for beginner students. Give learning advice based on the MagicFlex game results below.\n\n" +
+      return "You are a patient, friendly CSS Flexbox teacher. A beginner student just finished the MagicFlex game. Your job: explain the Flexbox topics they should study to truly understand how it works, as if teaching them in class.\n\n" +
         "STUDENT DATA:\n" +
         "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " of 25 questions completed)\n" +
-        "- Time spent: " + quizData.waktuPengerjaan + "\n" +
-        "- Solved smoothly: " + (r.done.join(", ") || "(none)") + "\n" +
-        "- Tried but struggled:\n" + hard + "\n" +
-        "- Not attempted yet: " + (r.untouched.join(", ") || "(none)") + "\n" +
-        "- Properties in the unattempted questions: " + (r.topics.join(", ") || "(none)") + "\n\n" +
+        "- Questions that felt hard (tried but needed many attempts or not solved):\n" + hard + "\n" +
+        "- Questions not attempted yet: " + r.untouched.length + "\n\n" +
+        "TOPICS TO EXPLAIN (most important first):\n" + flexNotesForAI(r, "en") + "\n\n" +
+        "TEACHING RULES:\n" +
+        "- Pick 2 or 3 topics from the list above, starting from the top. Explain as if to a student who has never studied Flexbox.\n" +
+        "- For each topic: (1) what it does in one simple sentence, (2) a short analogy, using the magic balls and portal from the game or everyday objects, (3) one short code example in backticks with its result, e.g. `justify-content: center` (ball goes to the middle).\n" +
+        "- Do not assign tasks like \"do question Q6\". Focus on explaining the topic. You may mention a question number only to point at one that felt hard.\n" +
+        "- Topics from unattempted questions are NOT weaknesses. Never say the student is weak or confused there. Just say they will meet it later.\n" +
+        "- If nothing felt hard, explain the topics as a deeper review.\n\n" +
         "LANGUAGE RULES:\n" +
-        "- Write for a beginner. Use everyday words and short sentences (max 15 words each).\n" +
-        "- Address the student as \"you\". Be friendly and encouraging.\n" +
-        "- Avoid jargon like \"weakness pattern\", \"main axis\", \"cross axis\".\n" +
-        "- Wrap CSS property names in backticks, e.g. `flex-direction`. When you mention one, explain what it does in simple words, e.g. `justify-content` (moves the balls left or right).\n\n" +
-        "CONTENT RULES:\n" +
-        "- Unattempted questions are NOT weaknesses. Never say the student is confused or weak there. Just invite them to try.\n" +
-        "- Only infer weaknesses from questions that were tried but struggled.\n" +
-        "- If nothing was difficult, fill \"What to practice\" with a small challenge, e.g. do the next question without hints.\n" +
-        "- Every step must be doable right inside the game. Mention question numbers when useful.\n\n" +
+        "- Use everyday words and short sentences (max 15 words each).\n" +
+        "- Address the student as \"you\". Be warm and encouraging like a caring teacher.\n" +
+        "- Avoid jargon like \"weakness pattern\" or \"fundamentals\". Mention \"main axis\" and \"cross axis\" only after a simple explanation, e.g. \"the main direction (main axis)\".\n" +
+        "- Wrap CSS property names and values in backticks.\n\n" +
         "ANSWER FORMAT (follow exactly, no other headings, no tables):\n" +
         "One or two sentences of praise matching the score.\n\n" +
-        "**What to practice**\n" +
-        "One or two sentences.\n\n" +
-        "**Next steps**\n" +
-        "1. First step, one sentence.\n" +
-        "2. Second step, one sentence.\n" +
-        "3. Third step, one sentence.\n\n" +
-        "Max 110 words total, in English. Finish every sentence. Do not recommend other websites.";
+        "**What to study**\n" +
+        "1. **`property-name`**: what it does, an analogy, and a code example.\n" +
+        "2. **`property-name`**: what it does, an analogy, and a code example.\n" +
+        "3. **`property-name`**: what it does, an analogy, and a code example. (2 topics is fine)\n\n" +
+        "**Memory trick**\n" +
+        "One sentence with an easy trick to remember the topics above.\n\n" +
+        "Max 170 words total, in English. Finish every sentence. Do not recommend other websites.";
     },
     // Learning Materials Section
     materiTitle: "Learning Materials",
@@ -267,15 +265,47 @@ var translations = {
   },
 };
 
+// Urutan materi mengikuti urutan soal di game (dari yang paling dasar).
+var FLEX_ORDER = ["justify-content", "align-items", "flex-direction", "order", "align-self", "flex-wrap", "flex-flow", "align-content"];
+
+// Bahan ajar singkat per properti, supaya penjelasan AI akurat dan tidak mengarang.
+var FLEX_NOTES = {
+  id: {
+    "justify-content": "mengatur posisi item sepanjang arah utama (main axis), yaitu arah barisnya. Kalau barisnya mendatar, item bergeser ke kiri, tengah, atau kanan. Nilai: flex-start, center, flex-end, space-between, space-around, space-evenly.",
+    "align-items": "mengatur posisi item pada arah silang (cross axis), yaitu arah yang tegak lurus dengan barisnya. Kalau barisnya mendatar, item bergeser ke atas, tengah, atau bawah. Nilai: flex-start, center, flex-end, stretch.",
+    "flex-direction": "mengubah arah utama: row (kiri ke kanan), row-reverse (kanan ke kiri), column (atas ke bawah), column-reverse (bawah ke atas). Saat column, justify-content jadi mengatur atas-bawah dan align-items jadi kiri-kanan, karena arahnya tertukar.",
+    "order": "mengubah urutan tampil item tanpa mengubah HTML. Angka lebih kecil tampil lebih dulu. Nilai awalnya 0, boleh negatif.",
+    "align-self": "mengatur posisi SATU item saja pada arah silang. Untuk item itu, ia mengalahkan align-items milik container.",
+    "flex-wrap": "menentukan apakah item boleh turun ke baris baru saat tempatnya tidak muat. nowrap = tetap satu baris, wrap = turun ke baris baru, wrap-reverse = baris barunya naik ke atas.",
+    "flex-flow": "singkatan untuk menulis flex-direction dan flex-wrap sekaligus, misalnya flex-flow: column wrap.",
+    "align-content": "mengatur jarak antar baris saat item terbagi ke beberapa baris. Hanya berpengaruh kalau flex-wrap: wrap aktif dan barisnya lebih dari satu."
+  },
+  en: {
+    "justify-content": "positions items along the main axis, the direction of the row. For a horizontal row, items move left, center, or right. Values: flex-start, center, flex-end, space-between, space-around, space-evenly.",
+    "align-items": "positions items on the cross axis, the direction perpendicular to the row. For a horizontal row, items move to the top, center, or bottom. Values: flex-start, center, flex-end, stretch.",
+    "flex-direction": "changes the main axis: row (left to right), row-reverse (right to left), column (top to bottom), column-reverse (bottom to top). With column, justify-content controls up-down and align-items controls left-right, because the axes swap.",
+    "order": "changes the display order of items without touching the HTML. Smaller numbers come first. Default is 0, negatives are allowed.",
+    "align-self": "positions ONE item only on the cross axis. For that item it overrides the container's align-items.",
+    "flex-wrap": "decides whether items may drop to a new line when there is no room. nowrap = stay on one line, wrap = drop to a new line, wrap-reverse = new lines go upward.",
+    "flex-flow": "shorthand to write flex-direction and flex-wrap together, e.g. flex-flow: column wrap.",
+    "align-content": "spaces out the lines when items are split into several lines. Only works when flex-wrap: wrap is active and there is more than one line."
+  }
+};
+
 // Ringkas data kuis untuk prompt AI. Soal yang belum dicoba BUKAN kelemahan,
 // jadi dipisahkan dari soal yang sudah dicoba tapi sulit.
+// focus = properti yang layak dijelaskan, urut prioritas: dari soal sulit dulu,
+// lalu dari soal yang belum dicoba (urut materi).
 function summarizeQuizForAI(quizData) {
-  var done = [], hard = [], untouched = [], topics = {};
+  var done = 0, hard = [], untouched = [], hardProps = [], untouchedProps = [];
+  function propsOf(d) {
+    return d.jawabanBenar.split("; ").map(function (p) { return p.split(":")[0].trim(); });
+  }
   quizData.perQuestionDetails.forEach(function (d) {
     var solved = d.status === "Benar";
     if (!solved && d.percobaan === 0) {
       untouched.push(d.soal);
-      d.jawabanBenar.split("; ").forEach(function (p) { topics[p.split(":")[0].trim()] = true; });
+      untouchedProps = untouchedProps.concat(propsOf(d));
     } else if (!solved || d.percobaan > 3) {
       hard.push({
         soal: d.soal,
@@ -284,11 +314,22 @@ function summarizeQuizForAI(quizData) {
         jawabanSiswa: d.jawabanSiswa.replace(/\s+/g, " ").slice(0, 80),
         jawabanBenar: d.jawabanBenar
       });
+      hardProps = hardProps.concat(propsOf(d));
     } else {
-      done.push(d.soal);
+      done++;
     }
   });
-  return { done: done, hard: hard, untouched: untouched, topics: Object.keys(topics) };
+  untouchedProps.sort(function (a, b) { return FLEX_ORDER.indexOf(a) - FLEX_ORDER.indexOf(b); });
+  var focus = hardProps.concat(untouchedProps).filter(function (p, i, all) { return all.indexOf(p) === i; });
+  return { done: done, hard: hard, untouched: untouched, focus: focus, review: focus.length === 0 };
+}
+
+// Daftar materi untuk prompt; kalau semua soal sudah beres, beri materi pendalaman.
+function flexNotesForAI(summary, language) {
+  var focus = summary.review ? ["flex-direction", "justify-content", "align-items"] : summary.focus;
+  return focus.slice(0, 4).map(function (p) {
+    return "- `" + p + "`: " + FLEX_NOTES[language][p];
+  }).join("\n");
 }
 
 function t(key, language) {

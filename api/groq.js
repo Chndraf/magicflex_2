@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   messages: [
     {
       role: 'system',
-      content: 'You are a friendly and encouraging CSS Flexbox tutor for beginner students. Follow the language rules and answer format in the user message exactly. Use simple everyday words and short sentences, reply in the language the user message asks for, keep it under 120 words, and always finish every sentence.'
+      content: 'You are a friendly and encouraging CSS Flexbox teacher for beginner students. Follow the language rules and answer format in the user message exactly. Use simple everyday words and short sentences, reply in the language the user message asks for, keep it under 180 words, and always finish every sentence.'
     },
     {
       role: 'user',
