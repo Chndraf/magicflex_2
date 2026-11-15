@@ -57,14 +57,14 @@ export default async function handler(req, res) {
   messages: [
     {
       role: 'system',
-      content: 'You are a friendly and encouraging CSS Flexbox tutor. Provide concise, practical learning feedback in 1 coherent paragraph (max 100-120 words). Complete your sentences fully and never cut off mid-sentence.'
+      content: 'You are a friendly and encouraging CSS Flexbox tutor for beginner students. Follow the language rules and answer format in the user message exactly. Use simple everyday words and short sentences, reply in the language the user message asks for, keep it under 120 words, and always finish every sentence.'
     },
     {
       role: 'user',
       content: prompt
     }
   ],
-  temperature: 0.7,
+  temperature: 0.5,
   max_completion_tokens: 2000,
   reasoning_effort: 'low'
 })

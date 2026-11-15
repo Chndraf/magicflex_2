@@ -1583,3 +1583,11 @@ body.swal2-shown {
     transform: scale(1);
   }
 }
+
+/* Saran Pembelajaran AI */
+.ai-feedback-container p { margin: 0 0 8px; }
+.ai-feedback-container p:last-child { margin-bottom: 0; }
+.ai-feedback-container .ai-heading { margin: 12px 0 4px; color: #0f172a; }
+.ai-feedback-container ol { margin: 0 0 4px; padding-left: 22px; }
+.ai-feedback-container li { margin-bottom: 6px; }
+.ai-feedback-container code { background: #e2e8f0; padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }

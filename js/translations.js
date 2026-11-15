@@ -86,22 +86,37 @@ var translations = {
     cannotAdvanceTitle: "Belum Bisa Lanjut",
     cannotAdvanceText: '<p style="font-size:0.95em;">Kamu harus <strong>menyelesaikan soal saat ini</strong> terlebih dahulu sebelum bisa pindah ke soal lain.</p>',
     aiPrompt: function (quizData) {
-      var detailSoal = quizData.perQuestionDetails.map(function (d) {
-        return d.soal + " [" + (d.status === "Benar" ? "Selesai" : "Belum Selesai") + ", " + d.percobaan + "x coba, jawaban: " + d.jawabanSiswa + ", benar: " + d.jawabanBenar + "]";
-      }).join("; ");
-      return "Kamu adalah tutor CSS Flexbox yang ramah. Analisis hasil belajar siswa berikut dari game MagicFlex.\n\n" +
+      var r = summarizeQuizForAI(quizData);
+      var sulit = r.hard.map(function (d) {
+        return d.soal + " (" + (d.solved ? "selesai tapi butuh " + d.percobaan + "x coba" : "belum selesai, " + d.percobaan + "x coba") + "; jawaban siswa: " + d.jawabanSiswa + "; yang benar: " + d.jawabanBenar + ")";
+      }).join("\n") || "(tidak ada)";
+      return "Kamu adalah tutor CSS Flexbox yang ramah untuk siswa pemula. Beri saran belajar dari hasil game MagicFlex berikut.\n\n" +
         "DATA SISWA:\n" +
-        "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " selesai, " + quizData.wrongAnswers + " belum dijawab dari 25 soal)\n" +
+        "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " dari 25 soal selesai)\n" +
         "- Waktu pengerjaan: " + quizData.waktuPengerjaan + "\n" +
-        "- Performa: " + quizData.performanceLevel + "\n" +
-        "- Soal yang belum dijawab: " + quizData.wrongDetails + "\n\n" +
-        "DETAIL PER SOAL:\n" + detailSoal + "\n\n" +
-        "INSTRUKSI:\n" +
-        "1. Puji pencapaian siswa secara singkat sesuai proporsi skornya.\n" +
-        "2. Identifikasi pola kelemahan spesifik dari soal yang belum dijawab atau yang membutuhkan banyak percobaan (misal: siswa sering keliru di flex-direction vs justify-content, atau lupa semicolon).\n" +
-        "3. Jika ada soal dengan percobaan banyak (>3x), sebutkan bahwa konsep itu perlu diperkuat.\n" +
-        "4. Berikan 2-3 langkah konkret yang harus dilakukan siswa selanjutnya untuk memperbaiki pemahaman konsep Flexbox tersebut.\n" +
-        "5. Tulis dalam 1 paragraf utuh, bahasa Indonesia, tanpa heading/list/markdown, maksimal 100 kata. Selesaikan kalimat dengan sempurna dan jangan sampai terpotong di tengah jalan. Jangan rekomendasikan website lain.";
+        "- Soal selesai dengan lancar: " + (r.done.join(", ") || "(tidak ada)") + "\n" +
+        "- Soal yang sudah dicoba tapi sulit:\n" + sulit + "\n" +
+        "- Soal yang belum dicoba: " + (r.untouched.join(", ") || "(tidak ada)") + "\n" +
+        "- Properti di soal yang belum dicoba: " + (r.topics.join(", ") || "(tidak ada)") + "\n\n" +
+        "ATURAN BAHASA:\n" +
+        "- Tulis untuk siswa yang baru belajar. Pakai kata sehari-hari dan kalimat pendek (maksimal 15 kata per kalimat).\n" +
+        "- Sapa dengan \"kamu\". Nada ramah dan menyemangati seperti teman, tetap sopan.\n" +
+        "- Hindari kata rumit seperti \"pola kelemahan\", \"konsep dasar\", \"distribusi\", \"kombinasi\", \"main axis\", \"cross axis\".\n" +
+        "- Tulis nama properti CSS dengan tanda backtick, misalnya `flex-direction`. Saat menyebut properti, jelaskan fungsinya dengan kata sederhana, misalnya `justify-content` (mengatur posisi bola ke kiri-kanan).\n\n" +
+        "ATURAN ISI:\n" +
+        "- Soal yang belum dicoba BUKAN kelemahan. Jangan bilang siswa bingung atau lemah di soal itu. Cukup ajak mencobanya.\n" +
+        "- Kelemahan hanya boleh disimpulkan dari soal yang sudah dicoba tapi sulit.\n" +
+        "- Jika tidak ada soal sulit, bagian \"Yang perlu dilatih\" diisi tantangan kecil, misalnya mengerjakan soal berikutnya tanpa melihat petunjuk.\n" +
+        "- Setiap langkah harus bisa langsung dilakukan di game. Sebut nomor soalnya jika perlu.\n\n" +
+        "FORMAT JAWABAN (ikuti persis, tanpa judul lain, tanpa tabel):\n" +
+        "Satu atau dua kalimat apresiasi sesuai skor.\n\n" +
+        "**Yang perlu dilatih**\n" +
+        "Satu atau dua kalimat.\n\n" +
+        "**Langkah selanjutnya**\n" +
+        "1. Langkah pertama, satu kalimat.\n" +
+        "2. Langkah kedua, satu kalimat.\n" +
+        "3. Langkah ketiga, satu kalimat.\n\n" +
+        "Total maksimal 110 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan rekomendasikan website lain.";
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
@@ -204,22 +219,37 @@ var translations = {
     cannotAdvanceTitle: "Cannot Continue Yet",
     cannotAdvanceText: '<p style="font-size:0.95em;">You must <strong>complete the current question</strong> before moving to another question.</p>',
     aiPrompt: function (quizData) {
-      var detailSoal = quizData.perQuestionDetails.map(function (d) {
-        return d.soal + " [" + d.status + ", " + d.percobaan + "x tries, answer: " + d.jawabanSiswa + ", correct: " + d.jawabanBenar + "]";
-      }).join("; ");
-      return "You are a friendly CSS Flexbox tutor. Analyze the following student results from the MagicFlex game.\n\n" +
+      var r = summarizeQuizForAI(quizData);
+      var hard = r.hard.map(function (d) {
+        return d.soal + " (" + (d.solved ? "solved but needed " + d.percobaan + " tries" : "not solved, " + d.percobaan + " tries") + "; student answer: " + d.jawabanSiswa + "; correct: " + d.jawabanBenar + ")";
+      }).join("\n") || "(none)";
+      return "You are a friendly CSS Flexbox tutor for beginner students. Give learning advice based on the MagicFlex game results below.\n\n" +
         "STUDENT DATA:\n" +
-        "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " completed, " + quizData.wrongAnswers + " unanswered out of 25 questions)\n" +
+        "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " of 25 questions completed)\n" +
         "- Time spent: " + quizData.waktuPengerjaan + "\n" +
-        "- Performance: " + quizData.performanceLevel + "\n" +
-        "- Unanswered questions: " + quizData.wrongDetails + "\n\n" +
-        "PER-QUESTION DETAIL:\n" + detailSoal + "\n\n" +
-        "INSTRUCTIONS:\n" +
-        "1. Briefly praise the student's achievement proportional to their score.\n" +
-        "2. Identify specific weakness patterns from unanswered questions or those with multiple attempts (e.g. confusing flex-direction with justify-content, or forgetting semicolons).\n" +
-        "3. If any question took many attempts (>3x), mention that concept needs reinforcement.\n" +
-        "4. Give 2-3 concrete next steps the student should take to improve those Flexbox concepts.\n" +
-        "5. Write in 1 cohesive paragraph, in English, no headings/lists/markdown, max 100 words. Complete all sentences fully and do not cut off. Do not recommend other websites.";
+        "- Solved smoothly: " + (r.done.join(", ") || "(none)") + "\n" +
+        "- Tried but struggled:\n" + hard + "\n" +
+        "- Not attempted yet: " + (r.untouched.join(", ") || "(none)") + "\n" +
+        "- Properties in the unattempted questions: " + (r.topics.join(", ") || "(none)") + "\n\n" +
+        "LANGUAGE RULES:\n" +
+        "- Write for a beginner. Use everyday words and short sentences (max 15 words each).\n" +
+        "- Address the student as \"you\". Be friendly and encouraging.\n" +
+        "- Avoid jargon like \"weakness pattern\", \"main axis\", \"cross axis\".\n" +
+        "- Wrap CSS property names in backticks, e.g. `flex-direction`. When you mention one, explain what it does in simple words, e.g. `justify-content` (moves the balls left or right).\n\n" +
+        "CONTENT RULES:\n" +
+        "- Unattempted questions are NOT weaknesses. Never say the student is confused or weak there. Just invite them to try.\n" +
+        "- Only infer weaknesses from questions that were tried but struggled.\n" +
+        "- If nothing was difficult, fill \"What to practice\" with a small challenge, e.g. do the next question without hints.\n" +
+        "- Every step must be doable right inside the game. Mention question numbers when useful.\n\n" +
+        "ANSWER FORMAT (follow exactly, no other headings, no tables):\n" +
+        "One or two sentences of praise matching the score.\n\n" +
+        "**What to practice**\n" +
+        "One or two sentences.\n\n" +
+        "**Next steps**\n" +
+        "1. First step, one sentence.\n" +
+        "2. Second step, one sentence.\n" +
+        "3. Third step, one sentence.\n\n" +
+        "Max 110 words total, in English. Finish every sentence. Do not recommend other websites.";
     },
     // Learning Materials Section
     materiTitle: "Learning Materials",
@@ -236,6 +266,30 @@ var translations = {
     orderDesc: "Changes the visual order of items without modifying the HTML structure."
   },
 };
+
+// Ringkas data kuis untuk prompt AI. Soal yang belum dicoba BUKAN kelemahan,
+// jadi dipisahkan dari soal yang sudah dicoba tapi sulit.
+function summarizeQuizForAI(quizData) {
+  var done = [], hard = [], untouched = [], topics = {};
+  quizData.perQuestionDetails.forEach(function (d) {
+    var solved = d.status === "Benar";
+    if (!solved && d.percobaan === 0) {
+      untouched.push(d.soal);
+      d.jawabanBenar.split("; ").forEach(function (p) { topics[p.split(":")[0].trim()] = true; });
+    } else if (!solved || d.percobaan > 3) {
+      hard.push({
+        soal: d.soal,
+        solved: solved,
+        percobaan: d.percobaan,
+        jawabanSiswa: d.jawabanSiswa.replace(/\s+/g, " ").slice(0, 80),
+        jawabanBenar: d.jawabanBenar
+      });
+    } else {
+      done.push(d.soal);
+    }
+  });
+  return { done: done, hard: hard, untouched: untouched, topics: Object.keys(topics) };
+}
 
 function t(key, language) {
   var selectedLanguage = translations[language] ? language : "id";
