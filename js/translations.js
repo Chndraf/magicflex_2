@@ -88,34 +88,35 @@ var translations = {
     aiPrompt: function (quizData) {
       var r = summarizeQuizForAI(quizData);
       var sulit = r.hard.map(function (d) {
-        return d.soal + " (" + (d.solved ? "selesai tapi butuh " + d.percobaan + "x coba" : "belum selesai, " + d.percobaan + "x coba") + "; jawaban murid: " + d.jawabanSiswa + "; yang benar: " + d.jawabanBenar + ")";
+        return d.soal + " (" + (d.solved ? "selesai tetapi membutuhkan " + d.percobaan + " percobaan" : "belum selesai, " + d.percobaan + " percobaan") + "; jawaban siswa: " + d.jawabanSiswa + "; jawaban benar: " + d.jawabanBenar + ")";
       }).join("\n") || "(tidak ada)";
-      return "Kamu adalah guru CSS Flexbox yang sabar dan ramah. Seorang murid pemula baru selesai bermain game MagicFlex. Tugasmu: jelaskan materi Flexbox yang perlu dia pelajari supaya paham cara kerjanya, seolah kamu mengajar langsung di kelas.\n\n" +
-        "DATA MURID:\n" +
+      return "Kamu adalah guru CSS Flexbox. Seorang siswa pemula baru menyelesaikan game MagicFlex. Tugasmu menyusun saran pembelajaran berupa materi yang perlu dipelajari siswa, dengan gaya penulisan bahan ajar di sekolah.\n\n" +
+        "DATA SISWA:\n" +
         "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " dari 25 soal selesai)\n" +
-        "- Soal yang terasa sulit (sudah dicoba tapi butuh banyak percobaan atau belum selesai):\n" + sulit + "\n" +
+        "- Soal yang terasa sulit (sudah dicoba tetapi membutuhkan banyak percobaan atau belum selesai):\n" + sulit + "\n" +
         "- Soal yang belum dicoba: " + r.untouched.length + " soal\n\n" +
         "MATERI YANG PERLU DIJELASKAN (urut dari yang paling penting):\n" + flexNotesForAI(r, "id") + "\n\n" +
-        "ATURAN MENGAJAR:\n" +
-        "- Pilih 2 atau 3 materi dari daftar di atas, mulai dari yang paling atas. Jelaskan seperti ke murid yang belum pernah belajar Flexbox.\n" +
-        "- Untuk tiap materi: (1) fungsinya dalam satu kalimat sederhana, (2) perumpamaan singkat, bisa pakai bola sihir dan portal di game atau benda sehari-hari, (3) satu contoh kode pendek dalam backtick beserta hasilnya, misalnya `justify-content: center` (bola ke tengah).\n" +
-        "- Jangan memberi tugas atau perintah seperti \"kerjakan soal Q6\". Fokus menjelaskan materi. Nomor soal boleh disebut hanya untuk menunjuk soal yang terasa sulit.\n" +
-        "- Materi dari soal yang belum dicoba BUKAN kelemahan. Jangan bilang murid lemah atau bingung di situ. Katakan saja materi itu akan dia temui nanti.\n" +
-        "- Jika tidak ada soal yang sulit, jelaskan materi sebagai pendalaman.\n\n" +
         "ATURAN BAHASA:\n" +
-        "- Pakai kata sehari-hari dan kalimat pendek (maksimal 15 kata per kalimat).\n" +
-        "- Sapa dengan \"kamu\". Nada ramah dan menyemangati seperti guru yang peduli, tetap sopan.\n" +
-        "- Hindari kata rumit seperti \"pola kelemahan\", \"konsep dasar\", \"distribusi\", \"kombinasi\". Istilah \"main axis\" dan \"cross axis\" cukup disebut sekali dalam kurung setelah penjelasan sederhana, misalnya \"arah utama (main axis)\".\n" +
-        "- Tulis nama properti CSS dan nilainya dengan tanda backtick.\n\n" +
+        "- Gunakan bahasa Indonesia baku dan formal seperti bahan ajar di sekolah. Kalimat jelas dan ringkas (maksimal 20 kata).\n" +
+        "- Sapa siswa dengan \"kamu\". Jangan memakai bahasa gaul, seruan, emoji, atau kalimat yang terlalu santai.\n" +
+        "- Jangan memakai perumpamaan atau kiasan (misalnya bola menari, portal, meja), slogan, atau kutipan hiasan. Jelaskan langsung dan faktual.\n" +
+        "- Istilah teknis seperti sumbu utama dan sumbu silang dijelaskan dalam satu kalimat saat pertama muncul.\n" +
+        "- Tulis nama properti dan nilai CSS dengan tanda backtick tunggal. DILARANG memakai blok kode (```). Tulis contoh kode di dalam kalimat.\n\n" +
+        "ATURAN ISI:\n" +
+        "- Pilih 2 atau 3 materi dari daftar di atas, mulai dari yang paling atas. Gunakan hanya informasi dari daftar itu.\n" +
+        "- Untuk tiap materi tulis: (1) pengertian dan fungsinya, (2) dua atau tiga nilai yang sering dipakai, (3) satu contoh penerapan beserta hasilnya, misalnya: Contoh: `justify-content: center;` menempatkan item di tengah sumbu utama.\n" +
+        "- Jangan memberi tugas seperti \"kerjakan soal Q6\". Nomor soal boleh disebut hanya untuk menunjuk soal yang terasa sulit.\n" +
+        "- Materi dari soal yang belum dicoba BUKAN kelemahan. Jangan menyebut siswa lemah atau bingung di situ. Cukup katakan materi itu akan dipelajari pada soal berikutnya.\n" +
+        "- Jika tidak ada soal yang sulit, jelaskan materi sebagai pendalaman.\n\n" +
         "FORMAT JAWABAN (ikuti persis, tanpa judul lain, tanpa tabel):\n" +
-        "Satu atau dua kalimat apresiasi sesuai skor.\n\n" +
-        "**Yang perlu kamu pelajari**\n" +
-        "1. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode.\n" +
-        "2. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode.\n" +
-        "3. **`nama-properti`**: fungsi, perumpamaan, dan contoh kode. (boleh hanya 2 materi)\n\n" +
-        "**Kunci mengingat**\n" +
-        "Satu kalimat trik mudah untuk mengingat materi di atas.\n\n" +
-        "Total maksimal 170 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan rekomendasikan website lain.";
+        "Satu atau dua kalimat ringkasan capaian: sebutkan jumlah soal yang selesai dari 25 soal, lalu satu kalimat dorongan yang wajar tanpa tanda seru.\n\n" +
+        "**Materi yang perlu dipelajari**\n" +
+        "1. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan.\n" +
+        "2. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan.\n" +
+        "3. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan. (boleh hanya 2 materi)\n\n" +
+        "**Ringkasan**\n" +
+        "Satu kalimat yang menghubungkan materi di atas secara akurat. Jangan memakai slogan atau tanda kutip.\n\n" +
+        "Total maksimal 170 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan merekomendasikan situs lain.";
     },
     // Materi Pembelajaran Section
     materiTitle: "Materi Pembelajaran",
@@ -220,33 +221,34 @@ var translations = {
     aiPrompt: function (quizData) {
       var r = summarizeQuizForAI(quizData);
       var hard = r.hard.map(function (d) {
-        return d.soal + " (" + (d.solved ? "solved but needed " + d.percobaan + " tries" : "not solved, " + d.percobaan + " tries") + "; student answer: " + d.jawabanSiswa + "; correct: " + d.jawabanBenar + ")";
+        return d.soal + " (" + (d.solved ? "solved but needed " + d.percobaan + " attempts" : "not solved, " + d.percobaan + " attempts") + "; student answer: " + d.jawabanSiswa + "; correct: " + d.jawabanBenar + ")";
       }).join("\n") || "(none)";
-      return "You are a patient, friendly CSS Flexbox teacher. A beginner student just finished the MagicFlex game. Your job: explain the Flexbox topics they should study to truly understand how it works, as if teaching them in class.\n\n" +
+      return "You are a CSS Flexbox teacher. A beginner student just finished the MagicFlex game. Write a study recommendation listing the topics the student should learn, in the style of school learning material.\n\n" +
         "STUDENT DATA:\n" +
         "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " of 25 questions completed)\n" +
         "- Questions that felt hard (tried but needed many attempts or not solved):\n" + hard + "\n" +
         "- Questions not attempted yet: " + r.untouched.length + "\n\n" +
         "TOPICS TO EXPLAIN (most important first):\n" + flexNotesForAI(r, "en") + "\n\n" +
-        "TEACHING RULES:\n" +
-        "- Pick 2 or 3 topics from the list above, starting from the top. Explain as if to a student who has never studied Flexbox.\n" +
-        "- For each topic: (1) what it does in one simple sentence, (2) a short analogy, using the magic balls and portal from the game or everyday objects, (3) one short code example in backticks with its result, e.g. `justify-content: center` (ball goes to the middle).\n" +
-        "- Do not assign tasks like \"do question Q6\". Focus on explaining the topic. You may mention a question number only to point at one that felt hard.\n" +
-        "- Topics from unattempted questions are NOT weaknesses. Never say the student is weak or confused there. Just say they will meet it later.\n" +
-        "- If nothing felt hard, explain the topics as a deeper review.\n\n" +
         "LANGUAGE RULES:\n" +
-        "- Use everyday words and short sentences (max 15 words each).\n" +
-        "- Address the student as \"you\". Be warm and encouraging like a caring teacher.\n" +
-        "- Avoid jargon like \"weakness pattern\" or \"fundamentals\". Mention \"main axis\" and \"cross axis\" only after a simple explanation, e.g. \"the main direction (main axis)\".\n" +
-        "- Wrap CSS property names and values in backticks.\n\n" +
+        "- Use formal, textbook-style English. Clear, concise sentences (max 20 words).\n" +
+        "- Address the student as \"you\". No slang, exclamations, emojis, or overly casual phrasing.\n" +
+        "- No analogies or metaphors (e.g. dancing balls, portals, tables), slogans, or decorative quotes. Explain directly and factually.\n" +
+        "- Explain technical terms such as main axis and cross axis in one sentence when first mentioned.\n" +
+        "- Wrap CSS property names and values in single backticks. NEVER use code blocks (```). Put code examples inside sentences.\n\n" +
+        "CONTENT RULES:\n" +
+        "- Pick 2 or 3 topics from the list above, starting from the top. Use only the information in that list.\n" +
+        "- For each topic write: (1) the definition and purpose, (2) two or three commonly used values, (3) one example with its result, e.g. Example: `justify-content: center;` places items at the center of the main axis.\n" +
+        "- Do not assign tasks like \"do question Q6\". Mention a question number only to point at one that felt hard.\n" +
+        "- Topics from unattempted questions are NOT weaknesses. Never say the student is weak or confused there. Just say it will be covered in later questions.\n" +
+        "- If nothing felt hard, present the topics as a deeper review.\n\n" +
         "ANSWER FORMAT (follow exactly, no other headings, no tables):\n" +
-        "One or two sentences of praise matching the score.\n\n" +
-        "**What to study**\n" +
-        "1. **`property-name`**: what it does, an analogy, and a code example.\n" +
-        "2. **`property-name`**: what it does, an analogy, and a code example.\n" +
-        "3. **`property-name`**: what it does, an analogy, and a code example. (2 topics is fine)\n\n" +
-        "**Memory trick**\n" +
-        "One sentence with an easy trick to remember the topics above.\n\n" +
+        "One or two sentences summarizing progress: state how many of the 25 questions were completed, then one reasonable encouraging sentence without exclamation marks.\n\n" +
+        "**Topics to study**\n" +
+        "1. **`property-name`**: definition, common values, and an example.\n" +
+        "2. **`property-name`**: definition, common values, and an example.\n" +
+        "3. **`property-name`**: definition, common values, and an example. (2 topics is fine)\n\n" +
+        "**Summary**\n" +
+        "One sentence that accurately connects the topics above. No slogans or quotation marks.\n\n" +
         "Max 170 words total, in English. Finish every sentence. Do not recommend other websites.";
     },
     // Learning Materials Section
@@ -271,14 +273,14 @@ var FLEX_ORDER = ["justify-content", "align-items", "flex-direction", "order", "
 // Bahan ajar singkat per properti, supaya penjelasan AI akurat dan tidak mengarang.
 var FLEX_NOTES = {
   id: {
-    "justify-content": "mengatur posisi item sepanjang arah utama (main axis), yaitu arah barisnya. Kalau barisnya mendatar, item bergeser ke kiri, tengah, atau kanan. Nilai: flex-start, center, flex-end, space-between, space-around, space-evenly.",
-    "align-items": "mengatur posisi item pada arah silang (cross axis), yaitu arah yang tegak lurus dengan barisnya. Kalau barisnya mendatar, item bergeser ke atas, tengah, atau bawah. Nilai: flex-start, center, flex-end, stretch.",
-    "flex-direction": "mengubah arah utama: row (kiri ke kanan), row-reverse (kanan ke kiri), column (atas ke bawah), column-reverse (bawah ke atas). Saat column, justify-content jadi mengatur atas-bawah dan align-items jadi kiri-kanan, karena arahnya tertukar.",
-    "order": "mengubah urutan tampil item tanpa mengubah HTML. Angka lebih kecil tampil lebih dulu. Nilai awalnya 0, boleh negatif.",
-    "align-self": "mengatur posisi SATU item saja pada arah silang. Untuk item itu, ia mengalahkan align-items milik container.",
-    "flex-wrap": "menentukan apakah item boleh turun ke baris baru saat tempatnya tidak muat. nowrap = tetap satu baris, wrap = turun ke baris baru, wrap-reverse = baris barunya naik ke atas.",
+    "justify-content": "mengatur posisi item sepanjang sumbu utama (main axis), yaitu arah susunan item. Pada susunan mendatar, item dapat diletakkan di kiri, tengah, atau kanan. Nilai: flex-start, center, flex-end, space-between, space-around, space-evenly.",
+    "align-items": "mengatur posisi item pada sumbu silang (cross axis), yaitu arah yang tegak lurus dengan sumbu utama. Pada susunan mendatar, item dapat diletakkan di atas, tengah, atau bawah. Nilai: flex-start, center, flex-end, stretch.",
+    "flex-direction": "menentukan arah sumbu utama: row (kiri ke kanan), row-reverse (kanan ke kiri), column (atas ke bawah), column-reverse (bawah ke atas). Pada column, justify-content mengatur posisi atas-bawah dan align-items mengatur posisi kiri-kanan karena kedua sumbu bertukar.",
+    "order": "mengubah urutan tampil item tanpa mengubah HTML. Item dengan angka lebih kecil tampil lebih dahulu. Nilai awalnya 0 dan boleh negatif.",
+    "align-self": "mengatur posisi satu item saja pada sumbu silang. Untuk item tersebut, nilainya menggantikan align-items milik container.",
+    "flex-wrap": "menentukan apakah item boleh pindah ke baris baru saat ruang tidak cukup. nowrap = tetap satu baris, wrap = pindah ke baris baru, wrap-reverse = baris baru muncul ke arah atas.",
     "flex-flow": "singkatan untuk menulis flex-direction dan flex-wrap sekaligus, misalnya flex-flow: column wrap.",
-    "align-content": "mengatur jarak antar baris saat item terbagi ke beberapa baris. Hanya berpengaruh kalau flex-wrap: wrap aktif dan barisnya lebih dari satu."
+    "align-content": "mengatur jarak antarbaris saat item terbagi ke beberapa baris. Hanya berpengaruh jika flex-wrap: wrap aktif dan jumlah barisnya lebih dari satu."
   },
   en: {
     "justify-content": "positions items along the main axis, the direction of the row. For a horizontal row, items move left, center, or right. Values: flex-start, center, flex-end, space-between, space-around, space-evenly.",

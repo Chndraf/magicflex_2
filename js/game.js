@@ -678,7 +678,7 @@ var game = {
 
     // Generate cache key based on sessionId so every unique game session gets its own fresh feedback
     const sessionId = quizData.sessionId || game.sessionId || 'default';
-    const cacheKey = `ai_feedback_v2_${sessionId}_${quizData.score}_${quizData.correctAnswers}`;
+    const cacheKey = `ai_feedback_v3_${sessionId}_${quizData.score}_${quizData.correctAnswers}`;
     
     // Check if cached feedback exists (valid for 24 hours)
     const cachedData = this.getAIFeedbackCache(cacheKey);
@@ -742,28 +742,46 @@ var game = {
   },
 
   /**
-   * Ubah teks AI (markdown ringan) jadi HTML aman: paragraf, judul tebal, daftar bernomor, `kode`.
+   * Ubah teks AI (markdown ringan) jadi HTML aman: paragraf, judul tebal, daftar bernomor,
+   * `kode` inline, dan blok kode ``` (jaga-jaga bila AI tetap membuatnya).
    */
   formatAIFeedback: function(text) {
-    const inline = (s) => s
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const inline = (s) => esc(s)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/`([^`]+)`/g, "<code>$1</code>");
     let html = "";
     let items = [];
+    let code = null;
+    let n = 0; // penomoran dihitung sendiri; reset di tiap judul
     const flush = () => {
-      if (items.length) html += "<ol>" + items.map((i) => "<li>" + i + "</li>").join("") + "</ol>";
+      if (items.length) html += "<ol>" + items.join("") + "</ol>";
       items = [];
     };
+    const endCode = () => {
+      if (code) html += "<pre><code>" + esc(code.join("\n")) + "</code></pre>";
+      code = null;
+    };
     text.split(/\n+/).forEach((raw) => {
+      if (raw.trim().startsWith("```")) {
+        if (code) endCode(); else { flush(); code = []; }
+        return;
+      }
+      if (code) { code.push(raw); return; }
       const line = raw.trim();
       if (!line) return;
-      const item = line.match(/^(?:\d+[.)]|[-*•])\s+(.*)/);
-      if (item) { items.push(inline(item[1])); return; }
+      // value=n menjaga nomor tetap berurutan walau daftar terpotong paragraf atau blok kode.
+      const item = line.match(/^(?:(\d+)[.)]|[-*•])\s+(.*)/);
+      if (item) {
+        items.push(`<li${item[1] ? ` value="${++n}"` : ""}>${inline(item[2])}</li>`);
+        return;
+      }
       flush();
       const isHeading = /^\*\*[^*]+\*\*:?$/.test(line);
+      if (isHeading) n = 0;
       html += `<p${isHeading ? ' class="ai-heading"' : ""}>${inline(line)}</p>`;
     });
+    endCode();
     flush();
     return html;
   },
