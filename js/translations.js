@@ -94,8 +94,9 @@ var translations = {
         "DATA SISWA:\n" +
         "- Skor: " + quizData.score + "% (" + quizData.correctAnswers + " dari 25 soal selesai)\n" +
         "- Soal yang terasa sulit (sudah dicoba tetapi membutuhkan banyak percobaan atau belum selesai):\n" + sulit + "\n" +
-        "- Soal yang belum dicoba: " + r.untouched.length + " soal\n\n" +
-        "MATERI YANG PERLU DIJELASKAN (urut dari yang paling penting):\n" + flexNotesForAI(r, "id") + "\n\n" +
+        "- Soal yang belum dicoba: " + r.untouched.length + " soal\n" +
+        "- Properti yang sudah dikerjakan dengan lancar: " + (r.masteredProps.join(", ") || "(belum ada)") + "\n\n" +
+        "MATERI YANG PERLU DIJELASKAN (tiap materi diberi label):\n" + flexNotesForAI(r, "id") + "\n\n" +
         "ATURAN BAHASA:\n" +
         "- Gunakan bahasa Indonesia baku dan formal seperti bahan ajar di sekolah. Kalimat jelas dan ringkas (maksimal 20 kata).\n" +
         "- Sapa siswa dengan \"kamu\". Jangan memakai bahasa gaul, seruan, emoji, atau kalimat yang terlalu santai.\n" +
@@ -103,17 +104,18 @@ var translations = {
         "- Istilah teknis seperti sumbu utama dan sumbu silang dijelaskan dalam satu kalimat saat pertama muncul.\n" +
         "- Tulis nama properti dan nilai CSS dengan tanda backtick tunggal. DILARANG memakai blok kode (```). Tulis contoh kode di dalam kalimat.\n\n" +
         "ATURAN ISI:\n" +
-        "- Pilih 2 atau 3 materi dari daftar di atas, mulai dari yang paling atas. Gunakan hanya informasi dari daftar itu.\n" +
+        "- Jelaskan semua materi dalam daftar di atas, sesuai urutannya. Gunakan hanya informasi dari daftar itu. Jangan menjelaskan properti yang tidak ada dalam daftar, termasuk properti yang sudah dikerjakan dengan lancar.\n" +
         "- Untuk tiap materi tulis: (1) pengertian dan fungsinya, (2) dua atau tiga nilai yang sering dipakai, (3) satu contoh penerapan beserta hasilnya, misalnya: Contoh: `justify-content: center;` menempatkan item di tengah sumbu utama.\n" +
         "- Jangan memberi tugas seperti \"kerjakan soal Q6\". Nomor soal boleh disebut hanya untuk menunjuk soal yang terasa sulit.\n" +
-        "- Materi dari soal yang belum dicoba BUKAN kelemahan. Jangan menyebut siswa lemah atau bingung di situ. Cukup katakan materi itu akan dipelajari pada soal berikutnya.\n" +
-        "- Jika tidak ada soal yang sulit, jelaskan materi sebagai pendalaman.\n\n" +
+        "- Label [belum dikerjakan]: siswa belum mengerjakan soal yang memakai properti ini. Tulis bahwa materi ini akan dipelajari pada soal berikutnya. BUKAN kelemahan, jangan menyebut siswa lemah atau bingung.\n" +
+        "- Label [perlu diulang]: siswa membutuhkan beberapa kali percobaan pada soal yang memakai properti ini. Tulis bahwa materi ini perlu diulang, boleh menyebut nomor soalnya.\n" +
+        "- Label [pendalaman]: semua soal sudah selesai dengan lancar. Jelaskan sebagai pendalaman.\n\n" +
         "FORMAT JAWABAN (ikuti persis, tanpa judul lain, tanpa tabel):\n" +
-        "Satu atau dua kalimat ringkasan capaian: sebutkan jumlah soal yang selesai dari 25 soal, lalu satu kalimat dorongan yang wajar tanpa tanda seru.\n\n" +
+        "Satu atau dua kalimat ringkasan capaian: sebutkan jumlah soal yang selesai dari 25 soal, lalu satu kalimat dorongan yang wajar tanpa tanda seru. Boleh menyebut singkat properti yang sudah dikuasai.\n\n" +
         "**Materi yang perlu dipelajari**\n" +
         "1. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan.\n" +
         "2. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan.\n" +
-        "3. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan. (boleh hanya 2 materi)\n\n" +
+        "3. **`nama-properti`**: pengertian, nilai yang sering dipakai, dan contoh penerapan. (sesuaikan jumlah butir dengan jumlah materi)\n\n" +
         "**Ringkasan**\n" +
         "Satu kalimat yang menghubungkan materi di atas secara akurat. Jangan memakai slogan atau tanda kutip.\n\n" +
         "Total maksimal 170 kata, bahasa Indonesia. Selesaikan semua kalimat sampai tuntas. Jangan merekomendasikan situs lain.";
@@ -227,8 +229,9 @@ var translations = {
         "STUDENT DATA:\n" +
         "- Score: " + quizData.score + "% (" + quizData.correctAnswers + " of 25 questions completed)\n" +
         "- Questions that felt hard (tried but needed many attempts or not solved):\n" + hard + "\n" +
-        "- Questions not attempted yet: " + r.untouched.length + "\n\n" +
-        "TOPICS TO EXPLAIN (most important first):\n" + flexNotesForAI(r, "en") + "\n\n" +
+        "- Questions not attempted yet: " + r.untouched.length + "\n" +
+        "- Properties already completed smoothly: " + (r.masteredProps.join(", ") || "(none yet)") + "\n\n" +
+        "TOPICS TO EXPLAIN (each topic has a label):\n" + flexNotesForAI(r, "en") + "\n\n" +
         "LANGUAGE RULES:\n" +
         "- Use formal, textbook-style English. Clear, concise sentences (max 20 words).\n" +
         "- Address the student as \"you\". No slang, exclamations, emojis, or overly casual phrasing.\n" +
@@ -236,17 +239,18 @@ var translations = {
         "- Explain technical terms such as main axis and cross axis in one sentence when first mentioned.\n" +
         "- Wrap CSS property names and values in single backticks. NEVER use code blocks (```). Put code examples inside sentences.\n\n" +
         "CONTENT RULES:\n" +
-        "- Pick 2 or 3 topics from the list above, starting from the top. Use only the information in that list.\n" +
+        "- Explain every topic in the list above, in order. Use only the information in that list. Do not explain properties that are not in the list, including properties already completed smoothly.\n" +
         "- For each topic write: (1) the definition and purpose, (2) two or three commonly used values, (3) one example with its result, e.g. Example: `justify-content: center;` places items at the center of the main axis.\n" +
         "- Do not assign tasks like \"do question Q6\". Mention a question number only to point at one that felt hard.\n" +
-        "- Topics from unattempted questions are NOT weaknesses. Never say the student is weak or confused there. Just say it will be covered in later questions.\n" +
-        "- If nothing felt hard, present the topics as a deeper review.\n\n" +
+        "- Label [not attempted yet]: the student has not done a question using this property. Say it will be covered in later questions. NOT a weakness, never call the student weak or confused.\n" +
+        "- Label [needs review]: the student needed several attempts on a question using this property. Say it needs review; you may mention the question number.\n" +
+        "- Label [deeper review]: every question was completed smoothly. Present it as a deeper review.\n\n" +
         "ANSWER FORMAT (follow exactly, no other headings, no tables):\n" +
-        "One or two sentences summarizing progress: state how many of the 25 questions were completed, then one reasonable encouraging sentence without exclamation marks.\n\n" +
+        "One or two sentences summarizing progress: state how many of the 25 questions were completed, then one reasonable encouraging sentence without exclamation marks. You may briefly mention properties already mastered.\n\n" +
         "**Topics to study**\n" +
         "1. **`property-name`**: definition, common values, and an example.\n" +
         "2. **`property-name`**: definition, common values, and an example.\n" +
-        "3. **`property-name`**: definition, common values, and an example. (2 topics is fine)\n\n" +
+        "3. **`property-name`**: definition, common values, and an example. (match the number of items to the number of topics)\n\n" +
         "**Summary**\n" +
         "One sentence that accurately connects the topics above. No slogans or quotation marks.\n\n" +
         "Max 170 words total, in English. Finish every sentence. Do not recommend other websites.";
@@ -294,21 +298,26 @@ var FLEX_NOTES = {
   }
 };
 
-// Ringkas data kuis untuk prompt AI. Soal yang belum dicoba BUKAN kelemahan,
-// jadi dipisahkan dari soal yang sudah dicoba tapi sulit.
-// focus = properti yang layak dijelaskan, urut prioritas: dari soal sulit dulu,
-// lalu dari soal yang belum dicoba (urut materi).
+// Soal dianggap "butuh beberapa kali percobaan" bila dijalankan sebanyak ini atau lebih.
+var HARD_TRIES = 3;
+
+// Ringkas data kuis untuk prompt AI. Materi yang perlu dipelajari ada dua jenis:
+//  - hardProps: properti di soal yang belum selesai / butuh beberapa kali percobaan (perlu diulang)
+//  - newProps : properti yang belum pernah dikerjakan siswa sama sekali (belum dikerjakan)
+// Properti yang sudah dikerjakan lancar (mastered) tidak dijelaskan lagi, walau muncul di soal berikutnya.
 function summarizeQuizForAI(quizData) {
-  var done = 0, hard = [], untouched = [], hardProps = [], untouchedProps = [];
+  var hard = [], untouched = [], hardProps = [], mastered = {}, newProps = [];
   function propsOf(d) {
     return d.jawabanBenar.split("; ").map(function (p) { return p.split(":")[0].trim(); });
   }
+  function byOrder(a, b) { return FLEX_ORDER.indexOf(a) - FLEX_ORDER.indexOf(b); }
+  function unique(p, i, all) { return all.indexOf(p) === i; }
+
   quizData.perQuestionDetails.forEach(function (d) {
     var solved = d.status === "Benar";
     if (!solved && d.percobaan === 0) {
-      untouched.push(d.soal);
-      untouchedProps = untouchedProps.concat(propsOf(d));
-    } else if (!solved || d.percobaan > 3) {
+      untouched.push(d);
+    } else if (!solved || d.percobaan >= HARD_TRIES) {
       hard.push({
         soal: d.soal,
         solved: solved,
@@ -318,19 +327,41 @@ function summarizeQuizForAI(quizData) {
       });
       hardProps = hardProps.concat(propsOf(d));
     } else {
-      done++;
+      propsOf(d).forEach(function (p) { mastered[p] = true; });
     }
   });
-  untouchedProps.sort(function (a, b) { return FLEX_ORDER.indexOf(a) - FLEX_ORDER.indexOf(b); });
-  var focus = hardProps.concat(untouchedProps).filter(function (p, i, all) { return all.indexOf(p) === i; });
-  return { done: done, hard: hard, untouched: untouched, focus: focus, review: focus.length === 0 };
+  hardProps = hardProps.filter(unique).sort(byOrder);
+  untouched.forEach(function (d) {
+    propsOf(d).forEach(function (p) {
+      if (!mastered[p] && hardProps.indexOf(p) === -1) newProps.push(p);
+    });
+  });
+  newProps = newProps.filter(unique).sort(byOrder);
+  var masteredProps = Object.keys(mastered).filter(function (p) { return hardProps.indexOf(p) === -1; }).sort(byOrder);
+  return {
+    hard: hard,
+    untouched: untouched.map(function (d) { return d.soal; }),
+    hardProps: hardProps,
+    newProps: newProps,
+    masteredProps: masteredProps
+  };
 }
 
-// Daftar materi untuk prompt; kalau semua soal sudah beres, beri materi pendalaman.
+// Daftar materi untuk prompt: maksimal 2 properti "perlu diulang", sisanya "belum dikerjakan" (total 3).
+// Kalau tidak ada keduanya (semua sudah lancar), beri materi pendalaman.
+var FLEX_LABELS = {
+  id: { hard: "perlu diulang", fresh: "belum dikerjakan", deep: "pendalaman" },
+  en: { hard: "needs review", fresh: "not attempted yet", deep: "deeper review" }
+};
 function flexNotesForAI(summary, language) {
-  var focus = summary.review ? ["flex-direction", "justify-content", "align-items"] : summary.focus;
-  return focus.slice(0, 4).map(function (p) {
-    return "- `" + p + "`: " + FLEX_NOTES[language][p];
+  var labels = FLEX_LABELS[language];
+  var items = summary.hardProps.slice(0, 2).map(function (p) { return [p, labels.hard]; })
+    .concat(summary.newProps.map(function (p) { return [p, labels.fresh]; })).slice(0, 3);
+  if (!items.length) {
+    items = ["flex-direction", "justify-content", "align-items"].map(function (p) { return [p, labels.deep]; });
+  }
+  return items.map(function (it) {
+    return "- `" + it[0] + "` [" + it[1] + "]: " + FLEX_NOTES[language][it[0]];
   }).join("\n");
 }
 
