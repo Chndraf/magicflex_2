@@ -13,8 +13,10 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![jQuery](https://img.shields.io/badge/jQuery-0769AD?style=flat&logo=jquery&logoColor=white)](https://jquery.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Groq](https://img.shields.io/badge/Groq-F55036?style=flat&logoColor=white)](https://groq.com/)
 
-[🎮 Demo](https://magicflex.vercel.app/) | [📚 Dokumentasi](#level-dan-materi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
+[🎮 Demo](https://magicflex.my.id/) | [📚 Dokumentasi](#level-dan-materi) | [🚀 Instalasi](#instalasi) | [👥 Tim](#tim-pengembang)
 
 </div>
 
@@ -25,30 +27,32 @@
 - [Tentang Proyek](#tentang-proyek)
 - [Fitur Utama](#fitur-utama)
 - [Tech Stack](#tech-stack)
-- [Struktur File](#struktur-file) 
-- [Instalasi](#instalasi) 
-- [Cara Bermain](#cara-bermain) 
-- [Sistem Scoring](#sistem-scoring) 
-- [Integrasi Google Sheets](#integrasi-google-sheets) 
-- [Level & Materi](#level-dan-materi) 
-- [Konfigurasi](#konfigurasi) 
-- [Tim Pengembang](#tim-pengembang) 
-- [Lisensi](#lisensi) 
+- [Struktur File](#struktur-file)
+- [Instalasi](#instalasi)
+- [Cara Bermain](#cara-bermain)
+- [Sistem Scoring](#sistem-scoring)
+- [Integrasi Google Sheets](#integrasi-google-sheets)
+- [AI Feedback (Groq)](#ai-feedback-groq)
+- [Level & Materi](#level-dan-materi)
+- [Konfigurasi](#konfigurasi)
+- [Troubleshooting](#troubleshooting)
+- [Tim Pengembang](#tim-pengembang)
+- [Lisensi](#lisensi)
 
 ---
 <a id="tentang-proyek"></a>
 ## 🎯 Tentang Proyek
 
-**MagicFlex** adalah platform pembelajaran CSS Flexbox yang interaktif dan gamified. Siswa belajar dengan menyelesaikan 25 misi progresif, mendapat umpan balik secara langsung, pelacakan progres otomatis ke Google Sheets, dan masukan berbasis AI.
+**MagicFlex** adalah platform pembelajaran CSS Flexbox yang interaktif dan gamified. Siswa belajar dengan menyelesaikan 25 misi progresif, mendapat umpan balik secara langsung, progres tercatat otomatis ke Google Sheets, dan menerima saran belajar berbasis AI (Groq) di akhir permainan.
 
 ### 🌟 Keunggulan
 
 - ✨ **Game-based Learning** - Belajar sambil bermain dengan misi menarik
 - 🎨 **Visual Feedback** - Lihat hasil kode CSS secara langsung
 - 📊 **Tracking Otomatis** - Data kemajuan tersimpan di Google Sheets
-- 🤖 **AI-Powered Hints** - Tips cerdas dari AI
-- ⏱️ **Timer System** - Mode pengujian dengan timer 60 detik
-- 🌐 **Multilingual** - Mendukung Bahasa Indonesia & English
+- 🤖 **AI Learning Advice** - Saran materi yang perlu dipelajari, dibuat oleh AI (Groq) berdasarkan hasil siswa
+- ⏱️ **Timer System** - Batas waktu pengerjaan 30 menit
+- 🌐 **Multilingual** - Antarmuka mendukung Bahasa Indonesia & English
 - 📱 **Responsive Design** - Optimal di desktop dan mobile
 
 ---
@@ -56,43 +60,50 @@
 ## 🚀 Fitur Utama
 
 ### 1. **Core Gameplay**
-- 25 level progresif mengajarkan semua properti Flexbox
-- Live code editor dengan validasi sintaks real-time
+- 25 level progresif mengajarkan properti Flexbox
+- Live code editor dengan validasi sintaks
 - Visual rendering langsung dari kode CSS
 - Progress tracking dengan indikator visual
-- Auto-save progress ke localStorage
-- Navigasi level: Previous/Next + direct jump
+- Auto-save progres ke localStorage
+- Navigasi level: Previous/Next + direct jump ke level yang sudah dibuka
 
 ### 2. **Sistem Timer**
-- Countdown 60 detik per sesi untuk pengujian
-- Tampilan ganda (desktop & mobile)
-- Sinkronisasi waktu real-time ke spreadsheet
+- Countdown **30 menit** per sesi permainan
+- Tampilan ganda (desktop & mobile), format `MM:SS`
+- Waktu mulai disimpan di localStorage sehingga tetap akurat saat halaman di-refresh
+- Saat waktu habis, game berakhir otomatis dan hasil dikirim ke spreadsheet
 
 ### 3. **Integrasi Google Sheets**
-- **Live Sync**: Data real-time selama gameplay
-- **Auto-save**: Update otomatis saat level diselesaikan
-- **Timeout Handler**: Submit otomatis saat waktu habis
-- **Data Cleanup**: Hapus data stale session
+- **Live Sync**: Data dikirim otomatis selama gameplay
+- **Auto-save**: Update saat level dikerjakan atau diselesaikan
+- **Penanda Meninggalkan Permainan**: Siswa yang menutup halaman sebelum selesai tetap tercatat, dengan penanda khusus
+- **Session ID**: Satu sesi permainan = satu baris di spreadsheet
 
-### 4. **AI Feedback (Google Gemini)**
-- Hint cerdas tanpa bocoran jawaban
-- Analisis kesalahan kode CSS
-- Saran perbaikan berbasis konteks
-- Fallback UI jika API gagal
+### 4. **AI Feedback (Groq)**
+- Saran pembelajaran dibuat otomatis saat popup hasil kuis terbuka
+- Berisi materi Flexbox yang perlu dipelajari, berdasarkan soal yang sulit atau belum selesai
+- Dijalankan lewat Vercel Serverless Function (`/api/groq`), API key tidak pernah dikirim ke browser
+- Fallback otomatis antar model Groq dan cache hasil 24 jam
+- Pesan error yang jelas jika API gagal
 
 ### 5. **Analisis Error**
-- Parser CSS pintar deteksi syntax error
-- Deteksi typo dengan algoritma Levenshtein
-- Validasi properti Flexbox
-- Error modal dengan pesan color-coded
+- Parser CSS deteksi syntax error (titik dua / titik koma hilang)
+- Deteksi typo nilai dan nama properti dengan algoritma Levenshtein
+- Validasi properti Flexbox yang tidak diperlukan atau tidak dikenali
+- Error modal dengan pesan dan petunjuk
 
 ### 6. **Progress Indicators**
-- Visual dots grid (6 kolom)
+- Visual dots grid untuk 25 level
 - Status: Solved ✅, Current 🎯, Locked 🔒
 - Klik navigasi ke level yang sudah dibuka
 
-### 7. **Fitur Tambahan**
-- WhatsApp sharing hasil final
+### 7. **Landing Page**
+- Beranda, video tutorial (YouTube), materi interaktif per properti Flexbox, dan bagian Tentang Kami
+- Handout PDF untuk diunduh (`images/Handout Magicflex Flexbox CSS.pdf`)
+- Pemilih bahasa (ID/EN) yang diteruskan ke halaman game
+
+### 8. **Fitur Tambahan**
+- WhatsApp sharing skor akhir
 - Reset game dengan konfirmasi
 - View Transitions API untuk animasi smooth
 - Interactive CSS tooltips dengan contoh
@@ -106,16 +117,17 @@
 - **CSS3** - Styling & animasi custom
 - **Tailwind CSS** (CDN) - Utility-first framework
 - **jQuery 3.6.0** - DOM manipulation & event handling
-- **SweetAlert2 v11** - Beautiful modals & popups
+- **SweetAlert2 v11** - Modal & popup
 
 ### Fonts & Icons
 - **Google Fonts**: Space Grotesk, Libre Caslon Text
 - **Material Symbols Outlined** - Icon library
 
-### Backend Integration
-- **Google Apps Script** - Server-side spreadsheet management
-- **Google Gemini AI** - Intelligent feedback system
-- **Google Sheets API** - Real-time progress tracking
+### Backend & Integrasi
+- **Vercel** - Hosting statis + Serverless Functions (Node.js 24.x)
+- **Groq API** - AI feedback (`openai/gpt-oss-20b`, fallback `openai/gpt-oss-120b`)
+- **Google Apps Script** - Backend penyimpanan ke spreadsheet
+- **Google Sheets** - Pencatatan progres siswa
 
 ---
 <a id="struktur-file"></a>
@@ -123,30 +135,41 @@
 
 ```
 magicflex_2/
-├── index.html                 # Landing page dengan intro game
+├── index.html                 # Landing page (beranda, tutorial, materi, tentang kami)
 ├── game.html                  # Interface game utama
 ├── favicon.ico
-├── google-apps-script.js      # Backend Apps Script untuk Sheets
-├── SWEETALERT_FIX.md         # Dokumentasi fix SweetAlert2
+├── google-apps-script.js      # Backend Apps Script untuk Google Sheets
+├── package.json               # Metadata project & script Vercel
+├── vercel.json                # Rewrites (/game) & security headers
+├── robots.txt / sitemap.xml   # SEO
+├── .env.example               # Contoh environment variable (GROQ_API_KEY)
+├── SWEETALERT_FIX.md          # Dokumentasi fix SweetAlert2
 ├── README.md                  # Dokumentasi proyek (file ini)
 │
+├── api/
+│   ├── groq.js               # Serverless function AI feedback (DIPAKAI game)
+│   └── gemini.js             # Sisa versi lama, tidak dipanggil oleh game
+│
 ├── css/
-│   ├── style.css             # Main game styles (1581 baris)
+│   ├── style.css             # Main game styles (1595 baris)
 │   └── custom.css            # Animasi & efek kustom (85 baris)
 │
 ├── js/
-│   ├── game.js               # Core game logic (2048 baris)
-│   ├── levels.js             # 25 definisi level (281 baris)
-│   ├── messages.js           # Dukungan multilingual (37 baris)
+│   ├── game.js               # Core game logic: timer, validasi, sync, hasil (2138 baris)
+│   ├── levels.js             # 25 definisi level (280 baris)
+│   ├── translations.js       # Teks UI ID/EN & prompt AI (403 baris)
+│   ├── messages.js           # Teks tambahan (29 baris)
 │   ├── docs.js               # Dokumentasi CSS tooltips (34 baris)
+│   ├── config.js             # Loader konfigurasi browser, tanpa API key (72 baris)
+│   ├── dashboard-translations.js  # Terjemahan landing page (80 baris)
 │   └── tailwind-config.js    # Konfigurasi tema Tailwind (135 baris)
 │
 └── images/
-    ├── bg.png                # Background mistis
+    ├── bg.png, tumbnail.png, logo.svg   # Background, banner, logo
     ├── Bola*.svg             # Magic ball elements (Air, Api, Tanah)
     ├── portal*.png           # Portal target elements
     ├── element *.svg         # Elemen dekoratif (1-5)
-    ├── *.jpg                 # Foto tim (Ima, Icha, Anike, Candra)
+    ├── ima/icha/anike/candra.jpg   # Foto tim
     └── Handout *.pdf         # Materi pembelajaran
 ```
 
@@ -157,6 +180,8 @@ magicflex_2/
 
 ### Prasyarat
 - Web browser modern (Chrome, Firefox, Edge, Safari)
+- Node.js 24.x dan [Vercel CLI](https://vercel.com/docs/cli) (`npm i -g vercel`)
+- Akun Groq dan API key dari [console.groq.com/keys](https://console.groq.com/keys)
 - Google Account untuk setup Sheets (opsional)
 
 ### Setup Lokal
@@ -167,47 +192,66 @@ magicflex_2/
    cd magicflex
    ```
 
-2. **Buka dengan live server**
+2. **Siapkan environment variable**
    ```bash
-   # Menggunakan Python
-   python -m http.server 8000
-   
-   # Atau menggunakan Node.js
-   npx live-server
+   cp .env.example .env
+   ```
+   Lalu isi `.env`:
+   ```
+   GROQ_API_KEY=isi_api_key_groq_anda
+   ```
+   > File `.env` sudah ada di `.gitignore`. Jangan pernah meng-commit API key.
+
+3. **Jalankan dengan Vercel Dev**
+   ```bash
+   npm run dev
    ```
 
-3. **Akses di browser**
+4. **Akses di browser**
    ```
-   http://localhost:8000/index.html
+   http://localhost:3000
    ```
+
+> ⚠️ Server statis biasa (`python -m http.server`, `live-server`) tetap bisa menjalankan game, tetapi endpoint `/api/groq` tidak tersedia sehingga **saran AI tidak akan muncul**. Gunakan `vercel dev` untuk menguji fitur AI.
+
+### Deploy ke Vercel
+
+1. Import repository ke Vercel (atau jalankan `npm run deploy`)
+2. Buka **Project Settings > Environment Variables**
+3. Tambahkan `GROQ_API_KEY` dengan API key Groq Anda
+4. Redeploy agar variable terbaca
 
 ### Setup Google Sheets Integration
 
 1. **Buat Google Spreadsheet baru**
 
-2. **Setup Apps Script**
+2. **Isi header di baris 1** (script tidak membuat header otomatis):
+   ```
+   A: Timestamp | B: Nama | C: No Absen | D: Skor | E: Waktu Pengerjaan
+   F-AD: Q1 ... Q25 (satu kolom per soal)
+   AE: Session ID (kolom internal, boleh disembunyikan)
+   ```
+
+3. **Setup Apps Script**
    - Buka Extensions > Apps Script
    - Copy isi file `google-apps-script.js`
    - Paste ke editor Apps Script
    - Save project
 
-3. **Deploy sebagai Web App**
+4. **Deploy sebagai Web App**
    - Klik Deploy > New deployment
    - Type: Web app
    - Execute as: Me
    - Who has access: Anyone
    - Copy Web App URL
 
-4. **Update URL di game.js**
+5. **Update URL di game.js**
    ```javascript
-   // Baris 34-35 di js/game.js
+   // js/game.js, properti googleScriptUrl (sekitar baris 36)
    googleScriptUrl: "PASTE_WEB_APP_URL_DISINI"
    ```
 
-5. **Format Header Spreadsheet** (otomatis dibuat, atau manual):
-   ```
-   Timestamp | Nama | No Absen | Skor | Waktu Pengerjaan | Soal 1 (Tries) | Soal 1 (Status) | ... | Soal 25 (Status)
-   ```
+> 🔄 Setiap kali `google-apps-script.js` diubah (misalnya durasi timer), salin ulang ke editor Apps Script lalu buat deployment versi baru (**Deploy > Manage deployments > Edit > New version**). Jika tidak, spreadsheet masih memakai kode lama.
 
 ---
 <a id="cara-bermain"></a>
@@ -216,43 +260,44 @@ magicflex_2/
 ### Alur Permainan
 
 1. **🚀 Start Game**
-   - Buka `game.html`
+   - Buka `game.html` (atau klik **Mulai Petualangan** di landing page)
    - Masukkan Nama & No Absen
-   - Timer pengujian 60 detik dimulai
+   - Timer **30 menit** dimulai
 
 2. **📝 Solve Levels**
    - Baca instruksi di panel kiri
    - Tulis kode CSS di editor "Editor Buku Sihir"
-   - Klik **Jalankan Sihir** untuk test kode
+   - Klik **Jalankan Sihir** untuk menguji kode
    - Lihat hasil visual di panel kanan
 
 3. **✅ Validasi**
-   - Jika benar: Bola mencapai portal ✨
-   - Jika salah: Error analysis muncul ❌
-   - Klik **Lanjut Soal Berikutnya** untuk next level
+   - Jika benar: bola mencapai portal ✨ dan lanjut ke soal berikutnya
+   - Jika salah: error analysis muncul ❌
+   - Soal harus diselesaikan terlebih dahulu sebelum pindah ke soal lain
 
 4. **🏆 Finish**
-   - Selesaikan 25 level atau waktu habis
-   - Lihat hasil akhir & feedback AI
+   - Selesaikan 25 level atau tunggu waktu habis
+   - Lihat hasil akhir dan saran belajar dari AI
    - Share ke WhatsApp (opsional)
 
 ### Tombol & Kontrol
 
 | Tombol | Fungsi |
 |--------|--------|
-| **Cast Spell** | Test kode CSS (dihitung sebagai percobaan) |
-| **Lanjut Soal Berikutnya** | Validasi final & lanjut ke level berikutnya |
-| **← →** | Navigasi Previous/Next level |
-| **Progress Dots** | Klik untuk jump ke level sebelumnya |
-| **Reset** | Mulai ulang dari level 1 (dengan konfirmasi) |
+| **Jalankan Sihir** | Menguji kode CSS (dihitung sebagai 1 percobaan) |
+| **‹ ›** | Navigasi Previous/Next level (lanjut hanya jika soal saat ini sudah benar) |
+| **Atur Ulang** | Menghapus kode di soal yang sedang dikerjakan (dengan konfirmasi) |
+| **Mulai Permainan Baru** | Mulai ulang dari level 1 (dengan konfirmasi) |
+| **Progress Dots** | Klik untuk pindah ke level yang sudah dibuka |
+| **ID / EN** | Ganti bahasa antarmuka |
 
 ### Tips Bermain
 
 💡 **Gunakan tooltip**: Klik kata `code` di instruksi untuk melihat dokumentasi CSS  
-💡 **Test berkala**: Klik Cast Spell untuk lihat efek setiap perubahan  
-💡 **Baca error**: Error analysis memberikan hint spesifik  
-💡 **Manfaatkan AI**: Klik "Dapatkan Masukan dari Gemini AI" jika stuck  
-💡 **Kelola waktu**: Timer 60 detik ini khusus untuk pengujian cepat  
+💡 **Test berkala**: Klik Jalankan Sihir untuk melihat efek setiap perubahan  
+💡 **Baca error**: Error analysis memberikan petunjuk spesifik  
+💡 **Kelola waktu**: Kamu punya 30 menit untuk 25 soal, jangan terlalu lama di satu soal  
+💡 **Jangan tutup halaman**: Jika ditutup sebelum selesai, hasilmu tercatat dengan penanda meninggalkan permainan  
 
 ---
 <a id="sistem-scoring"></a>
@@ -261,31 +306,31 @@ magicflex_2/
 ### Perhitungan Skor
 
 ```javascript
-Score = (Jumlah Level Solved / 25) × 100%
+Score = Math.round((Jumlah Level Solved / 25) × 100)
 ```
 
 ### Data yang Dicatat
 
 **Per Siswa:**
 - Nama
-- No Absen
+- No Absen (nomor numerik dinormalkan: `01`, `001`, dan `1` dianggap sama)
 - Skor akhir (%)
-- Waktu pengerjaan (maks. 60 detik untuk pengujian)
-- Timestamp submission
+- Waktu pengerjaan (maksimal 30 menit)
+- Timestamp submission terakhir
 
-**Per Level (1-25):**
-- **Tries**: Jumlah klik "Cast Spell" + "Lanjut Soal Berikutnya"
-- **Status**: "Benar" atau "Salah"
+**Per Level (Q1-Q25):**
+- **Percobaan**: Jumlah klik **Jalankan Sihir** (ditambah percobaan saat pindah level jika kode berubah)
+- **Status**: Selesai atau Belum Selesai
 
 ### Performance Level
 
 | Skor | Badge | Warna |
 |------|-------|-------|
-| ≥ 90% | 🌟 Excellent! | Hijau |
-| 80-89% | 🎯 Very Good! | Biru |
-| 70-79% | 👍 Good! | Ungu |
-| 60-69% | 📈 Fair | Orange |
-| < 60% | 💪 Keep Trying! | Merah |
+| ≥ 90% | 🌟 Luar Biasa! | Hijau |
+| 80-89% | 🎯 Sangat Baik! | Biru |
+| 70-79% | 👍 Baik! | Ungu |
+| 60-69% | 📈 Cukup Baik! | Orange |
+| < 60% | 💪 Tetap Semangat! | Merah |
 
 ---
 <a id="integrasi-google-sheets"></a>
@@ -295,15 +340,15 @@ Score = (Jumlah Level Solved / 25) × 100%
 
 ```mermaid
 graph LR
-    A[Game Frontend] -->|Cast Spell| B[liveSyncData]
-    A -->|Level Solved| B
+    A[Game Frontend] -->|Jalankan Sihir / Level Solved| B[liveSyncData]
     B -->|POST Request| C[Apps Script]
-    C -->|Update/Insert| D[Google Sheets]
-    A -->|Timer Expires| E[endGame]
+    C -->|Update/Insert per sessionId| D[Google Sheets]
+    A -->|Timer 30 menit habis| E[endGame → autoSaveData]
     E -->|Final Submit| C
-    A -->|Close Tab > 1min| F[handleTimeout]
-    F -->|DELETE Request| C
-    C -->|Delete Row| D
+    A -->|Tab ditutup sebelum selesai| F[saveAndClearSession]
+    F -->|Simpan + penanda meninggalkan| C
+    A -->|Dibuka lagi > 30 menit sejak mulai| G[handleTimeout]
+    G -->|Simpan + penanda meninggalkan, lalu reset| C
 ```
 
 ### Fungsi Backend (Apps Script)
@@ -311,48 +356,63 @@ graph LR
 #### **doPost(e)**
 Menerima POST request dari frontend:
 
-**Actions:**
-- **Default**: Update/insert data siswa
-- **`action=delete`**: Hapus baris siswa (cleanup session stale)
+**Parameter:** `nama`, `absen`, `skor`, `waktuPengerjaan`, `detailJawaban` (JSON), `sessionId`
 
 **Validasi:**
-- Nama & No Absen wajib
-- Proteksi bug: Hapus data jika waktu > 60 detik
+- Nama & No Absen wajib diisi
+- Proteksi bug: data **ditolak** jika waktu pengerjaan > 30 menit
+- `action=delete` tidak lagi menghapus apa pun (hanya dibalas sukses untuk kompatibilitas)
 
-**Data Stored:**
-```javascript
-{
-  Timestamp: Date,
-  Nama: String,
-  Absen: String,
-  Skor: Number (0-100),
-  Waktu Pengerjaan: String ("XX menit YY detik"),
-  "Soal 1 (Tries)": Number,
-  "Soal 1 (Status)": String ("Benar"/"Salah"),
-  // ... repeat for Soal 2-25
-}
-```
+**Cara kerja baris:**
+- Baris dicari berdasarkan `sessionId` (kolom AE). Jika ada, baris diperbarui. Jika tidak, baris baru dibuat.
+- Kolom Waktu Pengerjaan berwarna merah jika mengandung penanda "siswa meninggalkan permainan"
 
 ### Business Rules
 
 | Skenario | Data di Spreadsheet |
 |----------|---------------------|
-| Timer countdown habis (01:00 → 0:00) saat siswa aktif | ✅ **TERSIMPAN** |
-| Siswa close website, buka lagi setelah > 60 detik | ❌ **DIHAPUS** |
-| Bug sistem mengirim waktu > 60 detik | ❌ **DIHAPUS** (proteksi) |
+| Timer habis (30:00 → 0:00) saat siswa aktif | ✅ **TERSIMPAN** tanpa penanda |
+| Semua 25 level selesai | ✅ **TERSIMPAN** tanpa penanda |
+| Siswa menutup/meninggalkan halaman sebelum selesai | ✅ **TERSIMPAN** dengan penanda *(siswa meninggalkan permainan)* |
+| Siswa membuka lagi setelah > 30 menit sejak mulai | ✅ **TERSIMPAN** dengan penanda, lalu game direset |
+| Bug sistem mengirim waktu > 30 menit | ❌ **DITOLAK** (proteksi) |
 
 ### Format Spreadsheet
 
 ```
-| Timestamp        | Nama    | No Absen | Skor | Waktu Pengerjaan | Soal 1 (Tries) | Soal 1 (Status) | ... |
-|------------------|---------|----------|------|------------------|----------------|-----------------|-----|
-| 9/14/2026 08:30  | Chandra | 01       | 92   | 28 menit 15 detik| 2              | Benar           | ... |
+| Timestamp        | Nama    | No Absen | Skor | Waktu Pengerjaan   | Q1                          | Q2                          | ... | Q25 |
+|------------------|---------|----------|------|--------------------|-----------------------------|-----------------------------|-----|-----|
+| 9/14/2026 08:30  | Chandra | 1        | 92   | 28 menit 15 detik  | 2 kali percobaan (Selesai)  | 1 kali percobaan (Selesai)  | ... | -   |
 ```
 
+- Soal yang belum dicoba ditulis `-`
+- Waktu ditulis mengikuti bahasa yang dipakai siswa (`28 menit 15 detik` atau `28 minute(s) 15 second(s)`)
+
 **Warna Cell:**
-- 🟢 Hijau (#d9ead3): Status "Benar"
-- 🔴 Merah (#f4cccc): Status "Salah"
+- 🟢 Hijau (#d9ead3): Soal selesai
+- 🔴 Merah (#f4cccc): Sudah dicoba tetapi belum selesai
 - ⚪ Putih (#ffffff): Belum dikerjakan
+
+---
+<a id="ai-feedback-groq"></a>
+## 🤖 AI Feedback (Groq)
+
+Saran pembelajaran dibuat otomatis ketika popup hasil kuis terbuka. Alurnya:
+
+1. `game.js` merangkum hasil siswa: skor, soal yang sulit, soal yang belum dicoba, dan properti yang sudah dikuasai
+2. Prompt (Bahasa Indonesia atau English, sesuai bahasa aktif) dikirim ke `POST /api/groq`
+3. Serverless function memanggil Groq Chat Completions dengan model `openai/gpt-oss-20b`. Jika gagal, otomatis mencoba `openai/gpt-oss-120b`
+4. Jawaban ditampilkan di bagian **Saran Pembelajaran AI** dan disimpan di localStorage selama 24 jam (kunci berdasarkan session ID, skor, dan jumlah benar)
+
+**Karakteristik respons:** gaya bahan ajar formal, tanpa code block, maksimal sekitar 180 kata.
+
+**Environment variable:**
+
+| Nama | Keterangan |
+|------|------------|
+| `GROQ_API_KEY` | API key Groq. Wajib di `.env` (lokal) atau Environment Variables Vercel (produksi) |
+
+> `js/config.js` sengaja tidak memuat API key. Semua pemanggilan AI lewat server.
 
 ---
 
@@ -373,31 +433,31 @@ Konsep: Perataan vertikal (cross axis)
 - Level 5: `flex-end`
 - Level 6-7: Kombinasi dengan `justify-content`
 
-#### **Levels 8-10: `flex-direction`**
-Konsep: Arah sumbu utama
+#### **Levels 8-13: `flex-direction`**
+Konsep: Arah sumbu utama dan perubahan perilaku axis
 - Level 8: `row-reverse`
 - Level 9: `column`
-- Level 10: Kombinasi dengan alignment
-
-#### **Levels 11-13: Kombinasi Lanjut**
-Konsep: Memahami axis-switching behavior
+- Level 10-13: Kombinasi dengan `justify-content` dan `align-items` (termasuk `column-reverse`)
 
 #### **Levels 14-17: `order` & `align-self`**
 Konsep: Manipulasi individual item
-- Level 14-15: `order` property
-- Level 16-17: `align-self` override
+- Level 14-15: `order`
+- Level 16: `align-self`
+- Level 17: `align-self` dikombinasikan dengan `order`
 
 #### **Levels 18-20: `flex-wrap` & `flex-flow`**
 Konsep: Multi-line layouts
-- Level 18-19: `wrap` & `wrap-reverse`
+- Level 18: `wrap`
+- Level 19: `column` + `wrap`
 - Level 20: `flex-flow` shorthand
 
 #### **Levels 21-24: `align-content`**
 Konsep: Spacing untuk multi-line
-- Kombinasi kompleks dengan wrap
+- Level 21-22: `flex-start` dan `flex-end`
+- Level 23-24: Kombinasi kompleks dengan `column-reverse` dan `wrap-reverse`
 
 #### **Level 25: Final Exam**
-Konsep: Challenge gabungan semua properti
+Konsep: Challenge gabungan semua properti (`flex-direction`, `flex-wrap`, `align-content`, `justify-content`, `align-items`)
 
 ### Dokumentasi CSS (docs.js)
 
@@ -416,6 +476,23 @@ Tooltips interaktif untuk:
 ---
 <a id="konfigurasi"></a>
 ## ⚙️ Konfigurasi
+
+### Durasi Timer
+
+Batas waktu diatur lewat konstanta `GAME_DURATION_SECONDS`. Nilainya harus **sama di dua tempat**:
+
+```javascript
+// js/game.js (baris 28)
+var GAME_DURATION_SECONDS = 30 * 60; // 30 menit
+
+// google-apps-script.js (baris 15)
+var GAME_DURATION_SECONDS = 30 * 60; // 30 menit
+```
+
+Jika mengubah durasi, ubah juga:
+- Tampilan awal timer di `game.html` (`id="timer"` dan `id="timer-mobile"`, saat ini `30:00`)
+- Teks `timeoutText` dan `timeoutFallback` di `js/translations.js`
+- Lalu deploy ulang Apps Script (lihat catatan di bagian Google Sheets)
 
 ### Tailwind Theme (js/tailwind-config.js)
 
@@ -449,19 +526,23 @@ fontFamily: {
 }
 ```
 
-### Multilingual (js/messages.js)
+### Multilingual (js/translations.js)
 
 **Bahasa Tersedia:**
 - English (`en`)
 - Bahasa Indonesia (`id`)
 
 **Cara Ganti Bahasa:**
-```javascript
-// Di game.js
-game.language = 'en'; // atau 'id'
-```
+- Klik tombol **ID / EN** di header, atau buka `game.html#en` / `game.html#id`
+- Pilihan bahasa disimpan di localStorage (`language`)
 
-**Note**: Level instructions saat ini hanya Bahasa Indonesia
+**Note**: Instruksi tiap level (`js/levels.js`) saat ini hanya tersedia dalam Bahasa Indonesia
+
+### Vercel (vercel.json)
+
+- Rewrite `/` → `index.html` dan `/game` → `game.html`
+- Security headers: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `X-XSS-Protection`
+- `robots.txt` memblokir crawler dari `/api/`
 
 ---
 
@@ -477,26 +558,36 @@ game.language = 'en'; // atau 'id'
 - Extended wait logic (10s timeout)
 - Try-catch wrappers semua `Swal.fire()`
 
+### Saran AI Tidak Muncul / Error
+
+**Checklist:**
+1. ✅ `GROQ_API_KEY` sudah diisi di `.env` (lokal) atau Environment Variables Vercel (produksi)?
+2. ✅ Dijalankan dengan `vercel dev` atau sudah di-deploy ke Vercel? (server statis biasa tidak punya `/api/groq`)
+3. ✅ Setelah menambah environment variable di Vercel, sudah redeploy?
+4. ✅ Cek **Vercel Function Logs** untuk pesan error dari Groq (misalnya limit atau model tidak tersedia)
+
 ### Data Tidak Tersimpan ke Spreadsheet
 
 **Checklist:**
 1. ✅ Apps Script sudah di-deploy sebagai Web App?
-2. ✅ URL di `game.js` baris 34-35 sudah benar?
+2. ✅ URL `googleScriptUrl` di `js/game.js` sudah benar?
 3. ✅ Permission "Anyone" di deployment settings?
-4. ✅ Cek browser console untuk error fetch
+4. ✅ Apps Script sudah diperbarui ke versi terbaru (batas 30 menit)? Versi lama menolak data jika waktu > 60 detik
+5. ✅ Cek browser console untuk error fetch
 
 **Debug:**
 ```javascript
 // Di browser console
 localStorage.getItem("playerName")
 localStorage.getItem("playerAbsence")
+localStorage.getItem("sessionId")
 ```
 
-### Timer Tidak Berjalan
+### Timer Tidak Sesuai
 
 **Penyebab Umum:**
-- Browser tab tidak aktif (intended behavior - auto-pause)
-- localStorage corrupt
+- Sisa waktu (`timeLeft`) dan waktu mulai (`gameStartTime`) tersimpan di localStorage, jadi sesi lama bisa terbawa
+- Jika halaman dibuka lagi lebih dari 30 menit sejak mulai, game otomatis direset dengan penanda meninggalkan permainan
 
 **Solusi:**
 ```javascript
@@ -558,7 +649,8 @@ Project ini dibuat untuk tujuan edukasi.
 - **Google Fonts** - Space Grotesk & Libre Caslon Text
 - **Material Design 3** - Color system inspiration
 - **Flexbox Froggy** - Gameplay concept inspiration
-- **Google Gemini AI** - Intelligent feedback system
+- **Groq** - Inferensi AI untuk saran pembelajaran
+- **Vercel** - Hosting & Serverless Functions
 
 ---
 

@@ -25,7 +25,7 @@ var AlertHelper = {
   },
 };
 
-var GAME_DURATION_SECONDS = 60; // 60 seconds (1 minute)
+var GAME_DURATION_SECONDS = 30 * 60; // 30 minutes (1800 seconds)
 
 var game = {
   // ===========================================
@@ -34,7 +34,7 @@ var game = {
 
   // Game state
   googleScriptUrl:
-    "https://script.google.com/macros/s/AKfycbwD1m_oJrrAAR82y_jjIDVTOu5tTJJVgr_d_3RqtLeqPLWIYoSGwb14C1s8dxjosvxAVg/exec",
+    "https://script.google.com/macros/s/AKfycbyrxLUeYckpSng-FIxZfQbghXQjFEBwfDY3QCzMeW7YVzS82F4zNprfZaiJpqJmENG9-g/exec",
   language: ["id", "en"].includes(window.location.hash.substring(1))
     ? window.location.hash.substring(1)
     : localStorage.getItem("language") || "id",
