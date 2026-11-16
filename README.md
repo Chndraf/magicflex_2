@@ -82,6 +82,8 @@
 ### 4. **AI Feedback (Groq)**
 - Saran pembelajaran dibuat otomatis saat popup hasil kuis terbuka
 - Berisi materi Flexbox yang perlu dipelajari, berdasarkan soal yang sulit atau belum selesai
+- Siswa yang sudah mahir (25 soal selesai, tiap soal 1-2 percobaan) mendapat ucapan selamat dan **Langkah Belajar Selanjutnya**, tanpa memanggil AI
+- Kalimat pembuka dan daftar properti yang dikuasai dibuat oleh kode, jawaban AI divalidasi, sehingga isinya selalu sinkron dengan data siswa
 - Dijalankan lewat Vercel Serverless Function (`/api/groq`), API key tidak pernah dikirim ke browser
 - Fallback otomatis antar model Groq dan cache hasil 24 jam
 - Pesan error yang jelas jika API gagal
@@ -397,14 +399,26 @@ Menerima POST request dari frontend:
 <a id="ai-feedback-groq"></a>
 ## 🤖 AI Feedback (Groq)
 
-Saran pembelajaran dibuat otomatis ketika popup hasil kuis terbuka. Alurnya:
+Komponen ini dibuat otomatis ketika popup hasil kuis terbuka. Isinya bergantung pada hasil siswa:
 
-1. `game.js` merangkum hasil siswa: skor, soal yang sulit, soal yang belum dicoba, dan properti yang sudah dikuasai
-2. Prompt (Bahasa Indonesia atau English, sesuai bahasa aktif) dikirim ke `POST /api/groq`
-3. Serverless function memanggil Groq Chat Completions dengan model `openai/gpt-oss-20b`. Jika gagal, otomatis mencoba `openai/gpt-oss-120b`
-4. Jawaban ditampilkan di bagian **Saran Pembelajaran AI** dan disimpan di localStorage selama 24 jam (kunci berdasarkan session ID, skor, dan jumlah benar)
+| Kondisi siswa | Yang ditampilkan | Memanggil AI? |
+|---------------|------------------|---------------|
+| 25 soal selesai, tiap soal selesai dalam 1-2 percobaan | **Langkah Belajar Selanjutnya**: ucapan selamat, total dan rata-rata percobaan, lalu 3 langkah lanjut (`flex-grow`/`flex-shrink`/`flex-basis`, CSS Grid, layout responsif) | Tidak |
+| Ada materi yang perlu diulang atau belum dikerjakan | **Saran Pembelajaran AI**: pembuka dari kode + materi dari AI | Ya |
+| Belum selesai, tetapi soal tersisa hanya memakai properti yang sudah dikuasai | Pembuka + ajakan menyelesaikan soal tersisa | Tidak |
 
-**Karakteristik respons:** gaya bahan ajar formal, tanpa code block, maksimal sekitar 180 kata.
+Batas "lancar" memakai konstanta `HARD_TRIES = 3` di `js/translations.js`: soal yang selesai dengan 3 percobaan atau lebih dianggap perlu diulang.
+
+**Alur saran AI:**
+
+1. `summarizeQuizForAI()` (`js/translations.js`) merangkum hasil siswa: soal sulit, soal belum dicoba, properti yang sudah dikuasai, dan properti yang perlu dipelajari. Dua daftar terakhir tidak pernah beririsan
+2. Kalimat pembuka (jumlah soal selesai dan properti yang dikuasai) dibuat oleh kode, bukan AI
+3. Prompt (Bahasa Indonesia atau English, sesuai bahasa aktif) dikirim ke `POST /api/groq`. AI hanya menulis butir materi dan ringkasan
+4. Serverless function memanggil Groq Chat Completions dengan model `openai/gpt-oss-20b`. Jika gagal, otomatis mencoba `openai/gpt-oss-120b`
+5. `sanitizeAIBody()` memvalidasi jawaban AI: butir untuk properti di luar daftar dibuang, materi yang tidak dibahas diisi dari `FLEX_NOTES`, dan ringkasan yang menyebut properti di luar daftar atau mengklaim penguasaan diganti kalimat tetap
+6. Hasil disimpan di localStorage selama 24 jam (kunci `ai_feedback_v4_...` berdasarkan session ID, skor, dan jumlah benar)
+
+**Karakteristik respons:** gaya bahan ajar formal, tanpa code block, maksimal sekitar 150 kata.
 
 **Environment variable:**
 

@@ -581,6 +581,9 @@ var game = {
       sessionId: this.sessionId || ""
     };
 
+    // Siswa yang sudah mahir mendapat kartu "Langkah Belajar Selanjutnya", bukan saran materi.
+    const aiTitleKey = summarizeQuizForAI(quizDataForAI).allClear ? "aiNextStepsTitle" : "aiLearningAdvice";
+
     if (typeof Swal === "undefined") {
       alert(`QUIZ RESULTS\n\nPlayer: ${playerName}\nScore: ${score}%`);
       return;
@@ -609,7 +612,7 @@ var game = {
                   
                   <div class="ai-feedback-container" style="margin: 15px 0; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: left;">
                       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">${t("aiLearningAdvice", this.language)}</h3>
+                          <h3 style="margin: 0; font-size: 1.1em; color: #334155;">${t(aiTitleKey, this.language)}</h3>
                       </div>
                       <div id="ai-feedback-content"></div>
                   </div>
@@ -672,13 +675,36 @@ var game = {
    */
   handleAIFeedbackRequest: async function(quizData) {
     const feedbackContent = document.getElementById('ai-feedback-content');
+    const showText = (text) => {
+      if (feedbackContent) {
+        feedbackContent.innerHTML = `<div style="font-size: 0.95em; line-height: 1.6; color: #334155;">${this.formatAIFeedback(text)}</div>`;
+      }
+    };
+
+    // Data hasil siswa diringkas di kode. Bagian yang bergantung pada data (pembuka, daftar materi)
+    // tidak diserahkan ke AI supaya selalu sinkron.
+    const summary = summarizeQuizForAI(quizData);
+
+    // Siswa mahir (semua soal selesai, tiap soal 1-2 percobaan): ucapan selamat + langkah lanjut, tanpa AI.
+    if (summary.allClear) {
+      showText(aiMasteryText(summary, this.language));
+      return;
+    }
+
+    // Tidak ada materi yang perlu dijelaskan (soal tersisa hanya memakai properti yang sudah dikuasai).
+    const topics = flexTopics(summary);
+    if (!topics.length) {
+      showText(aiNoTopicsText(summary, this.language));
+      return;
+    }
+
     if (feedbackContent) {
       feedbackContent.innerHTML = '<div style="text-align: center; color: #64748b; padding: 15px;">' + t("sendingAiFeedback", this.language) + '</div>';
     }
 
     // Generate cache key based on sessionId so every unique game session gets its own fresh feedback
     const sessionId = quizData.sessionId || game.sessionId || 'default';
-    const cacheKey = `ai_feedback_v3_${sessionId}_${quizData.score}_${quizData.correctAnswers}`;
+    const cacheKey = `ai_feedback_v4_${sessionId}_${quizData.score}_${quizData.correctAnswers}`;
     
     // Check if cached feedback exists (valid for 24 hours)
     const cachedData = this.getAIFeedbackCache(cacheKey);
@@ -716,7 +742,8 @@ var game = {
         throw new Error(t("aiEmptyResponse", this.language));
       }
 
-      const formattedText = this.formatAIFeedback(aiText);
+      const fullText = aiOpeningText(summary, this.language) + "\n\n" + sanitizeAIBody(aiText, topics, this.language);
+      const formattedText = this.formatAIFeedback(fullText);
       
       // Cache the AI feedback for 24 hours
       this.setAIFeedbackCache(cacheKey, formattedText);
